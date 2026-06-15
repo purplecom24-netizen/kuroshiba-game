@@ -1,0 +1,33 @@
+# Secrets — NEVER commit real keys
+.env
+.env.local
+*.env
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Data / DB (local trading state must never be committed)
+*.sqlite
+*.sqlite3
+*.db
+data/
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.vite/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
