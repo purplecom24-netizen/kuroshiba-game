@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>レアアース投資マップ 2026 — 2手の地図</title>
+<meta name="description" content="脱・中国依存と国策マネーが動かすレアアース相場を「事業で跳ねる純粋プレイ」と「他事業でも伸びる分散型」の2手で地図化。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     レアアース投資マップ — 深海への潜行
+     Palette (deep sea · ocean blue · futuristic blue)
+       --abyss   #04080F  漆黒の深海（−6,000m）
+       --deep    #071726  深海ネイビー
+       --current #0E2C4C  中層の青
+       --lumen   #46E3DC  生物発光のシアン（主アクセント）
+       --volt    #5183FF  未来的なエレクトリックブルー
+       --foam    #EAF3FB  シーフォーム（本文）
+       --mist    #86A6C6  ミスト（副次テキスト）
+     ============================================================ */
+  :root{
+    --abyss:#04080F;
+    --deep:#071726;
+    --deep-2:#0A2138;
+    --current:#0E2C4C;
+    --glass:rgba(110,168,214,0.055);
+    --glass-2:rgba(110,168,214,0.085);
+    --line:rgba(122,196,228,0.14);
+    --line-soft:rgba(122,196,228,0.08);
+    --lumen:#46E3DC;
+    --lumen-soft:#86F0EA;
+    --volt:#5183FF;
+    --foam:#EAF3FB;
+    --mist:#8AA8C8;
+    --mist-dim:#5E7C9B;
+    --maxw:1120px;
+    --ease:cubic-bezier(.16,.84,.34,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+  body{
+    font-family:'Zen Kaku Gothic New','Space Grotesk',system-ui,sans-serif;
+    color:var(--foam);
+    background:var(--abyss);
+    line-height:1.7;
+    letter-spacing:.01em;
+    overflow-x:hidden;
+    /* 潜行：海面の青 → 漆黒へ。スクロールで深くなる */
+    background-image:linear-gradient(
+      180deg,
+      #0a2746 0%,
+      #0a2240 8%,
+      #081b33 26%,
+      #061425 48%,
+      #050f1d 70%,
+      #04090f 88%,
+      #03070c 100%
+    );
+    background-attachment:fixed;
+  }
+
+  /* 環境光：生物発光のにじみ（控えめ・固定） */
+  .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .ambient span{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5}
+  .ambient .a1{width:46vw;height:46vw;top:-12vw;right:-10vw;background:radial-gradient(circle,rgba(81,131,255,.30),transparent 65%)}
+  .ambient .a2{width:38vw;height:38vw;top:42%;left:-12vw;background:radial-gradient(circle,rgba(70,227,220,.16),transparent 65%)}
+  .ambient .a3{width:50vw;height:50vw;bottom:-18vw;left:30%;background:radial-gradient(circle,rgba(20,44,76,.55),transparent 70%)}
+
+  /* マリンスノー：生物発光の漂い（canvas） */
+  .snow{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.7}
+  @media (prefers-reduced-motion:reduce){.snow{display:none}}
+
+  .wrap{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 28px}
+
+  /* ---------- 深度ゲージ（シグネチャ：潜水計） ---------- */
+  .gauge{position:fixed;top:0;left:0;height:100vh;width:96px;z-index:5;display:none;
+    align-items:center;justify-content:center;pointer-events:none}
+  .gauge__line{position:relative;height:64vh;width:1px;background:linear-gradient(180deg,transparent,var(--line),transparent)}
+  .gauge__tick{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:7px}
+  .gauge__tick i{display:block;width:7px;height:1px;background:var(--line)}
+  .gauge__tick span{font-family:'Space Mono',monospace;font-size:9.5px;letter-spacing:.06em;color:var(--mist-dim);white-space:nowrap}
+  .gauge__thumb{position:absolute;left:50%;top:0;width:7px;height:7px;border-radius:50%;
+    transform:translate(-50%,-50%);background:var(--lumen);
+    box-shadow:0 0 0 4px rgba(70,227,220,.14),0 0 14px 2px rgba(70,227,220,.55);
+    transition:top .12s linear;animation:thumbpulse 2.6s ease-in-out infinite}
+  @keyframes thumbpulse{0%,100%{box-shadow:0 0 0 4px rgba(70,227,220,.12),0 0 12px 2px rgba(70,227,220,.45)}
+    50%{box-shadow:0 0 0 5px rgba(70,227,220,.2),0 0 18px 4px rgba(70,227,220,.7)}}
+  @media (prefers-reduced-motion:reduce){.gauge__thumb{animation:none}}
+  .gauge__read{position:absolute;top:calc(50% + 36vh);left:50%;transform:translateX(-50%);
+    font-family:'Space Mono',monospace;text-align:center;line-height:1.2}
+  .gauge__read b{display:block;font-size:13px;font-weight:700;color:var(--lumen-soft);letter-spacing:.02em}
+  .gauge__read em{display:block;font-size:9px;font-style:normal;color:var(--mist-dim);letter-spacing:.16em;margin-top:2px}
+  @media (min-width:1180px){.gauge{display:flex}.wrap{padding-left:28px}}
+  @media (prefers-reduced-motion:reduce){.gauge__thumb{transition:none}}
+
+  /* ---------- 共通：層（セクション） ---------- */
+  .stratum{padding:96px 0;position:relative}
+  .stratum--tight{padding:64px 0}
+  .eyebrow{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--lumen);display:flex;align-items:center;gap:12px;margin-bottom:22px}
+  .eyebrow::before{content:"";width:26px;height:1px;background:linear-gradient(90deg,var(--lumen),transparent)}
+  .depthmark{font-family:'Space Mono',monospace;color:var(--mist-dim);font-size:11px;letter-spacing:.08em}
+
+  h1,h2,h3{font-weight:700;letter-spacing:-.01em;line-height:1.18}
+  .lead{color:var(--mist);font-size:clamp(15px,1.5vw,18px);max-width:60ch}
+
+  /* ---------- 海面：ヒーロー ---------- */
+  .hero{min-height:92vh;display:flex;flex-direction:column;justify-content:center;
+    padding:120px 0 80px;position:relative}
+  .hero .kicker{font-family:'Space Mono',monospace;font-size:12.5px;letter-spacing:.16em;
+    color:var(--lumen);margin-bottom:30px;display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+  .hero .kicker .dot{width:4px;height:4px;border-radius:50%;background:var(--mist-dim);display:inline-block}
+  .hero h1{font-size:clamp(40px,8.2vw,92px);letter-spacing:-.025em}
+  .hero h1 .glow{background:linear-gradient(110deg,var(--lumen-soft) 0%,var(--lumen) 30%,var(--volt) 62%,var(--lumen-soft) 100%);
+    background-size:280% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:shimmer 7.5s var(--ease) infinite;
+    filter:drop-shadow(0 0 28px rgba(70,227,220,.28))}
+  @keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+  @media (prefers-reduced-motion:reduce){.hero h1 .glow{animation:none}}
+  .hero p.deck{margin-top:30px;font-size:clamp(16px,1.8vw,21px);color:var(--mist);max-width:62ch;line-height:1.75}
+  .hero .stats{margin-top:54px;display:flex;flex-wrap:wrap;gap:14px}
+  .stat{position:relative;border:1px solid var(--line);background:var(--glass);border-radius:14px;
+    padding:16px 20px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);min-width:0;
+    transition:transform .4s var(--ease),border-color .4s var(--ease),background .4s var(--ease)}
+  .stat:hover{transform:translateY(-3px);border-color:rgba(70,227,220,.32);background:var(--glass-2)}
+  .stat b{font-family:'Space Mono',monospace;font-size:17px;color:var(--foam);font-weight:700;display:block;letter-spacing:.01em}
+  .stat b .ar{color:var(--lumen);padding:0 6px}
+  .stat span{font-size:11.5px;color:var(--mist-dim);letter-spacing:.04em;display:block;margin-top:4px}
+  .scrollcue{margin-top:64px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.18em;
+    color:var(--mist-dim);display:flex;align-items:center;gap:10px}
+  .scrollcue i{display:block;width:1px;height:34px;background:linear-gradient(180deg,var(--lumen),transparent);animation:dive 2.4s var(--ease) infinite}
+  @keyframes dive{0%{transform:translateY(-8px);opacity:0}40%{opacity:1}100%{transform:translateY(8px);opacity:0}}
+  @media (prefers-reduced-motion:reduce){.scrollcue i{animation:none}}
+
+  /* ---------- 前提（構図） ---------- */
+  .premise-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1px;
+    background:var(--line-soft);border:1px solid var(--line-soft);border-radius:18px;overflow:hidden;margin-top:40px}
+  .pcell{position:relative;background:linear-gradient(180deg,rgba(12,32,56,.55),rgba(7,20,36,.55));padding:30px 26px;
+    transition:background .4s var(--ease)}
+  .pcell::after{content:"";position:absolute;left:0;top:0;width:2px;height:0;
+    background:linear-gradient(180deg,var(--lumen),transparent);transition:height .45s var(--ease)}
+  .pcell:hover{background:linear-gradient(180deg,rgba(16,42,72,.7),rgba(9,24,42,.6))}
+  .pcell:hover::after{height:100%}
+  .pcell h3{font-size:13px;letter-spacing:.04em;color:var(--lumen);font-family:'Space Mono',monospace;
+    font-weight:700;text-transform:uppercase;margin-bottom:14px}
+  .pcell p{font-size:14.5px;color:var(--mist);line-height:1.75}
+  .pcell .big{font-family:'Space Mono',monospace;font-size:26px;color:var(--foam);font-weight:700;
+    display:block;margin-bottom:8px;letter-spacing:-.01em}
+  .risk-note{margin-top:34px;border:1px solid rgba(81,131,255,.34);border-radius:16px;
+    padding:24px 28px;background:linear-gradient(120deg,rgba(81,131,255,.10),rgba(70,227,220,.05))}
+  .risk-note strong{color:var(--lumen-soft)}
+  .risk-note .tag{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;
+    color:var(--volt);text-transform:uppercase;display:block;margin-bottom:10px}
+
+  /* ---------- 2手の地図（フレーム） ---------- */
+  .axes{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:40px}
+  .axis{border:1px solid var(--line);border-radius:18px;padding:30px 28px;background:var(--glass);
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .axis .n{font-family:'Space Mono',monospace;font-size:12px;color:var(--lumen);letter-spacing:.1em}
+  .axis h3{font-size:21px;margin:12px 0 12px}
+  .axis p{font-size:14.5px;color:var(--mist);line-height:1.75}
+  @media (max-width:680px){.axes{grid-template-columns:1fr}}
+
+  /* ---------- バケット見出し ---------- */
+  .bucket-head{display:flex;align-items:baseline;gap:18px;flex-wrap:wrap;margin-bottom:10px}
+  .bucket-head h2{font-size:clamp(26px,4.4vw,40px)}
+  .bucket-head .tax{font-family:'Space Mono',monospace;font-size:12px;color:var(--lumen);
+    letter-spacing:.1em;padding:5px 11px;border:1px solid var(--line);border-radius:999px}
+  .sub-label{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--mist);margin:44px 0 18px;display:flex;align-items:center;gap:12px}
+  .sub-label::after{content:"";flex:1;height:1px;background:var(--line-soft)}
+  .sub-label .pri{color:var(--lumen-soft)}
+
+  /* ---------- 銘柄カード ---------- */
+  .cards{display:grid;gap:18px}
+  .cards--2{grid-template-columns:repeat(auto-fit,minmax(330px,1fr))}
+  .cards--3{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .card{position:relative;border:1px solid var(--line);border-radius:18px;overflow:hidden;
+    background:linear-gradient(180deg,rgba(14,34,58,.45),rgba(7,18,33,.55));
+    padding:26px 24px 24px;transition:transform .4s var(--ease),border-color .4s var(--ease),box-shadow .4s var(--ease)}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;z-index:2;
+    background:linear-gradient(90deg,transparent,var(--lumen),transparent);opacity:.4;transition:opacity .4s var(--ease)}
+  .card::after{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;opacity:0;
+    transition:opacity .4s var(--ease);
+    background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),rgba(70,227,220,.10),transparent 60%)}
+  .card>*{position:relative;z-index:1}
+  .card:hover{transform:translateY(-5px);border-color:rgba(70,227,220,.38);
+    box-shadow:0 24px 56px -28px rgba(70,227,220,.5),0 0 0 1px rgba(70,227,220,.12)}
+  .card:hover::before{opacity:1}
+  .card:hover::after{opacity:1}
+  .card__top{display:flex;justify-content:space-between;align-items:flex-start;gap:14px;margin-bottom:14px}
+  .card__id .tick{font-family:'Space Mono',monospace;font-size:12px;color:var(--mist);letter-spacing:.05em}
+  .card__id .name{font-size:20px;font-weight:700;margin-top:3px;line-height:1.25}
+  .card__price{font-family:'Space Mono',monospace;text-align:right;flex-shrink:0}
+  .card__price b{font-size:18px;color:var(--lumen-soft);font-weight:700;display:block;white-space:nowrap}
+  .card__price span{font-size:10.5px;color:var(--mist-dim);letter-spacing:.04em;display:block;margin-top:2px}
+  .pill{display:inline-block;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;
+    padding:4px 9px;border-radius:999px;margin-bottom:14px;border:1px solid var(--line)}
+  .pill--core{color:var(--lumen);border-color:rgba(70,227,220,.32);background:rgba(70,227,220,.07)}
+  .pill--theme{color:#ffd58a;border-color:rgba(255,213,138,.3);background:rgba(255,213,138,.06)}
+  .pill--frontier{color:var(--volt);border-color:rgba(81,131,255,.34);background:rgba(81,131,255,.08)}
+  .pill--diversified{color:var(--mist);border-color:var(--line)}
+  .pill--option{color:var(--mist-dim);border-color:var(--line-soft)}
+  .card__desc{font-size:14px;color:var(--foam);line-height:1.7;margin-bottom:14px}
+  .card__data{display:flex;flex-wrap:wrap;gap:7px 8px;margin-bottom:14px}
+  .chip{font-family:'Space Mono',monospace;font-size:11px;color:var(--mist);
+    border:1px solid var(--line-soft);border-radius:8px;padding:5px 9px;background:rgba(8,22,38,.4);
+    transition:border-color .3s var(--ease),color .3s var(--ease)}
+  .chip:hover{border-color:rgba(70,227,220,.28);color:var(--foam)}
+  .chip b{color:var(--foam);font-weight:700}
+  .card__risk{font-size:12.5px;color:var(--mist);line-height:1.65;padding-top:13px;border-top:1px solid var(--line-soft)}
+  .card__risk .lab{color:var(--mist-dim);font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;margin-right:7px}
+
+  .mini{border:1px solid var(--line-soft);border-radius:14px;padding:20px 22px;margin-top:18px;
+    background:rgba(8,22,38,.35);font-size:13.5px;color:var(--mist);line-height:1.75}
+  .mini b{color:var(--foam)}
+
+  /* ---------- 選び方 ---------- */
+  .verdict{border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-top:36px}
+  .vrow{display:grid;grid-template-columns:140px 1fr;gap:0;border-bottom:1px solid var(--line-soft)}
+  .vrow:last-child{border-bottom:0}
+  .vrow .vk{padding:22px 24px;font-weight:700;font-size:15px;background:rgba(12,32,56,.4);
+    display:flex;align-items:center;gap:10px}
+  .vrow .vk .d{font-family:'Space Mono',monospace;font-size:10px;color:var(--lumen);letter-spacing:.08em}
+  .vrow .vv{padding:22px 24px;font-size:14px;color:var(--mist);line-height:1.75}
+  .vrow .vv strong{color:var(--foam)}
+  @media (max-width:640px){.vrow{grid-template-columns:1fr}.vrow .vk{border-bottom:1px solid var(--line-soft)}}
+
+  /* ---------- 注意書き・フッター ---------- */
+  .disclaimer{border:1px solid rgba(81,131,255,.22);border-radius:16px;padding:26px 28px;
+    background:linear-gradient(120deg,rgba(7,20,36,.6),rgba(12,32,56,.5));margin-top:30px}
+  .disclaimer h3{font-family:'Space Mono',monospace;font-size:12px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--volt);margin-bottom:14px}
+  .disclaimer p{font-size:13px;color:var(--mist);line-height:1.8}
+  .disclaimer p + p{margin-top:10px}
+  footer{padding:60px 0 80px;text-align:center;border-top:1px solid var(--line-soft);margin-top:80px}
+  footer .mk{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;color:var(--mist-dim)}
+  footer .sig{margin-top:14px;font-size:13px;color:var(--mist)}
+
+  /* ---------- reveal ---------- */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .8s var(--ease),transform .8s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  .cards .card.reveal:nth-child(2){transition-delay:.09s}
+  .cards .card.reveal:nth-child(3){transition-delay:.18s}
+  .cards .card.reveal:nth-child(4){transition-delay:.27s}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+
+  /* ---------- focus ---------- */
+  a{color:var(--lumen-soft);text-decoration:none}
+  a:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--lumen);outline-offset:3px;border-radius:4px}
+
+  @media (max-width:560px){
+    .wrap{padding:0 20px}
+    .stratum{padding:72px 0}
+    .hero{min-height:90vh;padding:104px 0 60px}
+    .card{padding:22px 20px}
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true">
+  <span class="a1"></span><span class="a2"></span><span class="a3"></span>
+</div>
+<canvas class="snow" id="snow" aria-hidden="true"></canvas>
+
+<!-- 深度ゲージ（潜水計） -->
+<aside class="gauge" aria-hidden="true">
+  <div class="gauge__line">
+    <span class="gauge__tick" style="top:0%"><i></i><span>0 m 海面</span></span>
+    <span class="gauge__tick" style="top:25%"><i></i><span>1,500</span></span>
+    <span class="gauge__tick" style="top:50%"><i></i><span>3,000</span></span>
+    <span class="gauge__tick" style="top:75%"><i></i><span>4,500</span></span>
+    <span class="gauge__tick" style="top:100%"><i></i><span>6,000 m 海底</span></span>
+    <span class="gauge__thumb" id="gThumb"></span>
+  </div>
+  <div class="gauge__read"><b id="gVal">0</b><em>DEPTH · M</em></div>
+</aside>
+
+<main class="wrap">
+
+  <!-- ===== 海面：ヒーロー ===== -->
+  <header class="hero">
+    <div class="kicker reveal">
+      <span>RARE EARTH INVESTMENT MAP</span><span class="dot"></span>
+      <span>脱・中国 × 国策</span><span class="dot"></span>
+      <span>南鳥島 −6,000 m</span>
+    </div>
+    <h1 class="reveal">レアアースを、<br><span class="glow">2手</span>で捉える。</h1>
+    <p class="deck reveal">「レアアース事業で<em style="font-style:normal;color:var(--foam)">跳ねる</em>純粋プレイ」と「他事業でも<em style="font-style:normal;color:var(--foam)">伸びる</em>分散型」。脱・中国依存と国策マネーが動かす相場を、業績ドライバーの構造で地図化する。海面から深海まで、潜って読む。</p>
+    <div class="stats reveal">
+      <div class="stat"><b>$44<span class="ar">→</span>$110</b><span>NdPr 価格 /kg　2024 → 2026</span></div>
+      <div class="stat"><b>80%+ / 90%+</b><span>中国シェア　精製 / 磁石</span></div>
+      <div class="stat"><b>¥3,400 億</b><span>南鳥島 採掘〜精製（国策）</span></div>
+    </div>
+    <div class="scrollcue reveal"><i></i><span>DIVE</span></div>
+  </header>
+
+  <!-- ===== −500m：前提（構図） ===== -->
+  <section class="stratum" id="context">
+    <span class="depthmark reveal">− 500 m · 中層</span>
+    <div class="eyebrow reveal">構図 / The Setup</div>
+    <h2 class="reveal" style="font-size:clamp(24px,4vw,36px);max-width:18ch">なぜ今、レアアースに資金が向かうのか。</h2>
+    <p class="lead reveal" style="margin-top:18px">この相場の土台は2つ。中国の供給支配と、それに対抗する日米の「国策化」。両者が需要と価格の床を押し上げている。</p>
+
+    <div class="premise-grid reveal">
+      <div class="pcell">
+        <h3>価格</h3>
+        <span class="big">$44 → $110</span>
+        <p>NdPr（ネオジム・プラセオジム）は2024年半ばから足元で約2.5倍。ジスプロシウム・テルビウムなど重希土は2025年に倍増した。</p>
+      </div>
+      <div class="pcell">
+        <h3>中国 / China</h3>
+        <span class="big">精製 80%+</span>
+        <p>採掘で約6割、精製で8割超、高性能磁石で約9割を中国が握る。輸出規制が地政学カードとして機能している。</p>
+      </div>
+      <div class="pcell">
+        <h3>米国 / Project Vault</h3>
+        <span class="big">$12 B</span>
+        <p>2026年2月、戦略的重要鉱物備蓄を始動。政府が複数社へ出資し、国防総省が買取契約を結ぶ「ナショナル・チャンピオン」育成へ。</p>
+      </div>
+      <div class="pcell">
+        <h3>日本 / 南鳥島</h3>
+        <span class="big">2028 年度〜</span>
+        <p>太平洋・東京都小笠原のEEZで深海レアアース泥を採掘。27年2月に1日350トンの大規模試験、産業化は28年度以降を狙う。リサイクル国策も379億円。</p>
+      </div>
+    </div>
+
+    <div class="risk-note reveal">
+      <span class="tag">⚑ 最大の共通リスク</span>
+      <p><strong>米中和解で中国が輸出を再開し、価格が崩れるシナリオ。</strong>これは下限価格を持たない銘柄を直撃し、相場全体をディレーティングさせ得る。下の「2手」は、このリスクへの感応度の違いそのものでもある。</p>
+    </div>
+  </section>
+
+  <!-- ===== −1,500m：2手のフレーム ===== -->
+  <section class="stratum stratum--tight" id="frame">
+    <span class="depthmark reveal">− 1,500 m</span>
+    <div class="eyebrow reveal">読み方 / Two Hands</div>
+    <h2 class="reveal" style="font-size:clamp(24px,4vw,36px);max-width:20ch">同じ「レアアース株」でも、株価を動かす中身は違う。</h2>
+    <div class="axes reveal">
+      <div class="axis">
+        <span class="n">HAND 01</span>
+        <h3>レアアース事業で跳ねる</h3>
+        <p>純粋プレイ。価格・政策・立ち上げ進捗に株価が直結する高ベータ群。当たれば大きく、外れも大きい。判断軸は <b style="color:var(--lumen-soft)">①政府の下限価格があるか ②現値が織り込み済みか</b>。</p>
+      </div>
+      <div class="axis">
+        <span class="n">HAND 02</span>
+        <h3>他事業でも伸びる</h3>
+        <p>分散型。レアアースは本物の追い風だが「一部」。本業という土台が下値を支え、上値は希釈される。和解が来ても全損しにくい代わり、跳ね方は穏やか。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== −3,000m：手1 ===== -->
+  <section class="stratum" id="hand1">
+    <span class="depthmark reveal">− 3,000 m · 漸深層</span>
+    <div class="bucket-head reveal">
+      <h2>手1 — 跳ねる純粋プレイ</h2>
+      <span class="tax">RE = 株価エンジン</span>
+    </div>
+    <p class="lead reveal">レアアースそのものが業績の中心。価格と立ち上げ実行に全張りする群。</p>
+
+    <div class="sub-label reveal"><span class="pri">◆ 黒字・政府アンカー付き</span>　相対的な本命</div>
+    <div class="cards cards--2">
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">NYSE : MP</div><div class="name">MP Materials</div></div>
+          <div class="card__price"><b>≈ $57.5</b><span>時価総額 ≈ $103 億</span></div>
+        </div>
+        <span class="pill pill--core">黒字化途上 · 米国策</span>
+        <p class="card__desc">米唯一の一貫鉱山 Mountain Pass ＋テキサスの磁石工場。国防総省が出資し約15%株主、NdPrを $110/kg で10年下限保証、磁石7,000t/年を10年買取。</p>
+        <div class="card__data">
+          <span class="chip">Q1'26 売上 <b>$90.6M</b></span>
+          <span class="chip">NdPr <b>917t</b> (+63%)</span>
+          <span class="chip">現金 <b>$1.74B</b></span>
+          <span class="chip">EV/EBITDA <b>≈18x</b></span>
+          <span class="chip">目標 <b>≈$76</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Risk</span>25通期は純損失。単一顧客（DoD）への集中、高バリュエーション、米中和解。</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">ASX : LYC</div><div class="name">Lynas Rare Earths</div></div>
+          <div class="card__price"><b>≈ A$18.7</b><span>目標 ≈ A$20.8</span></div>
+        </div>
+        <span class="pill pill--core">黒字 · 日本(JARE)アンカー</span>
+        <p class="card__desc">中国外で唯一の一貫生産者にして唯一の黒字。Mt Weld は最低コスト級・鉱山寿命20年超。Dy/Tb も中国外唯一。JARE が $110/kg・5,000t を2038年まで保証。</p>
+        <div class="card__data">
+          <span class="chip">H1'26 売上 <b>A$414M</b></span>
+          <span class="chip">純利益 <b>A$80M</b></span>
+          <span class="chip">+1,259% <b>YoY</b></span>
+          <span class="chip">EBITDA <b>A$152M</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Risk</span>フェアバリュー比 約+78% プレミアム。6月のCEO退任、Seadrift立ち上げ、和解。</p>
+      </article>
+    </div>
+
+    <div class="sub-label reveal"><span class="pri">◆ 日系のテーマ株</span>　"中身" は別エンジンに注意</div>
+    <div class="cards cards--3">
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">TSE : 4082</div><div class="name">第一稀元素化学</div></div>
+          <div class="card__price"><b>≈ ¥2,500-2,900</b><span>時価総額 ≈ 705 億</span></div>
+        </div>
+        <span class="pill pill--theme">テーマで跳ねる</span>
+        <p class="card__desc">排ガス触媒用ジルコニウムの国内最大手。「レアアース系」として物色されるが、<b style="color:var(--lumen-soft)">業績エンジンは触媒</b>で磁石ではない、という二重性。</p>
+        <div class="card__data">
+          <span class="chip">FY3/26 売上 <b>357.5億</b> (+6.3%)</span>
+          <span class="chip">営利 <b>+52%</b></span>
+          <span class="chip">PER <b>≈70x</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Risk</span>テーマ依存の高ボラ。割高。実需は触媒であってレアアース磁石ではない。</p>
+      </article>
+    </div>
+
+    <div class="sub-label reveal"><span class="pri">◆ フロンティア</span>　プレ収益・高リスク・最高純度</div>
+    <div class="cards cards--2">
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">NASDAQ : USAR</div><div class="name">USA Rare Earth</div></div>
+          <div class="card__price"><b>≈ $20-22</b><span>時価総額 ≈ $47 億</span></div>
+        </div>
+        <span class="pill pill--frontier">プレ収益 · 実行ベット</span>
+        <p class="card__desc">米英仏伯にまたがる一貫チェーンを建設中。Stillwater 磁石工場が Q2'26 商用化、ブラジル Serra Verde を買収予定。商務省 CHIPS で最大 $1.6B 確定。</p>
+        <div class="card__data">
+          <span class="chip">TTM 売上 <b>$1.6M</b></span>
+          <span class="chip">純損失 <b>-$297.6M</b></span>
+          <span class="chip">26→27 予想 <b>$73M→$453M</b></span>
+          <span class="chip">目標 <b>$35</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Risk</span>深い赤字・現金燃焼。磁石量産の立ち上げ実行に全依存。</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">NASDAQ : AREC</div><div class="name">American Resources / ReElement</div></div>
+          <div class="card__price"><b>超投機</b><span>極小ポジ向き</span></div>
+        </div>
+        <span class="pill pill--frontier">投機的</span>
+        <p class="card__desc">ReElement が国防総省系（Office of Strategic Capital）と $14億規模の分離技術案件、磁石1万t/年を狙う。プレ収益で資金繰りを政府依存。</p>
+        <div class="card__data">
+          <span class="chip">磁石目標 <b>10,000 t/年</b></span>
+          <span class="chip">資金 <b>政府依存</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Risk</span>5月に「ペンタゴンが $80M 融資打ち切りを検討」と報道。政府支援は流動的。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== −4,500m：手2 ===== -->
+  <section class="stratum" id="hand2">
+    <span class="depthmark reveal">− 4,500 m · 深海層</span>
+    <div class="bucket-head reveal">
+      <h2>手2 — 他事業でも伸びる分散型</h2>
+      <span class="tax">RE = 複数ドライバーの一つ</span>
+    </div>
+    <p class="lead reveal">本業という土台の上に、レアアースをオプションとして乗せる構造。和解耐性は高い。</p>
+
+    <div class="cards cards--2" style="margin-top:34px">
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">TSE : 4063</div><div class="name">信越化学工業</div></div>
+          <div class="card__price"><b>≈ ¥7,100</b><span>時価総額 ≈ 14 兆 · PER ≈28x</span></div>
+        </div>
+        <span class="pill pill--diversified">守りで持てるRE</span>
+        <p class="card__desc">半導体ウエハー・塩ビ世界首位 ＋ レアアース磁石（粒界拡散、40%超値上げ）。エンジンは半導体・塩ビで、レアアースは収益の一部。</p>
+        <div class="card__data">
+          <span class="chip">FY3/26 <b>減益</b></span>
+          <span class="chip">自己資本 <b>82%</b></span>
+          <span class="chip">大型 <b>自社株買い</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Driver</span>半導体市況・為替。和解局面でも崩れにくい財務最強の一角。</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">TSE : 5711</div><div class="name">三菱マテリアル</div></div>
+          <div class="card__price"><b>≈ ¥5,100</b><span>PBR &lt;1 · 予想PER ≈30x</span></div>
+        </div>
+        <span class="pill pill--diversified">解散価値割れ</span>
+        <p class="card__desc">銅・金 ＋ 超硬工具 ＋ リサイクル（車載モーター磁石回収の特許）。エンジンは銅・金市況、レアアースはリサイクル国策のオプション。</p>
+        <div class="card__data">
+          <span class="chip">FY3/26 <b>増益</b></span>
+          <span class="chip">27/3 <b>増収減益・増配</b></span>
+          <span class="chip">配当 <b>≈2%</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Driver</span>銅・金。低PBRの是正余地が妙味、対するはROEの低さ。</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">TSE : 5714</div><div class="name">DOWAホールディングス</div></div>
+          <div class="card__price"><b>≈ ¥9,900</b><span>PER ≈11x</span></div>
+        </div>
+        <span class="pill pill--diversified">手2で相対割安</span>
+        <p class="card__desc">非鉄大手 ＋ 環境・リサイクル（都市鉱山）＋ 電子材料の5本柱。鉱山オペレーターも担い、株価は1990年以来の高値圏（石灰石・銅高）。</p>
+        <div class="card__data">
+          <span class="chip">リサイクル国策 <b>379億</b></span>
+          <span class="chip">PER <b>≈11x</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Driver</span>銅・石灰石・電子材料。レアアースリサイクルは国策の上乗せ。</p>
+      </article>
+
+      <article class="card reveal">
+        <div class="card__top">
+          <div class="card__id"><div class="tick">TSE : 5016</div><div class="name">JX Advanced Metals</div></div>
+          <div class="card__price"><b>≈ ¥3,389</b><span>2025 上場</span></div>
+        </div>
+        <span class="pill pill--diversified">二枚看板</span>
+        <p class="card__desc">旧 JX金属。銅 ＋ 半導体材料（スパッタリングターゲット等）＋ レアメタルリサイクル。エンジンは半導体材料・銅で、レアアースは都市鉱山ラインの一つ。</p>
+        <div class="card__data">
+          <span class="chip">上場直後 <b>時系列浅め</b></span>
+        </div>
+        <p class="card__risk"><span class="lab">Driver</span>半導体材料・銅。上場直後で値動きは読みにくい。</p>
+      </article>
+    </div>
+
+    <div class="mini reveal"><b>周辺：</b>磁石・商社系として <b>TDK（6762）</b>（NdFeB磁石は巨大エレクトロニクス事業の一部材料）、<b>豊田通商（8015）・松田産業（7456）</b>（重要鉱物・リサイクルが多数事業の一つ）。なお有力磁石メーカーの <b>プロテリアル（旧日立金属）</b> は Bain 傘下で非上場のため、磁石の純投資先にはならない。</div>
+  </section>
+
+  <!-- ===== −6,000m：番外（南鳥島・深海contractor） ===== -->
+  <section class="stratum" id="seabed">
+    <span class="depthmark reveal" style="color:var(--lumen)">− 6,000 m · 海底（南鳥島）</span>
+    <div class="bucket-head reveal">
+      <h2>番外 — 南鳥島・深海 contractor</h2>
+      <span class="tax">本業で伸び、RE は将来オプション</span>
+    </div>
+    <p class="lead reveal">手2に見えるが <b style="color:var(--foam)">レアアース貢献はまだゼロ</b>（実需化前）。買えば実態は防衛・資源・EPC 株。国策3,400億円が追い風でも、果実は2028年度以降。</p>
+
+    <div class="cards cards--3" style="margin-top:34px">
+      <article class="card reveal">
+        <div class="card__top"><div class="card__id"><div class="tick">TSE : 7013</div><div class="name">IHI</div></div><div class="card__price"><b>≈ ¥2,700-4,400</b><span>※フィード不一致</span></div></div>
+        <span class="pill pill--option">本業=防衛・航空</span>
+        <p class="card__desc">航空エンジン国内首位。揚泥システムに関与するが、レアアースは時価総額に対して誤差レベル。</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__top"><div class="card__id"><div class="tick">TSE : 7011</div><div class="name">三菱重工業</div></div><div class="card__price"><b>≈ ¥4,965</b><span>—</span></div></div>
+        <span class="pill pill--option">本業=防衛・GT</span>
+        <p class="card__desc">防衛・ガスタービン・特殊船舶。深海はテーマ上乗せに留まる。</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__top"><div class="card__id"><div class="tick">TSE : 1662</div><div class="name">石油資源開発 (JAPEX)</div></div><div class="card__price"><b>≈ ¥2,357</b><span>—</span></div></div>
+        <span class="pill pill--option">本業=石油ガス</span>
+        <p class="card__desc">石油・天然ガス開発 ＋ 海洋調査の新会社に関与。揚泥は石油開発技術の応用。</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__top"><div class="card__id"><div class="tick">TSE : 6330</div><div class="name">東洋エンジニアリング</div></div><div class="card__price"><b>要確認</b><span>—</span></div></div>
+        <span class="pill pill--option">本業=プラントEPC</span>
+        <p class="card__desc">揚泥の象徴技術を持つが、収益はプラントEPC（案件遅延で赤字歴あり）。</p>
+      </article>
+      <article class="card reveal">
+        <div class="card__top"><div class="card__id"><div class="tick">TSE : 7746</div><div class="name">岡本硝子</div></div><div class="card__price"><b>小型株</b><span>高ボラ</span></div></div>
+        <span class="pill pill--option">部材</span>
+        <p class="card__desc">深海探査機の耐圧ガラス球。小型で値動きは荒い。</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== 浮上：選び方 ===== -->
+  <section class="stratum" id="choose">
+    <span class="depthmark reveal">↑ 浮上 · Resurfacing</span>
+    <div class="eyebrow reveal">選び方 / How to Choose</div>
+    <h2 class="reveal" style="font-size:clamp(24px,4vw,36px);max-width:20ch">手の選択は、リスク許容度とテーマ感応度で決まる。</h2>
+
+    <div class="verdict reveal">
+      <div class="vrow">
+        <div class="vk"><span class="d">HAND 01</span>跳ねる</div>
+        <div class="vv">「価格 × 政策 × 立ち上げ実行」への高ベータ。決め手は <strong>①政府の下限価格があるか（MP=DoD・Lynas=JARE は有、他は無）②現値が織り込み済みか</strong>。下限のある2社が相対的に堅く、USAR / AREC は実行力に賭ける投機。</div>
+      </div>
+      <div class="vrow">
+        <div class="vk"><span class="d">HAND 02</span>伸びる</div>
+        <div class="vv">本業という土台の上にレアアースをオプションとして乗せる構造。<strong>和解耐性は高いが、レアアース単体の爆発力は出ない</strong>。守りで持つ／配当・バリュエーション妙味を取る層。</div>
+      </div>
+      <div class="vrow">
+        <div class="vk"><span class="d">番外</span>深海</div>
+        <div class="vv"><strong>「レアアース株のつもりで防衛株を買う」ことになる点に注意。</strong>南鳥島の果実は2028年度以降で、株価は防衛・資源・EPC の本業とニュースで動く。事象（試験成功・予算・受注）トレード向き。</div>
+      </div>
+    </div>
+
+    <div class="disclaimer reveal">
+      <h3>⚠ Disclaimer · 注意書き</h3>
+      <p>本資料は特徴による整理であり、特定銘柄の売買を推奨するものではありません。作成者は金融アドバイザーではありません。投資判断は、各社の最新の決算・現在値のバリュエーション・下限価格の有無をご自身で確認のうえ、自己責任で行ってください。</p>
+      <p>株価・財務数値は <b style="color:var(--mist)">2026年6月中旬時点の遅延・目安</b> です。為替・市況により変動します。※ IHI はフィードにより ¥2,700 と ¥4,384 が混在し、株式分割等の可能性があるため発注前に必ずライブ値を確認してください。最大の共通リスクは <b style="color:var(--lumen-soft)">米中レアアース和解による価格崩落</b> です。</p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="mk">RARE EARTH INVESTMENT MAP · 2026.06</div>
+    <div class="sig">脱・中国 × 国策 × 深海　—　2手で読む、レアアース相場の地図。</div>
+  </footer>
+
+</main>
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* スクロール連動の reveal */
+  var items = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, {threshold:0.12, rootMargin:'0px 0px -8% 0px'});
+    items.forEach(function(el){ io.observe(el); });
+  } else {
+    items.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* 深度ゲージ（潜水計）：スクロール → 0〜6000m */
+  var thumb = document.getElementById('gThumb');
+  var val   = document.getElementById('gVal');
+  var ticking = false;
+  function updateDepth(){
+    var doc = document.documentElement;
+    var max = doc.scrollHeight - window.innerHeight;
+    var frac = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+    if(thumb) thumb.style.top = (frac * 100) + '%';
+    if(val)   val.textContent = Math.round(frac * 6000).toLocaleString('en-US');
+    ticking = false;
+  }
+  function onScroll(){
+    if(!ticking){ window.requestAnimationFrame(updateDepth); ticking = true; }
+  }
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+  updateDepth();
+
+  /* 銘柄カード：カーソル追従のスポットライト */
+  document.querySelectorAll('.card').forEach(function(card){
+    card.addEventListener('pointermove', function(e){
+      var r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+      card.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+    });
+  });
+
+  /* マリンスノー：ゆっくり沈む生物発光の粒子 */
+  var canvas = document.getElementById('snow');
+  if(canvas && !reduce){
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    var W, H, flakes = [];
+    function size(){
+      W = canvas.width = Math.floor(innerWidth * dpr);
+      H = canvas.height = Math.floor(innerHeight * dpr);
+      canvas.style.width = innerWidth + 'px';
+      canvas.style.height = innerHeight + 'px';
+      var n = Math.round(innerWidth * innerHeight / 26000);
+      flakes = [];
+      for(var i=0;i<n;i++){
+        flakes.push({
+          x: Math.random()*W, y: Math.random()*H,
+          r: (Math.random()*1.6 + 0.4) * dpr,
+          vy: (Math.random()*0.32 + 0.08) * dpr,
+          vx: (Math.random()-0.5) * 0.18 * dpr,
+          a: Math.random()*0.5 + 0.15,
+          tw: Math.random()*Math.PI*2,
+          cy: Math.random() < 0.22
+        });
+      }
+    }
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      for(var i=0;i<flakes.length;i++){
+        var f = flakes[i];
+        f.y += f.vy; f.x += f.vx; f.tw += 0.02;
+        if(f.y - f.r > H){ f.y = -f.r; f.x = Math.random()*W; }
+        if(f.x < -10) f.x = W+10; else if(f.x > W+10) f.x = -10;
+        var alpha = f.a * (0.65 + 0.35*Math.sin(f.tw));
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+        ctx.fillStyle = f.cy
+          ? 'rgba(70,227,220,' + alpha.toFixed(3) + ')'
+          : 'rgba(180,212,240,' + (alpha*0.8).toFixed(3) + ')';
+        ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    size();
+    window.addEventListener('resize', size, {passive:true});
+    requestAnimationFrame(draw);
+  }
+})();
+</script>
+</body>
+</html>
