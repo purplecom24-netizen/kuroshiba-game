@@ -229,16 +229,6 @@
   .disclaimer p{font-size:12px;color:var(--mist);line-height:1.8}
   .disclaimer p + p{margin-top:8px}
 
-  /* ---------- 買うボタン ---------- */
-  .buybar{position:sticky;bottom:0;z-index:20;margin:18px -16px 0;padding:14px 16px 18px;
-    background:linear-gradient(0deg,rgba(5,12,22,.96),rgba(5,12,22,.7) 70%,transparent)}
-  .buybtn{display:block;width:100%;text-align:center;font-size:16px;font-weight:700;color:var(--abyss);
-    padding:15px;border:none;border-radius:14px;cursor:pointer;font-family:inherit;
-    background:linear-gradient(135deg,var(--lumen),var(--volt));
-    box-shadow:0 10px 30px -10px rgba(70,227,220,.7);transition:transform .25s var(--ease),box-shadow .25s}
-  .buybtn:hover{transform:translateY(-2px);box-shadow:0 16px 38px -12px rgba(70,227,220,.8)}
-  .buybtn small{display:block;font-size:10px;font-weight:400;opacity:.75;margin-top:2px;letter-spacing:.04em}
-
   /* ---------- 準備中 ---------- */
   .soon{display:none;text-align:center;padding:54px 24px}
   .soon .ic{font-size:34px;margin-bottom:14px}
@@ -246,7 +236,6 @@
   .soon p{font-size:13.5px;color:var(--mist);max-width:34ch;margin:0 auto;line-height:1.8}
   body.placeholder #detail{display:none}
   body.placeholder #soon{display:block}
-  body.placeholder .buybar{display:none}
 
   /* reveal / a11y */
   .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
@@ -484,11 +473,6 @@
     </div>
   </div><!-- /#detail -->
 
-  <!-- 買う -->
-  <div class="buybar">
-    <button class="buybtn" id="buyBtn">買う<small>※これはサンプル画面です（実際の発注はできません）</small></button>
-  </div>
-
 </div><!-- /.app -->
 
 <script>
@@ -580,6 +564,8 @@
 
   function resizeChart(){
     var r=canvas.parentElement.getBoundingClientRect();
+    // レイアウト未確定（サイズ0）なら次フレームで再試行：iOSの空チャート対策
+    if(r.width<2 || r.height<2){ requestAnimationFrame(resizeChart); return; }
     CW=r.width; CH=r.height;
     canvas.width=Math.floor(CW*dpr); canvas.height=Math.floor(CH*dpr);
     ctx.setTransform(dpr,0,0,dpr,0,0);
@@ -672,6 +658,10 @@
     setTF(b.getAttribute('data-tf'));
   });
   addEventListener('resize', function(){ resizeChart(); }, {passive:true});
+  addEventListener('load', function(){ resizeChart(); });
+  // パネルがレイアウト/表示された瞬間に再描画（初回の空チャート対策）
+  if('ResizeObserver' in window){ new ResizeObserver(function(){ resizeChart(); }).observe(canvas.parentElement); }
+  if(document.fonts && document.fonts.ready){ document.fonts.ready.then(function(){ resizeChart(); }); }
 
   /* ---------- アナリスト・バー（出現時に伸ばす） ---------- */
   function growBars(){ document.querySelectorAll('#anBars .fill').forEach(function(f){ f.style.width=f.getAttribute('data-v')+'%'; }); }
@@ -707,9 +697,6 @@
   /* ---------- お気に入り / 買う / 取引履歴 ---------- */
   document.getElementById('favBtn').addEventListener('click', function(){
     this.classList.toggle('on'); this.textContent=this.classList.contains('on')?'★':'☆';
-  });
-  document.getElementById('buyBtn').addEventListener('click', function(){
-    alert('これはサンプル画面です。実際の売買はできません。');
   });
   document.getElementById('histTab').addEventListener('click', function(){
     alert('取引履歴はサンプルのため未実装です。');
