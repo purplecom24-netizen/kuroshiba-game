@@ -22,9 +22,11 @@
     --glass:rgba(110,168,214,0.055); --glass-2:rgba(110,168,214,0.09);
     --line:rgba(0,0,0,0.12); --line-soft:rgba(0,0,0,0.07);
     --lumen:#46E3DC; --lumen-soft:#86F0EA; --volt:#5183FF;
+    /* 白地で読めるアクセント（チャートのローソクは鮮やかなまま別管理） */
+    --ink-teal:#0C9C8E; --ink-blue:#2F6BF0;
     --foam:#666666; --mist:#666666; --mist-dim:#666666;
-    --up:#46E3DC; --up-soft:rgba(70,227,220,.16);
-    --down:#FF6F8B; --down-soft:rgba(255,111,139,.16);
+    --up:#0C9C8E; --up-soft:rgba(12,156,142,.14);
+    --down:#E23A5E; --down-soft:rgba(226,58,94,.13);
     --gold:#ffd58a;
     --maxw:600px; --ease:cubic-bezier(.16,.84,.34,1);
   }
@@ -46,7 +48,7 @@
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
   .brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .brand .mk{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;
-    text-transform:uppercase;color:var(--lumen)}
+    text-transform:uppercase;color:var(--ink-teal)}
   .brand .sep{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
   .brand .tag{font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);letter-spacing:.12em}
   .selwrap{position:relative}
@@ -87,7 +89,7 @@
     display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
   .dpill{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;
     padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--mist)}
-  .dpill--option{color:var(--volt);border-color:rgba(81,131,255,.34);background:rgba(81,131,255,.08)}
+  .dpill--option{color:var(--ink-blue);border-color:rgba(47,107,240,.32);background:rgba(47,107,240,.07)}
   .fav{flex-shrink:0;color:var(--mist-dim);font-size:20px;cursor:pointer;line-height:1;
     background:none;border:none;transition:color .3s,transform .3s}
   .fav.on,.fav:hover{color:var(--gold);transform:scale(1.1)}
@@ -111,7 +113,7 @@
   .price .chg span{font-size:11px;color:var(--mist-dim)}
   .up{color:var(--up)} .down{color:var(--down)}
   .nisa{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.04em;
-    color:var(--lumen);border:1px solid rgba(70,227,220,.32);background:rgba(70,227,220,.08);
+    color:var(--ink-teal);border:1px solid rgba(12,156,142,.3);background:rgba(12,156,142,.08);
     padding:4px 11px;border-radius:999px}
 
   /* ---------- チャート ---------- */
@@ -201,7 +203,7 @@
     transition:height .8s var(--ease)}
   .pcol.cur .bar2{background:linear-gradient(180deg,var(--lumen),var(--volt))}
   .pcol .by{font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);margin-top:4px}
-  .pcol.cur .by{color:var(--volt)}
+  .pcol.cur .by{color:var(--ink-blue)}
   .settle{width:100%;border-collapse:collapse;margin-top:18px;font-size:13px}
   .settle th{text-align:right;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;
     color:var(--mist-dim);font-weight:400;padding:0 0 8px}
@@ -569,7 +571,7 @@
     geom={plotL:plotL,step:step,y:y,bw:bw};
     for(var j=0;j<n;j++){
       var c=curCandles[j], cx=plotL+(j+0.5)*step, up=c.c>=c.o;
-      var col=up?'#46E3DC':'#FF6F8B';
+      var col=up?'#10B9A6':'#F0496D';
       ctx.strokeStyle=col; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(cx,y(c.h)); ctx.lineTo(cx,y(c.l)); ctx.stroke();
       var yO=y(c.o), yC=y(c.c), top=Math.min(yO,yC), h=Math.max(1.5,Math.abs(yC-yO));
@@ -583,7 +585,7 @@
       ctx.beginPath(); ctx.moveTo(hx,plotT); ctx.lineTo(hx,plotB); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(plotL,hy); ctx.lineTo(plotR,hy); ctx.stroke();
       ctx.setLineDash([]);
-      ctx.fillStyle='#46E3DC'; ctx.beginPath(); ctx.arc(hx,hy,3,0,6.2832); ctx.fill();
+      ctx.fillStyle='#10B9A6'; ctx.beginPath(); ctx.arc(hx,hy,3,0,6.2832); ctx.fill();
     }
   }
   function fmt(v){ return Math.round(v).toLocaleString('en-US'); }
@@ -596,7 +598,9 @@
       '<div class="kv"><span>終値</span><b class="'+(up?'up':'down')+'">'+fmt(c.c)+'</b></div>'+
       '<div class="kv"><span>始値比</span><b class="'+(up?'up':'down')+'">'+(up?'+':'')+pct.toFixed(2)+'%</b></div>';
     tip.classList.add('on');
-    var tw=tip.offsetWidth; tip.style.left=Math.max(4, Math.min(px-tw/2, CW-tw-4))+'px';
+    // カーソルと反対側に寄せて、ホバー中のローソクに被らないようにする
+    var tw=tip.offsetWidth;
+    tip.style.left=(px < CW/2 ? (CW - tw - 8) : 8)+'px';
   }
   function hideTip(){ tip.classList.remove('on'); hoverIdx=-1; drawChart(); }
   function onMove(e){
