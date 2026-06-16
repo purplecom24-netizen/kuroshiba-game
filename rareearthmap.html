@@ -24,7 +24,8 @@
     --lumen:#46E3DC; --lumen-soft:#86F0EA; --volt:#5183FF;
     /* 白地で読めるアクセント（チャートのローソクは鮮やかなまま別管理） */
     --ink-teal:#0C9C8E; --ink-blue:#2F6BF0;
-    --foam:#666666; --mist:#666666; --mist-dim:#666666;
+    /* 3階調：主役 / 本文 / 補足 */
+    --ink:#1A1A1A; --foam:#1A1A1A; --mist:#555555; --mist-dim:#9A9A9A;
     --up:#0C9C8E; --up-soft:rgba(12,156,142,.14);
     --down:#E23A5E; --down-soft:rgba(226,58,94,.13);
     --gold:#ffd58a;
@@ -78,7 +79,7 @@
   .mono{font-family:'Space Mono',monospace}
 
   /* ---------- 銘柄ヘッダー ---------- */
-  .dhead{display:flex;align-items:flex-start;gap:14px;padding:6px 2px 0}
+  .dhead{display:flex;align-items:flex-start;gap:16px;padding:8px 2px 0}
   .dlogo{width:44px;height:44px;border-radius:12px;flex-shrink:0;display:grid;place-items:center;
     font-weight:700;font-size:17px;color:var(--abyss);
     background:linear-gradient(135deg,var(--lumen-soft),var(--volt));
@@ -94,7 +95,7 @@
     background:none;border:none;transition:color .3s,transform .3s}
   .fav.on,.fav:hover{color:var(--gold);transform:scale(1.1)}
 
-  .subtabs{display:flex;gap:24px;padding:14px 2px 0;border-bottom:1px solid var(--line-soft);margin:16px 0 0}
+  .subtabs{display:flex;gap:24px;padding:16px 2px 0;border-bottom:1px solid var(--line-soft);margin:16px 0 0}
   .subtab{font-size:14px;font-weight:700;color:var(--mist-dim);padding-bottom:12px;position:relative;
     background:none;border:none;cursor:pointer;font-family:inherit}
   .subtab.on{color:#222}
@@ -102,14 +103,14 @@
     background:linear-gradient(90deg,var(--lumen),var(--volt))}
 
   /* ---------- 価格ブロック ---------- */
-  .price{padding:20px 2px 0}
+  .price{padding:24px 2px 0}
   .price .asof{font-family:'Space Mono',monospace;font-size:11px;color:var(--mist-dim);letter-spacing:.04em}
   .price .row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
-  .price .lab{font-size:12px;color:var(--mist);display:block}
-  .price .big{font-family:'Space Mono',monospace;font-size:34px;font-weight:700;line-height:1;color:var(--foam);letter-spacing:-.01em}
-  .price .big .u{font-size:18px;color:var(--mist);margin-left:2px}
+  .price .lab{font-size:12px;color:var(--mist);display:block;margin-bottom:4px}
+  .price .big{font-family:'Space Mono',monospace;font-size:44px;font-weight:700;line-height:1;color:var(--ink);letter-spacing:-.02em}
+  .price .big .u{font-size:18px;color:var(--mist);margin-left:3px;letter-spacing:0}
   .price .chg{text-align:right;font-family:'Space Mono',monospace}
-  .price .chg b{font-size:20px;font-weight:700;display:block}
+  .price .chg b{font-size:22px;font-weight:700;display:block}
   .price .chg span{font-size:11px;color:var(--mist-dim)}
   .up{color:var(--up)} .down{color:var(--down)}
   .nisa{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;letter-spacing:.04em;
@@ -117,27 +118,23 @@
     padding:4px 11px;border-radius:999px}
 
   /* ---------- チャート ---------- */
-  .chart-card{padding:14px 0 0}
-  .chart-note{display:flex;align-items:center;gap:7px;padding:0 2px 8px;
-    font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--mist-dim)}
-  .chart-note .badge{color:var(--gold);border:1px solid rgba(255,213,138,.3);background:rgba(255,213,138,.07);
-    border-radius:999px;padding:2px 8px}
-  .chart-wrap{position:relative;width:100%;height:280px;touch-action:pan-y}
+  .chart-card{padding:16px 0 0}
+  .chart-legend{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 14px;min-height:18px;
+    padding:0 2px 12px;font-family:'Space Mono',monospace;font-size:11px;line-height:1.4;color:var(--ink)}
+  .chart-legend .lg-date{color:var(--mist)}
+  .chart-legend i{font-style:normal;color:var(--mist-dim);margin-right:4px}
+  .chart-legend b{font-weight:700}
+  .chart-wrap{position:relative;width:100%;height:280px;touch-action:pan-y;
+    background:rgba(0,0,0,.022);border:1px solid rgba(0,0,0,.05);border-radius:12px;overflow:hidden}
   #priceChart{display:block;width:100%;height:100%}
-  .chart-tip{position:absolute;top:8px;left:8px;pointer-events:none;opacity:0;transition:opacity .15s;
-    font-family:'Space Mono',monospace;font-size:11px;line-height:1.5;color:var(--foam);
-    background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:8px 11px;
-    box-shadow:0 6px 20px -8px rgba(0,0,0,.25);
-    backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:3;min-width:150px}
-  .chart-tip.on{opacity:1}
-  .chart-tip .d{color:var(--mist);font-size:10px;margin-bottom:4px}
-  .chart-tip .kv{display:flex;justify-content:space-between;gap:14px}
-  .chart-tip .kv span{color:var(--mist-dim)}
-  .tf{display:flex;gap:6px;padding:14px 0 2px;flex-wrap:wrap}
+  .chart-sample{position:absolute;top:8px;right:8px;pointer-events:none;
+    font-family:'Space Mono',monospace;font-size:9px;letter-spacing:.12em;color:var(--mist-dim);
+    background:rgba(0,0,0,.04);border-radius:999px;padding:2px 8px}
+  .tf{display:flex;gap:8px;padding:16px 0 0;flex-wrap:wrap}
   .tf button{flex:1;min-width:48px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
     color:var(--mist);background:rgba(0,0,0,.05);border:none;
     border-radius:9px;padding:9px 4px;cursor:pointer;transition:all .25s var(--ease)}
-  .tf button:hover{color:var(--foam);background:rgba(0,0,0,.09)}
+  .tf button:hover{color:var(--ink);background:rgba(0,0,0,.09)}
   .tf button.on{color:var(--abyss);background:linear-gradient(135deg,var(--lumen),var(--volt))}
 
   /* ---------- 配当 ---------- */
@@ -166,7 +163,7 @@
   .an-rate{flex-shrink:0;width:62px;height:62px;border-radius:50%;display:grid;place-items:center;text-align:center;
     font-size:13px;font-weight:700;color:var(--abyss);background:linear-gradient(135deg,var(--lumen),var(--volt));
     box-shadow:0 8px 22px -10px rgba(70,227,220,.7)}
-  .bars{margin-top:18px;display:grid;gap:10px}
+  .bars{margin-top:16px;display:grid;gap:12px}
   .bar{display:grid;grid-template-columns:64px 1fr 40px;align-items:center;gap:10px;font-size:12px}
   .bar .k{color:var(--mist)} .bar .p{text-align:right;font-family:'Space Mono',monospace;color:var(--foam)}
   .bar .track{height:8px;border-radius:6px;background:rgba(0,0,0,.08);overflow:hidden}
@@ -176,7 +173,7 @@
   .f-hold{background:linear-gradient(90deg,#7e8a52,#b6d36a)}
   .f-sell{background:linear-gradient(90deg,#c25a72,#ff8aa0)}
   .f-strong-sell{background:linear-gradient(90deg,#d23b57,#ff5d7c)}
-  .an-src{margin-top:14px;font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);
+  .an-src{margin-top:16px;font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);
     display:flex;justify-content:space-between}
 
   /* ---------- 業績 前年同期比 ---------- */
@@ -195,7 +192,7 @@
   .mtab{font-size:12px;font-family:'Space Mono',monospace;color:var(--mist);background:rgba(0,0,0,.05);
     border:none;border-radius:999px;padding:7px 14px;cursor:pointer;transition:all .25s}
   .mtab.on{color:var(--abyss);background:linear-gradient(135deg,var(--lumen),var(--volt))}
-  .pbars{display:flex;align-items:flex-end;gap:8px;height:170px;padding-top:18px}
+  .pbars{display:flex;align-items:flex-end;gap:8px;height:168px;padding-top:16px}
   .pcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
   .pcol .bv{font-family:'Space Mono',monospace;font-size:10px;color:var(--mist);white-space:nowrap}
   .pcol .bar2{width:62%;max-width:34px;border-radius:6px 6px 0 0;min-height:3px;
@@ -204,7 +201,7 @@
   .pcol.cur .bar2{background:linear-gradient(180deg,var(--lumen),var(--volt))}
   .pcol .by{font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);margin-top:4px}
   .pcol.cur .by{color:var(--ink-blue)}
-  .settle{width:100%;border-collapse:collapse;margin-top:18px;font-size:13px}
+  .settle{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}
   .settle th{text-align:right;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;
     color:var(--mist-dim);font-weight:400;padding:0 0 8px}
   .settle td{padding:10px 0;border-top:1px solid var(--line-soft);color:var(--mist);text-align:right}
@@ -236,7 +233,7 @@
   button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--lumen);outline-offset:3px;border-radius:6px}
 
   @media (max-width:420px){
-    .price .big{font-size:30px}
+    .price .big{font-size:38px}
     .kvgrid{grid-template-columns:1fr}
   }
 </style>
@@ -329,12 +326,10 @@
     <section class="panel reveal">
       <div class="panel__h"><h2>ローソク足チャート</h2></div>
       <div class="chart-card">
-        <div class="chart-note">
-          <span class="badge">SAMPLE</span><span>値動きはイメージ。十字カーソルで OHLC を表示</span>
-        </div>
+        <div class="chart-legend" id="chartLegend"></div>
         <div class="chart-wrap">
           <canvas id="priceChart"></canvas>
-          <div class="chart-tip" id="chartTip"></div>
+          <span class="chart-sample">SAMPLE</span>
         </div>
         <div class="tf" id="tfBtns">
           <button data-tf="1M">1ヶ月</button>
@@ -523,7 +518,7 @@
   }
 
   /* ---------- ローソク足チャート ---------- */
-  var canvas=document.getElementById('priceChart'), ctx=canvas.getContext('2d'), tip=document.getElementById('chartTip');
+  var canvas=document.getElementById('priceChart'), ctx=canvas.getContext('2d'), legend=document.getElementById('chartLegend');
   var dpr=Math.min(window.devicePixelRatio||1,2), CW=0, CH=0, geom=null, curCandles=[], hoverIdx=-1;
   var PAD={l:8,r:54,t:14,b:22};
 
@@ -589,35 +584,34 @@
     }
   }
   function fmt(v){ return Math.round(v).toLocaleString('en-US'); }
-  function showTip(idx, px){
-    var c=curCandles[idx], chg=(c.c-c.o), pct=(chg/c.o*100), up=chg>=0;
-    tip.innerHTML='<div class="d">'+fmtDate(c.date)+'</div>'+
-      '<div class="kv"><span>始値</span>'+fmt(c.o)+'</div>'+
-      '<div class="kv"><span>高値</span>'+fmt(c.h)+'</div>'+
-      '<div class="kv"><span>安値</span>'+fmt(c.l)+'</div>'+
-      '<div class="kv"><span>終値</span><b class="'+(up?'up':'down')+'">'+fmt(c.c)+'</b></div>'+
-      '<div class="kv"><span>始値比</span><b class="'+(up?'up':'down')+'">'+(up?'+':'')+pct.toFixed(2)+'%</b></div>';
-    tip.classList.add('on');
-    // カーソルと反対側に寄せて、ホバー中のローソクに被らないようにする
-    var tw=tip.offsetWidth;
-    tip.style.left=(px < CW/2 ? (CW - tw - 8) : 8)+'px';
+  // TradingView風：チャート上部に常時OHLCレジェンドを表示（被らない）
+  function updateLegend(idx){
+    if(!curCandles.length) return;
+    if(idx==null || idx<0 || idx>=curCandles.length) idx=curCandles.length-1;
+    var c=curCandles[idx], chg=(c.c-c.o), pct=(chg/c.o*100), up=chg>=0, cls=up?'up':'down';
+    legend.innerHTML=
+      '<span class="lg-date">'+fmtDate(c.date)+'</span>'+
+      '<span><i>始</i><b>'+fmt(c.o)+'</b></span>'+
+      '<span><i>高</i><b>'+fmt(c.h)+'</b></span>'+
+      '<span><i>安</i><b>'+fmt(c.l)+'</b></span>'+
+      '<span><i>終</i><b class="'+cls+'">'+fmt(c.c)+'</b></span>'+
+      '<span class="'+cls+'"><b>'+(up?'+':'')+pct.toFixed(2)+'%</b></span>';
   }
-  function hideTip(){ tip.classList.remove('on'); hoverIdx=-1; drawChart(); }
   function onMove(e){
     if(!geom) return; var r=canvas.getBoundingClientRect();
     var px=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
     var idx=Math.floor((px-geom.plotL)/geom.step);
     idx=Math.max(0,Math.min(curCandles.length-1,idx));
-    if(idx!==hoverIdx){ hoverIdx=idx; drawChart(); showTip(idx, geom.plotL+(idx+0.5)*geom.step); }
+    if(idx!==hoverIdx){ hoverIdx=idx; drawChart(); updateLegend(idx); }
   }
+  function onLeave(){ hoverIdx=-1; drawChart(); updateLegend(null); }
   canvas.addEventListener('pointermove', onMove);
   canvas.addEventListener('pointerdown', onMove);
-  canvas.addEventListener('pointerleave', hideTip);
+  canvas.addEventListener('pointerleave', onLeave);
   canvas.addEventListener('touchmove', onMove, {passive:true});
-  canvas.addEventListener('touchend', hideTip);
+  canvas.addEventListener('touchend', onLeave);
 
-  function setTF(tf){ curCandles=candlesFor(tf); hoverIdx=-1; hideTipNow(); resizeChart(); }
-  function hideTipNow(){ tip.classList.remove('on'); }
+  function setTF(tf){ curCandles=candlesFor(tf); hoverIdx=-1; resizeChart(); updateLegend(null); }
   var tfBtns=document.getElementById('tfBtns');
   tfBtns.addEventListener('click', function(e){
     var b=e.target.closest('button'); if(!b) return;
