@@ -20,9 +20,9 @@
   :root{
     --abyss:#04080F; --deep:#071726; --deep-2:#0A2138; --current:#0E2C4C;
     --glass:rgba(110,168,214,0.055); --glass-2:rgba(110,168,214,0.09);
-    --line:rgba(122,196,228,0.14); --line-soft:rgba(122,196,228,0.08);
+    --line:rgba(0,0,0,0.12); --line-soft:rgba(0,0,0,0.07);
     --lumen:#46E3DC; --lumen-soft:#86F0EA; --volt:#5183FF;
-    --foam:#EAF3FB; --mist:#8AA8C8; --mist-dim:#5E7C9B;
+    --foam:#666666; --mist:#666666; --mist-dim:#666666;
     --up:#46E3DC; --up-soft:rgba(70,227,220,.16);
     --down:#FF6F8B; --down-soft:rgba(255,111,139,.16);
     --gold:#ffd58a;
@@ -34,7 +34,7 @@
 
   body{
     font-family:'Zen Kaku Gothic New','Space Grotesk',system-ui,sans-serif;
-    color:var(--foam); background:#0A0C10;
+    color:var(--foam); background:#FFFFFF;
     line-height:1.7; letter-spacing:.01em; overflow-x:hidden;
   }
 
@@ -42,7 +42,7 @@
 
   /* ---------- トップバー / セレクタ ---------- */
   .topbar{position:sticky;top:0;z-index:20;margin:0 -18px 0;padding:18px 18px 14px;
-    background:linear-gradient(180deg,rgba(10,12,16,.96),rgba(10,12,16,.86) 62%,rgba(10,12,16,0));
+    background:linear-gradient(180deg,rgba(255,255,255,.97),rgba(255,255,255,.86) 62%,rgba(255,255,255,0));
     backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
   .brand{display:flex;align-items:center;gap:10px;margin-bottom:12px}
   .brand .mk{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;
@@ -57,13 +57,13 @@
   #stockSel{
     appearance:none;-webkit-appearance:none;width:100%;
     font-family:'Zen Kaku Gothic New',sans-serif;font-size:15px;font-weight:700;color:var(--foam);
-    background:rgba(255,255,255,.05);
-    border:1px solid rgba(255,255,255,.09);border-radius:13px;padding:23px 40px 9px 15px;cursor:pointer;
+    background:rgba(0,0,0,.04);
+    border:1px solid rgba(0,0,0,.12);border-radius:13px;padding:23px 40px 9px 15px;cursor:pointer;
     transition:border-color .3s var(--ease),box-shadow .3s var(--ease)}
-  #stockSel:hover{border-color:rgba(70,227,220,.4)}
-  #stockSel:focus-visible{outline:none;border-color:var(--lumen);box-shadow:0 0 0 3px rgba(70,227,220,.18)}
-  #stockSel option{background:#14171d;color:var(--foam);font-weight:500}
-  #stockSel optgroup{background:#0d1014;color:var(--lumen);font-family:'Space Mono',monospace;font-size:12px}
+  #stockSel:hover{border-color:rgba(0,0,0,.28)}
+  #stockSel:focus-visible{outline:none;border-color:#333;box-shadow:0 0 0 3px rgba(0,0,0,.08)}
+  #stockSel option{background:#fff;color:#444;font-weight:500}
+  #stockSel optgroup{background:#f2f2f3;color:#888;font-family:'Space Mono',monospace;font-size:12px}
 
   /* ---------- 共通セクション（囲い線なし・余白で区切る） ---------- */
   .panel{margin-top:40px}
@@ -95,7 +95,7 @@
   .subtabs{display:flex;gap:24px;padding:14px 2px 0;border-bottom:1px solid var(--line-soft);margin:16px 0 0}
   .subtab{font-size:14px;font-weight:700;color:var(--mist-dim);padding-bottom:12px;position:relative;
     background:none;border:none;cursor:pointer;font-family:inherit}
-  .subtab.on{color:var(--lumen-soft)}
+  .subtab.on{color:#222}
   .subtab.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:2px;border-radius:2px;
     background:linear-gradient(90deg,var(--lumen),var(--volt))}
 
@@ -124,7 +124,8 @@
   #priceChart{display:block;width:100%;height:100%}
   .chart-tip{position:absolute;top:8px;left:8px;pointer-events:none;opacity:0;transition:opacity .15s;
     font-family:'Space Mono',monospace;font-size:11px;line-height:1.5;color:var(--foam);
-    background:rgba(16,18,24,.92);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:8px 11px;
+    background:rgba(255,255,255,.97);border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:8px 11px;
+    box-shadow:0 6px 20px -8px rgba(0,0,0,.25);
     backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);z-index:3;min-width:150px}
   .chart-tip.on{opacity:1}
   .chart-tip .d{color:var(--mist);font-size:10px;margin-bottom:4px}
@@ -132,18 +133,18 @@
   .chart-tip .kv span{color:var(--mist-dim)}
   .tf{display:flex;gap:6px;padding:14px 0 2px;flex-wrap:wrap}
   .tf button{flex:1;min-width:48px;font-family:'Space Mono',monospace;font-size:12px;font-weight:700;
-    color:var(--mist);background:rgba(255,255,255,.045);border:none;
+    color:var(--mist);background:rgba(0,0,0,.05);border:none;
     border-radius:9px;padding:9px 4px;cursor:pointer;transition:all .25s var(--ease)}
-  .tf button:hover{color:var(--foam);background:rgba(255,255,255,.08)}
+  .tf button:hover{color:var(--foam);background:rgba(0,0,0,.09)}
   .tf button.on{color:var(--abyss);background:linear-gradient(135deg,var(--lumen),var(--volt))}
 
   /* ---------- 配当 ---------- */
   .div-top{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .div-top .lab{font-size:12px;color:var(--mist)}
-  .div-top .v{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;color:var(--lumen-soft)}
+  .div-top .v{font-family:'Space Mono',monospace;font-size:28px;font-weight:700;color:var(--foam)}
   .div-top .v small{font-size:13px;color:var(--mist);font-weight:400}
   .kvgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
-  .kvbox{border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.035)}
+  .kvbox{border-radius:12px;padding:12px 14px;background:rgba(0,0,0,.04)}
   .kvbox span{font-size:11px;color:var(--mist-dim);display:block}
   .kvbox b{font-family:'Space Mono',monospace;font-size:15px;color:var(--foam);font-weight:700;display:block;margin-top:3px}
   .htable{width:100%;border-collapse:collapse;margin-top:16px;font-size:13px}
@@ -166,7 +167,7 @@
   .bars{margin-top:18px;display:grid;gap:10px}
   .bar{display:grid;grid-template-columns:64px 1fr 40px;align-items:center;gap:10px;font-size:12px}
   .bar .k{color:var(--mist)} .bar .p{text-align:right;font-family:'Space Mono',monospace;color:var(--foam)}
-  .bar .track{height:8px;border-radius:6px;background:rgba(255,255,255,.06);overflow:hidden}
+  .bar .track{height:8px;border-radius:6px;background:rgba(0,0,0,.08);overflow:hidden}
   .bar .fill{height:100%;border-radius:6px;width:0;transition:width 1s var(--ease)}
   .f-strong-buy{background:linear-gradient(90deg,#2bc4bb,#46E3DC)}
   .f-buy{background:linear-gradient(90deg,#3f76e0,#5aa9ff)}
@@ -178,41 +179,41 @@
 
   /* ---------- 業績 前年同期比 ---------- */
   .perf-asof{font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);margin-bottom:12px}
-  .perf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-  .pmetric{border-radius:12px;padding:13px 14px;background:rgba(255,255,255,.035)}
-  .pmetric .k{font-size:11px;color:var(--mist);display:flex;align-items:center;gap:6px}
-  .pmetric .dir{font-size:10px;font-weight:700;padding:1px 6px;border-radius:5px}
+  .perf-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+  .pmetric{border-radius:10px;padding:11px 11px;background:rgba(0,0,0,.04)}
+  .pmetric .k{font-size:10.5px;color:var(--mist);display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+  .pmetric .dir{font-size:9.5px;font-weight:700;padding:1px 5px;border-radius:5px}
   .dir-up{color:var(--up);background:var(--up-soft)} .dir-down{color:var(--down);background:var(--down-soft)}
   .dir-flat{color:var(--mist-dim);background:rgba(94,124,155,.14)}
-  .pmetric .v{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;margin-top:6px}
+  .pmetric .v{font-family:'Space Mono',monospace;font-size:15px;font-weight:700;margin-top:5px}
   .perf-unit{text-align:right;font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);margin-top:8px}
 
   /* ---------- 業績・決算 棒グラフ ---------- */
   .mtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}
-  .mtab{font-size:12px;font-family:'Space Mono',monospace;color:var(--mist);background:rgba(255,255,255,.045);
+  .mtab{font-size:12px;font-family:'Space Mono',monospace;color:var(--mist);background:rgba(0,0,0,.05);
     border:none;border-radius:999px;padding:7px 14px;cursor:pointer;transition:all .25s}
   .mtab.on{color:var(--abyss);background:linear-gradient(135deg,var(--lumen),var(--volt))}
   .pbars{display:flex;align-items:flex-end;gap:8px;height:170px;padding-top:18px}
   .pcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:6px}
   .pcol .bv{font-family:'Space Mono',monospace;font-size:10px;color:var(--mist);white-space:nowrap}
   .pcol .bar2{width:62%;max-width:34px;border-radius:6px 6px 0 0;min-height:3px;
-    background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.07));
+    background:linear-gradient(180deg,rgba(0,0,0,.16),rgba(0,0,0,.06));
     transition:height .8s var(--ease)}
   .pcol.cur .bar2{background:linear-gradient(180deg,var(--lumen),var(--volt))}
   .pcol .by{font-family:'Space Mono',monospace;font-size:10px;color:var(--mist-dim);margin-top:4px}
-  .pcol.cur .by{color:var(--lumen-soft)}
+  .pcol.cur .by{color:var(--volt)}
   .settle{width:100%;border-collapse:collapse;margin-top:18px;font-size:13px}
   .settle th{text-align:right;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;
     color:var(--mist-dim);font-weight:400;padding:0 0 8px}
+  .settle td{padding:10px 0;border-top:1px solid var(--line-soft);color:var(--mist);text-align:right}
   .settle th:first-child,.settle td:first-child{text-align:left}
-  .settle td{padding:10px 0;border-top:1px solid var(--line-soft);color:var(--mist)}
   .settle td b{color:var(--foam);font-family:'Space Mono',monospace}
 
   /* ---------- メモ・免責 ---------- */
   .memo{font-size:13.5px;color:var(--mist);line-height:1.8}
   .memo b{color:var(--foam)}
   .disclaimer{border-radius:14px;padding:18px 16px;margin-top:40px;
-    background:rgba(255,255,255,.03)}
+    background:rgba(0,0,0,.035)}
   .disclaimer h3{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--volt);margin-bottom:10px}
   .disclaimer p{font-size:12px;color:var(--mist);line-height:1.8}
   .disclaimer p + p{margin-top:8px}
@@ -234,7 +235,7 @@
 
   @media (max-width:420px){
     .price .big{font-size:30px}
-    .kvgrid,.perf-grid{grid-template-columns:1fr}
+    .kvgrid{grid-template-columns:1fr}
   }
 </style>
 </head>
@@ -324,7 +325,7 @@
 
     <!-- チャート -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">📈</span><h2>ローソク足チャート</h2></div>
+      <div class="panel__h"><h2>ローソク足チャート</h2></div>
       <div class="chart-card">
         <div class="chart-note">
           <span class="badge">SAMPLE</span><span>値動きはイメージ。十字カーソルで OHLC を表示</span>
@@ -345,7 +346,7 @@
 
     <!-- 会社について -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">ℹ️</span><h2>三菱重工業について</h2></div>
+      <div class="panel__h"><h2>三菱重工業について</h2></div>
       <div class="panel__b">
         <p class="muted" style="font-size:14px">総合重機最大手。エナジー、プラント、ドライブシステム、航空・宇宙・造船・防衛産業を手がける。レアアース文脈では <b style="color:var(--foam)">南鳥島・深海レアアース泥の揚泥システム</b> に関与するが、株価ドライバーは防衛・ガスタービン・特殊船舶という本業。深海の果実は2028年度以降のオプション。</p>
       </div>
@@ -353,7 +354,7 @@
 
     <!-- 配当 -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">💧</span><h2>配当情報</h2></div>
+      <div class="panel__h"><h2>配当情報</h2></div>
       <div class="panel__b">
         <div class="div-top">
           <span class="lab">1株あたりの今期配当予想</span>
@@ -376,13 +377,13 @@
 
     <!-- 株主優待 -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">🎁</span><h2>株主優待情報</h2></div>
+      <div class="panel__h"><h2>株主優待情報</h2></div>
       <div class="panel__b"><p class="benefit">株主優待情報はありません。</p></div>
     </section>
 
     <!-- アナリスト評価 -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">📊</span><h2>アナリスト評価</h2></div>
+      <div class="panel__h"><h2>アナリスト評価</h2></div>
       <div class="panel__b">
         <div class="an-top">
           <div>
@@ -404,7 +405,7 @@
 
     <!-- 業績：前年同期比 -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">📈</span><h2>業績 — 前年同期比</h2></div>
+      <div class="panel__h"><h2>業績 — 前年同期比</h2></div>
       <div class="panel__b">
         <div class="perf-asof">過去の四半期決算の実績データ（四半期ごと）· 2026年03月時点</div>
         <div class="perf-grid">
@@ -421,7 +422,7 @@
 
     <!-- 業績・決算：棒グラフ -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">📊</span><h2>業績・決算情報</h2></div>
+      <div class="panel__h"><h2>業績・決算情報</h2></div>
       <div class="panel__b">
         <div class="mtabs" id="mtabs">
           <button class="mtab on" data-m="sales">売上高</button>
@@ -445,7 +446,7 @@
 
     <!-- メモ -->
     <section class="panel reveal">
-      <div class="panel__h"><span class="ic">⚓</span><h2>このマップでの位置づけ</h2></div>
+      <div class="panel__h"><h2>このマップでの位置づけ</h2></div>
       <div class="panel__b">
         <p class="memo"><b>番外 — 南鳥島・深海contractor。</b>「レアアース株のつもりで防衛株を買う」ことになる点に注意。レアアース貢献はまだゼロ（実需化前）で、南鳥島の果実は2028年度以降。株価は防衛・ガスタービン・特殊船舶の本業とニュース（試験成功・予算・受注）で動く、事象トレード向き。</p>
       </div>
@@ -552,13 +553,13 @@
     ctx.font="10px 'Space Mono',monospace"; ctx.textBaseline='middle';
     var gs=niceStep(hi-lo), g0=Math.ceil(lo/gs)*gs;
     for(var gv=g0; gv<hi; gv+=gs){
-      var gy=y(gv); ctx.strokeStyle='rgba(122,196,228,0.08)'; ctx.lineWidth=1;
+      var gy=y(gv); ctx.strokeStyle='rgba(0,0,0,0.07)'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(plotL,gy); ctx.lineTo(plotR,gy); ctx.stroke();
-      ctx.fillStyle='rgba(94,124,155,0.9)'; ctx.textAlign='left';
+      ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.textAlign='left';
       ctx.fillText(Math.round(gv).toLocaleString('en-US'), plotR+6, gy);
     }
     // 時間ラベル（左/中/右）
-    ctx.fillStyle='rgba(94,124,155,0.9)'; ctx.textBaseline='top';
+    ctx.fillStyle='rgba(0,0,0,0.45)'; ctx.textBaseline='top';
     [0, Math.floor(n/2), n-1].forEach(function(idx,k){
       var cx=plotL+(idx+0.5)*step; ctx.textAlign = k===0?'left':k===2?'right':'center';
       var d=curCandles[idx].date; ctx.fillText((d.getFullYear()+'/'+('0'+(d.getMonth()+1)).slice(-2)), cx, plotB+5);
@@ -578,7 +579,7 @@
     // ホバー十字
     if(hoverIdx>=0 && hoverIdx<n){
       var hx=plotL+(hoverIdx+0.5)*step, hc=curCandles[hoverIdx], hy=y(hc.c);
-      ctx.setLineDash([3,3]); ctx.strokeStyle='rgba(134,240,234,0.5)'; ctx.lineWidth=1;
+      ctx.setLineDash([3,3]); ctx.strokeStyle='rgba(0,0,0,0.32)'; ctx.lineWidth=1;
       ctx.beginPath(); ctx.moveTo(hx,plotT); ctx.lineTo(hx,plotB); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(plotL,hy); ctx.lineTo(plotR,hy); ctx.stroke();
       ctx.setLineDash([]);
