@@ -10,9 +10,12 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import __version__
+from app.api import routes, ws
 from app.config import TradingMode, get_settings
+from app.marketdata import get_provider
 
 logger = logging.getLogger("kuroshiba")
 
@@ -36,6 +39,17 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# Local-only dashboard; allow the Vite dev server to call the API.
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(routes.router)
+app.include_router(ws.router)
+
 
 @app.get("/health")
 def health() -> dict:
@@ -45,4 +59,7 @@ def health() -> dict:
 @app.get("/api/status")
 def status() -> dict:
     """Current operating mode — non-secret. Frontend status panel reads this."""
-    return get_settings().describe()
+    settings = get_settings()
+    info = settings.describe()
+    info["data_source"] = get_provider().name
+    return info
