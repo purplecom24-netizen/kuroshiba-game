@@ -54,6 +54,32 @@ python -m unittest discover -s tests -v
 5. ベースラインA(TOPIX バイ&ホールド)は仕様の文言どおり執行コストなし(寄付買い→終値評価)。
 6. 中立ユニバース(TOPIX Core30)の構成銘柄は実装時点の近似リスト。定期入替に合わせて `backtest.py` の `NEUTRAL_UNIVERSE` のみ編集可(ルール本体は変更しない)。
 
+## Phase 2: フォワードテスト(`daily_scan.py`)
+
+Gate 1 合格(2026-07-02 実データ実行)を受けて実装。仮想資金のみを扱う。
+
+```bash
+python daily_scan.py            # 毎営業日の大引け後(18:00 JST 目安)に実行
+```
+
+- 初回実行日が「フォワード開始日」として `forward/state.json` に固定記録される(以後変更しない)
+- リプレイ方式: 毎回、開始日から当日までを Phase 1 と同一エンジンで決定的に再構築する。実行を数日忘れても次回実行で自動的に追いつく
+- 出力: `forward/forward_trades.csv`(決済済み台帳)、保有中ポジションと当日シグナルはコンソール表示、金曜(または `--weekly`)に `forward/summary_weekly.md`、30/50トレード到達時に `forward/review_30.md` / `review_50.md`(同期間 TOPIX と再生成ランダム分布との比較)
+
+スケジュール設定:
+
+```
+# Linux/Mac (crontab -e)
+0 18 * * 1-5 cd /path/to/kuroshiba-game && python3 daily_scan.py >> forward/scan_log.txt 2>&1
+```
+
+```
+# Windows (フォルダ内で PowerShell から。パスにスペースがある場合は引用符に注意)
+schtasks /Create /SC WEEKLY /D MON,TUE,WED,THU,FRI /ST 18:00 /TN KuroshibaDailyScan /TR "$PWD\run_daily_scan.bat"
+```
+
+Windows はタスク実行時刻にPCが起動している必要がある。起動していなかった日は、次に手動で `py daily_scan.py`(または `run_daily_scan.bat` をダブルクリック)すれば自動的に追いつく。
+
 ## 実行環境に関する注意
 
 - Yahoo Finance へのHTTPSアクセスが必要(このリポジトリを作成したリモート実行環境ではネットワークポリシーによりブロックされていたため、実データでの実行はローカル環境で行うこと)。
