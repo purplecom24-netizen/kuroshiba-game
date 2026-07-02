@@ -55,8 +55,15 @@ class Config:
 RULE_PRESETS: dict[str, Config] = {
     "v1": Config(),                                            # docs/requirements_v1.md
     "v2": Config(vol_mult=3.0, hold_days=10, ma_days=200),     # docs/requirements_v2.md
+    # v2.1: ルールは v2 と同一。検証期間のみ 15 年に拡張(docs/requirements_v2_1.md)。
+    # 2011-07〜2021-06 はパラメータ選択に使っていない擬似アウトオブサンプル期間。
+    "v21": Config(start="2011-07-01", vol_mult=3.0, hold_days=10, ma_days=200),
 }
-RULE_LABELS = {"v1": "v1.0", "v2": "v2.0"}
+RULE_LABELS = {"v1": "v1.0", "v2": "v2.0", "v21": "v2.1"}
+
+# v2.1 の擬似アウトオブサンプル判定(事前登録)
+V21_OOS_CUTOFF = "2021-07-01"   # この日より前のシグナルが擬似OOS期間
+V21_OOS_MIN_TRADES = 30         # 未満なら判定不能
 
 
 # 主ユニバース(15銘柄・固定)
@@ -134,7 +141,8 @@ DQ_HALT_RETURN_ABS = 0.35   # これを超えたら本体を実行せず停止
 def fetch_ticker(ticker: str, cfg: Config, refresh: bool = False) -> pd.DataFrame:
     """日足を取得して data/ にキャッシュする。取得失敗は例外で停止(§6)。"""
     os.makedirs(DATA_DIR, exist_ok=True)
-    cache = os.path.join(DATA_DIR, f"{ticker.replace('.', '_')}.csv")
+    # キャッシュは取得開始日ごとに分離する(検証期間の異なるルールの混線を防ぐ)
+    cache = os.path.join(DATA_DIR, f"{ticker.replace('.', '_')}_{cfg.start}.csv")
     if os.path.exists(cache) and not refresh:
         df = pd.read_csv(cache, index_col=0, parse_dates=True)
         return df
@@ -1107,6 +1115,27 @@ def main(argv: list[str] | None = None) -> int:
 
     print("=== 6/7 Gate 1 判定・レポート ===")
     gate = evaluate_gate1(s_main, rnd_main["finals"])
+    if args.rule == "v21" and gate.decidable:
+        # 第5条件(事前登録): 擬似アウトオブサンプル期間の期待値R > 0。
+        # 2011-07〜2021-06 のデータはパラメータ選択(感度分析・年次観察)に
+        # 一切使われていないため、この期間の成績が過剰適合の検出器になる。
+        cutoff = pd.Timestamp(V21_OOS_CUTOFF)
+        sub_r = [t.r_multiple for t in res_main.trades if t.signal_date < cutoff]
+        if len(sub_r) < V21_OOS_MIN_TRADES:
+            gate.checks.append((
+                f"擬似OOS期間({cfg.start}〜{V21_OOS_CUTOFF})の期待値R > 0", None,
+                f"該当 {len(sub_r)} 件 < {V21_OOS_MIN_TRADES} → 判定不能",
+            ))
+            gate.decidable = False
+            gate.passed = False
+        else:
+            sub_exp = float(np.mean(sub_r))
+            ok = sub_exp > 0
+            gate.checks.append((
+                f"擬似OOS期間({cfg.start}〜{V21_OOS_CUTOFF})の期待値R > 0", ok,
+                f"{sub_exp:+.3f} R({len(sub_r)} 件)",
+            ))
+            gate.passed = gate.passed and ok
     write_trades_csv(res_main, PRIMARY_UNIVERSE, os.path.join(out_dir, "trades.csv"))
     write_summary(cfg, results, gate, topix_final, rnd_main, rnd_neutral, lookahead_msg,
                   os.path.join(out_dir, "summary.md"), rule_label=rule_label)

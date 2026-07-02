@@ -279,6 +279,28 @@ class TestPortfolioRules(unittest.TestCase):
         self.assertEqual(len(res.trades), 1)
 
 
+class TestRulePresets(unittest.TestCase):
+    """事前登録されたプリセットが登録文書と一致していること。"""
+
+    def test_presets_match_registered_docs(self):
+        from backtest import RULE_PRESETS
+        v1, v2, v21 = RULE_PRESETS["v1"], RULE_PRESETS["v2"], RULE_PRESETS["v21"]
+        self.assertEqual((v1.vol_mult, v1.hold_days, v1.ma_days, v1.start),
+                         (2.0, 5, None, "2021-07-01"))
+        self.assertEqual((v2.vol_mult, v2.hold_days, v2.ma_days, v2.start),
+                         (3.0, 10, 200, "2021-07-01"))
+        # v2.1 はルールが v2 と完全同一で、期間のみ拡張
+        self.assertEqual((v21.vol_mult, v21.hold_days, v21.ma_days),
+                         (v2.vol_mult, v2.hold_days, v2.ma_days))
+        self.assertEqual(v21.start, "2011-07-01")
+        # 執行前提・判定に関わる共通パラメータは全プリセットで同一
+        for cfg in (v1, v2, v21):
+            self.assertEqual(
+                (cfg.slippage_pct, cfg.cost_pct, cfg.risk_pct, cfg.max_positions,
+                 cfg.target_r, cfg.seed, cfg.initial_capital),
+                (0.003, 0.001, 0.01, 3, 2.0, 42, 1_000_000.0))
+
+
 class TestGlitchRepair(unittest.TestCase):
     """データソースの一時的な価格水準グリッチの検出・補正。"""
 
