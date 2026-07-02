@@ -83,6 +83,53 @@ class TestSignal(unittest.TestCase):
         self.assertFalse(sig["signal"].iloc[20])  # 平均算出期間に出来高0 → 除外
 
 
+class TestMAFilter(unittest.TestCase):
+    """v2: 終値 > 200日単純移動平均 のレジームフィルタ。"""
+
+    CFG_MA = Config(ma_days=200)
+
+    @staticmethod
+    def _df_with_spike(level: float, tail_level: float, n_tail: int) -> pd.DataFrame:
+        """level で204日 + tail_level で n_tail 日 + 出来高急増の陽線1日。"""
+        rows = [
+            {"Open": level, "High": level + 1, "Low": level - 1, "Close": level, "Volume": 1000.0}
+            for _ in range(204)
+        ]
+        rows += [
+            {"Open": tail_level, "High": tail_level + 1, "Low": tail_level - 1,
+             "Close": tail_level, "Volume": 1000.0}
+            for _ in range(n_tail)
+        ]
+        c = tail_level * 1.05
+        rows.append({"Open": tail_level, "High": c + 1, "Low": tail_level - 1,
+                     "Close": c, "Volume": 3000.0})
+        return make_df(rows)
+
+    def test_signal_blocked_below_ma(self):
+        # 200日MA ≈ 100 に対し、直近は80近辺 → 終値84 < MA → シグナル無効
+        df = self._df_with_spike(level=100.0, tail_level=80.0, n_tail=20)
+        sig_v1 = compute_signals(df, CFG)
+        sig_v2 = compute_signals(df, self.CFG_MA)
+        self.assertTrue(sig_v1["signal"].iloc[-1])    # フィルタなしなら成立
+        self.assertFalse(sig_v2["signal"].iloc[-1])   # MA下なので除外
+
+    def test_signal_allowed_above_ma(self):
+        df = self._df_with_spike(level=100.0, tail_level=100.0, n_tail=20)
+        sig_v2 = compute_signals(df, self.CFG_MA)
+        self.assertTrue(sig_v2["signal"].iloc[-1])    # 終値105 > MA≈100
+
+    def test_no_signal_when_history_short(self):
+        # 履歴が200日未満 → MA が計算できずシグナル無効
+        rows = [
+            {"Open": 100.0, "High": 101.0, "Low": 99.0, "Close": 100.0, "Volume": 1000.0}
+            for _ in range(50)
+        ]
+        rows.append({"Open": 100.0, "High": 106.0, "Low": 99.0, "Close": 105.0, "Volume": 3000.0})
+        df = make_df(rows)
+        self.assertTrue(compute_signals(df, CFG)["signal"].iloc[-1])
+        self.assertFalse(compute_signals(df, self.CFG_MA)["signal"].iloc[-1])
+
+
 class TestExitLogic(unittest.TestCase):
     """§8-2 出口ロジック単体テスト(3ケース+ギャップアップ利確)。"""
 

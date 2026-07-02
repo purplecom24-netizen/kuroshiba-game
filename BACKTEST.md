@@ -1,12 +1,16 @@
-# 「出来高+陽線」ルール検証システム v1.0 — 使い方
+# 「出来高+陽線」ルール検証システム — 使い方
 
-事前登録仕様: [docs/requirements_v1.md](docs/requirements_v1.md)(2026-07-02 登録・変更禁止)
+事前登録仕様(いずれも登録後変更禁止):
+
+- **v1.0**: [docs/requirements_v1.md](docs/requirements_v1.md) — 出来高2.0倍+陽線 / 保有5日
+- **v2.0**: [docs/requirements_v2.md](docs/requirements_v2.md) — 出来高3.0倍+陽線+終値>200日MA / 保有10日(v1からの差分定義・半探索的)
 
 ## セットアップと実行
 
 ```bash
 pip install -r requirements.txt
-python backtest.py
+python backtest.py              # v1 を検証(成果物: output/)
+python backtest.py --rule v2    # v2 を検証(成果物: output_v2/)
 ```
 
 1コマンドで 取得 → データ検証 → 先読み検査 → バックテスト(4系列)→ ベースラインA/B → Gate 1 判定 → レポート が完走する。
@@ -62,9 +66,10 @@ Gate 1 合格(2026-07-02 実データ実行)を受けて実装。仮想資金の
 python daily_scan.py            # 毎営業日の大引け後(18:00 JST 目安)に実行
 ```
 
-- 初回実行日が「フォワード開始日」として `forward/state.json` に固定記録される(以後変更しない)
+- 複数ルールの並走に対応。ルールごとに `forward/<rule>/` に状態・台帳が分離され、初回有効化日が「フォワード開始日」として `forward/<rule>/state.json` に固定記録される(以後変更しない)。デフォルトの有効ルールは v1
+- 新ルールの追加は、そのルールの Phase 1 が Gate 1 に合格した後に `python daily_scan.py --activate v2`
 - リプレイ方式: 毎回、開始日から当日までを Phase 1 と同一エンジンで決定的に再構築する。実行を数日忘れても次回実行で自動的に追いつく
-- 出力: `forward/forward_trades.csv`(決済済み台帳)、保有中ポジションと当日シグナルはコンソール表示、金曜(または `--weekly`)に `forward/summary_weekly.md`、30/50トレード到達時に `forward/review_30.md` / `review_50.md`(同期間 TOPIX と再生成ランダム分布との比較)
+- 出力(ルールごと): `forward/<rule>/forward_trades.csv`(決済済み台帳)、保有中ポジションと当日シグナルはコンソール表示、金曜(または `--weekly`)に `summary_weekly.md`、30/50トレード到達時に `review_30.md` / `review_50.md`(同期間 TOPIX と再生成ランダム分布との比較)
 
 スケジュール設定:
 

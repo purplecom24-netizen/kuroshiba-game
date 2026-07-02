@@ -48,6 +48,15 @@ class Config:
     target_r: float = 2.0             # 利確 = エントリー + 2R
     seed: int = 42
     n_random_trials: int = 1000
+    ma_days: int | None = None        # v2: 終値 > N日単純移動平均 のレジームフィルタ
+
+
+# ルールプリセット(いずれも事前登録・変更禁止。登録文書は docs/ を参照)
+RULE_PRESETS: dict[str, Config] = {
+    "v1": Config(),                                            # docs/requirements_v1.md
+    "v2": Config(vol_mult=3.0, hold_days=10, ma_days=200),     # docs/requirements_v2.md
+}
+RULE_LABELS = {"v1": "v1.0", "v2": "v2.0"}
 
 
 # 主ユニバース(15銘柄・固定)
@@ -306,6 +315,9 @@ def compute_signals(df: pd.DataFrame, cfg: Config) -> pd.DataFrame:
     valid = avg.notna() & (mn > 0) & (vol > 0) & price_ok
     ratio = vol / avg
     sig = valid & (vol >= cfg.vol_mult * avg) & (df["Close"] > df["Open"])
+    if cfg.ma_days:
+        ma = df["Close"].rolling(cfg.ma_days, min_periods=cfg.ma_days).mean()
+        sig = sig & ma.notna() & (df["Close"] > ma)
     return pd.DataFrame({"signal": sig, "vol_ratio": ratio, "stop": df["Low"]}, index=df.index)
 
 
@@ -821,6 +833,7 @@ def write_summary(
     rnd_neutral: dict,
     lookahead_msg: str,
     path: str,
+    rule_label: str = "v1.0",
 ):
     (res_main, s_main) = results["主・端株可"]
     eod_n = sum(1 for t in res_main.trades if t.exit_reason == "eod")
@@ -828,14 +841,16 @@ def write_summary(
     exp_pct_rank = float(
         (rnd_main["expectancies"] <= s_main.expectancy_r).mean() * 100
     )
+    ma_note = f" / MAフィルタ 終値>{cfg.ma_days}日MA" if cfg.ma_days else ""
     lines = [
-        "# 検証サマリー: 「出来高+陽線」ルール v1.0(Phase 1 バックテスト)",
+        f"# 検証サマリー: 「出来高+陽線」ルール {rule_label}(Phase 1 バックテスト)",
         "",
         f"- 実行日時: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
         f"- 検証期間: {cfg.start} 〜 {res_main.dates[-1].date()}",
         f"- パラメータ: 出来高倍率 {cfg.vol_mult} / 平均 {cfg.vol_lookback}日 / 保有 {cfg.hold_days}営業日 / "
         f"スリッページ {cfg.slippage_pct:.1%} / コスト片道 {cfg.cost_pct:.1%} / "
-        f"最小ストップ距離 {cfg.min_stop_dist_pct:.1%} / リスク {cfg.risk_pct:.0%} / 最大 {cfg.max_positions} 枠",
+        f"最小ストップ距離 {cfg.min_stop_dist_pct:.1%} / リスク {cfg.risk_pct:.0%} / "
+        f"最大 {cfg.max_positions} 枠{ma_note}",
         f"- モンテカルロ試行数: {len(rnd_main['finals'])} / シード {cfg.seed}",
         "",
         "## Gate 1 判定結果",
@@ -1009,6 +1024,8 @@ def write_sensitivity(data: dict[str, pd.DataFrame], cfg: Config, path: str):
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(description="「出来高+陽線」ルール検証 Phase 1 バックテスト")
+    ap.add_argument("--rule", choices=sorted(RULE_PRESETS), default="v1",
+                    help="検証するルールプリセット(デフォルト v1)")
     ap.add_argument("--refresh", action="store_true", help="CSVキャッシュを無視して再取得する")
     ap.add_argument("--trials", type=int, default=None, help="モンテカルロ試行数(デフォルト1000)")
     ap.add_argument("--qa-truncate", type=int, default=30,
@@ -1016,10 +1033,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--skip-sensitivity", action="store_true", help="感度分析を省略する")
     args = ap.parse_args(argv)
 
-    cfg = Config()
+    cfg = RULE_PRESETS[args.rule]
+    rule_label = RULE_LABELS[args.rule]
     if args.trials:
         cfg = replace(cfg, n_random_trials=args.trials)
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+    out_dir = OUTPUT_DIR if args.rule == "v1" else f"{OUTPUT_DIR}_{args.rule}"
+    print(f"ルール: {rule_label}({args.rule})/ 出力先: {out_dir}/")
+    os.makedirs(out_dir, exist_ok=True)
 
     print("=== 1/7 データ取得(主ユニバース + 中立ユニバース + TOPIX ETF) ===")
     all_tickers = sorted(set(PRIMARY_UNIVERSE) | set(NEUTRAL_UNIVERSE) | {TOPIX_ETF})
@@ -1036,12 +1056,12 @@ def main(argv: list[str] | None = None) -> int:
             for note in notes:
                 print(f"  価格グリッチ修復: {t} {note}")
     dq_md, severe = data_quality(data_all, all_names, repairs)
-    with open(os.path.join(OUTPUT_DIR, "data_quality.md"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out_dir, "data_quality.md"), "w", encoding="utf-8") as f:
         f.write(dq_md)
-    print(f"  -> {OUTPUT_DIR}/data_quality.md")
+    print(f"  -> {out_dir}/data_quality.md")
     if severe:
         print("重大なデータ異常を検出したため本体を実行せず停止します。"
-              f"{OUTPUT_DIR}/data_quality.md を確認してください。", file=sys.stderr)
+              f"{out_dir}/data_quality.md を確認してください。", file=sys.stderr)
         return 1
 
     data_main = {t: data_all[t] for t in PRIMARY_UNIVERSE}
@@ -1087,13 +1107,13 @@ def main(argv: list[str] | None = None) -> int:
 
     print("=== 6/7 Gate 1 判定・レポート ===")
     gate = evaluate_gate1(s_main, rnd_main["finals"])
-    write_trades_csv(res_main, PRIMARY_UNIVERSE, os.path.join(OUTPUT_DIR, "trades.csv"))
+    write_trades_csv(res_main, PRIMARY_UNIVERSE, os.path.join(out_dir, "trades.csv"))
     write_summary(cfg, results, gate, topix_final, rnd_main, rnd_neutral, lookahead_msg,
-                  os.path.join(OUTPUT_DIR, "summary.md"))
+                  os.path.join(out_dir, "summary.md"), rule_label=rule_label)
     plot_equity_curve(res_main, topix_curve, rnd_main, cfg,
-                      os.path.join(OUTPUT_DIR, "equity_curve.png"))
+                      os.path.join(out_dir, "equity_curve.png"))
     plot_random_dist(s_main.final_equity, rnd_main, cfg,
-                     os.path.join(OUTPUT_DIR, "random_dist.png"))
+                     os.path.join(out_dir, "random_dist.png"))
     for name, ok, detail in gate.checks:
         mark = "—" if ok is None else ("PASS" if ok else "FAIL")
         print(f"  [{mark}] {name}: {detail}")
@@ -1105,14 +1125,14 @@ def main(argv: list[str] | None = None) -> int:
         print("  判定: Gate 1 不合格 → ルール棄却。Phase 2 は実装しない")
 
     print("=== 7/7 感度分析(探索的・Gate判定に不使用) ===")
-    if args.skip_sensitivity:
-        print("  省略(--skip-sensitivity)")
+    if args.skip_sensitivity or args.rule != "v1":
+        print("  省略" + ("(--skip-sensitivity)" if args.skip_sensitivity else "(v1 のみ対象)"))
     else:
-        write_sensitivity(data_main, cfg, os.path.join(OUTPUT_DIR, "sensitivity.md"))
-        print(f"  -> {OUTPUT_DIR}/sensitivity.md")
+        write_sensitivity(data_main, cfg, os.path.join(out_dir, "sensitivity.md"))
+        print(f"  -> {out_dir}/sensitivity.md")
 
-    print(f"完了。成果物: {OUTPUT_DIR}/data_quality.md, trades.csv, summary.md, "
-          "equity_curve.png, random_dist.png, sensitivity.md")
+    print(f"完了。成果物: {out_dir}/data_quality.md, trades.csv, summary.md, "
+          "equity_curve.png, random_dist.png")
     return 0
 
 
