@@ -62,9 +62,18 @@ class AlpacaProvider(MarketDataProvider):
 
     def get_quote(self, symbol: str) -> Quote:
         symbol = symbol.upper()
-        url = f"{_DATA_BASE_URL}/stocks/{symbol}/trades/latest"
+        # The snapshot bundles the latest trade and the previous daily bar in a
+        # single call, so we get price + previous close (day's change) at once.
+        url = f"{_DATA_BASE_URL}/stocks/{symbol}/snapshot"
         with httpx.Client(timeout=self._timeout) as client:
             resp = client.get(url, headers=self._headers)
             resp.raise_for_status()
-            trade = resp.json()["trade"]
-        return Quote(symbol=symbol, price=trade["p"], time=_to_epoch(trade["t"]))
+            snap = resp.json()
+        trade = snap["latestTrade"]
+        prev_bar = snap.get("prevDailyBar") or {}
+        return Quote(
+            symbol=symbol,
+            price=trade["p"],
+            time=_to_epoch(trade["t"]),
+            prev_close=prev_bar.get("c"),
+        )

@@ -74,10 +74,18 @@ class MockProvider(MarketDataProvider):
 
     def get_quote(self, symbol: str) -> Quote:
         symbol = symbol.upper()
-        candles = self.get_candles(symbol, Timeframe.M1, limit=2)
-        last_close = candles[-1].close if candles else _base_price(symbol)
-        # Wander around the last close, reseeded each wall-clock second so the
+        # Two daily bars: today (reference for the live price) and yesterday
+        # (previous close, for the day's change).
+        daily = self.get_candles(symbol, Timeframe.D1, limit=2)
+        today_close = daily[-1].close if daily else _base_price(symbol)
+        prev_close = daily[-2].close if len(daily) >= 2 else today_close
+        # Wander around today's close, reseeded each wall-clock second so the
         # value changes between polls but is stable within a second.
         rng = random.Random(_seed(symbol, str(int(time.time()))))
-        price = max(1.0, last_close * (1 + rng.uniform(-0.003, 0.003)))
-        return Quote(symbol=symbol, price=round(price, 2), time=int(time.time()))
+        price = max(1.0, today_close * (1 + rng.uniform(-0.003, 0.003)))
+        return Quote(
+            symbol=symbol,
+            price=round(price, 2),
+            time=int(time.time()),
+            prev_close=round(prev_close, 2),
+        )

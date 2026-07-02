@@ -52,3 +52,4 @@ def test_ws_quotes_stream():
         msg = wsc.receive_json()
         assert msg["symbol"] == "AAPL"
         assert msg["price"] > 0
+        assert msg["prev_close"] > 0  # enables the day's-change display

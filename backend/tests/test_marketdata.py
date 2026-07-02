@@ -38,6 +38,12 @@ def test_quote_is_near_last_close(provider: MockProvider):
     assert quote.price > 0
 
 
+def test_quote_has_prev_close_for_day_change(provider: MockProvider):
+    quote = provider.get_quote("AAPL")
+    assert quote.prev_close is not None
+    assert quote.prev_close > 0
+
+
 def test_sma_warmup_and_value():
     values = [float(i) for i in range(1, 11)]  # 1..10
     result = sma(values, period=3)
