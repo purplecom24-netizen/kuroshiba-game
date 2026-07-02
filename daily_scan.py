@@ -47,6 +47,7 @@ from backtest import (
     Universe,
     build_rule_events,
     compute_signals,
+    drop_market_wide_zero_volume_days,
     fetch_ticker,
     repair_price_glitches,
     run_engine,
@@ -109,8 +110,12 @@ def load_state(rule: str) -> dict:
 def load_data(cfg: Config, refresh: bool) -> dict[str, pd.DataFrame]:
     data = {}
     for t in sorted(set(PRIMARY_UNIVERSE) | {TOPIX_ETF}):
-        df = fetch_ticker(t, cfg, refresh=refresh)
-        df, notes = repair_price_glitches(df)
+        data[t] = fetch_ticker(t, cfg, refresh=refresh)
+    data, dropped = drop_market_wide_zero_volume_days(data)
+    if dropped:
+        print(f"  擬似営業日を除去: {len(dropped)} 日(全銘柄の9割以上が出来高0)")
+    for t in sorted(data):
+        df, notes = repair_price_glitches(data[t])
         for note in notes:
             print(f"  価格グリッチ修復: {t} {note}")
         data[t] = df

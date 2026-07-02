@@ -335,6 +335,64 @@ class TestGlitchRepair(unittest.TestCase):
         self.assertEqual(notes, [])
         pd.testing.assert_frame_equal(repaired, df)
 
+    def test_permanent_tenth_shift_backadjusted(self):
+        # 実データで観測されたパターン: 1306.T が 2015-01-05 以前だけ10倍単位で記録
+        # (前日比 -90% の恒久シフト)→ シフト以前の全期間を ×0.1 で遡及補正
+        closes = [15300.0, 15400.0, 15500.0, 1542.0, 1550.0, 1548.0, 1560.0]
+        df = self._price_df(closes)
+        repaired, notes = repair_price_glitches(df)
+        self.assertEqual(len(notes), 1)
+        self.assertIn("遡及補正", notes[0])
+        self.assertAlmostEqual(repaired["Close"].iloc[0], 1530.0, places=6)
+        self.assertAlmostEqual(repaired["Close"].iloc[2], 1550.0, places=6)
+        self.assertAlmostEqual(repaired["Close"].iloc[3], 1542.0, places=6)  # 以降は無変更
+        self.assertFalse((repaired["Close"].pct_change().abs() > 0.30).any())
+
+    def test_genuine_crash_50pct_not_backadjusted(self):
+        # -50%超でも10の冪に一致しない本物の暴落は遡及補正しない
+        closes = [380.0, 382.0, 381.0, 150.0, 148.0, 152.0, 149.0]
+        df = self._price_df(closes)
+        repaired, notes = repair_price_glitches(df)
+        self.assertEqual(notes, [])
+        pd.testing.assert_frame_equal(repaired, df)
+
+
+class TestMarketWideZeroVolume(unittest.TestCase):
+    def test_market_wide_zero_days_dropped_individual_kept(self):
+        from backtest import drop_market_wide_zero_volume_days
+        dates = pd.bdate_range("2024-01-04", periods=30)
+        data = {}
+        for k in range(6):
+            df = pd.DataFrame({
+                "Open": 100.0, "High": 101.0, "Low": 99.0, "Close": 100.0,
+                "Volume": 1000.0}, index=dates)
+            df.loc[dates[10], "Volume"] = 0.0  # 全銘柄一斉の擬似営業日
+            if k == 0:
+                df.loc[dates[20], "Volume"] = 0.0  # 1銘柄だけの出来高0(本物の閑散)
+            data[f"T{k}.T"] = df
+        cleaned, dropped = drop_market_wide_zero_volume_days(data)
+        self.assertEqual(dropped, [dates[10]])
+        for t, df in cleaned.items():
+            self.assertNotIn(dates[10], df.index)      # 擬似営業日は全銘柄から除去
+        self.assertEqual(cleaned["T0.T"].loc[dates[20], "Volume"], 0.0)  # 個別は残す
+
+
+class TestVerifiedGenuineMoves(unittest.TestCase):
+    def test_whitelisted_move_does_not_halt(self):
+        from backtest import data_quality
+        dates = pd.bdate_range("2016-07-04", periods=10)
+        assert str(dates[6].date()) == "2016-07-12"
+        closes = [100.0] * 6 + [140.4] + [140.0, 141.0, 140.5]
+        df = pd.DataFrame({
+            "Open": closes, "High": [c * 1.01 for c in closes],
+            "Low": [c * 0.99 for c in closes], "Close": closes, "Volume": 1000.0,
+        }, index=dates)
+        md_ok, severe_ok = data_quality({"7974.T": df}, {"7974.T": "任天堂"})
+        self.assertFalse(severe_ok)                    # 裏取り済み実イベント → 停止しない
+        self.assertIn("裏取り済み実イベント", md_ok)
+        md_ng, severe_ng = data_quality({"9999.T": df}, {"9999.T": "テスト"})
+        self.assertTrue(severe_ng)                     # 許可リスト外の同じ動きは停止
+
 
 def synthetic_universe(seed: int = 7, n_days: int = 300, n_tickers: int = 4):
     """先読み検査・再現性テスト用のランダムだが決定的な合成ユニバース。"""

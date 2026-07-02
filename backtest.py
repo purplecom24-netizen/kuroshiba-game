@@ -128,9 +128,18 @@ OUTPUT_DIR = "output"
 
 # データ品質の停止基準(§7)
 DQ_MAX_MISSING_RATE = 0.05
-DQ_MAX_ZERO_VOLUME_DAYS = 10
+DQ_MAX_ZERO_VOLUME_DAYS = 10      # 出来高0の許容日数(下限。0.5%×行数と比較して大きい方)
+DQ_ZERO_VOLUME_RATE = 0.005
 DQ_LIST_RETURN_ABS = 0.30   # これを超える日次リターンをリスト化
 DQ_HALT_RETURN_ABS = 0.35   # これを超えたら本体を実行せず停止
+
+# ニュース・報道で裏取り済みの実イベント(停止基準の適用除外。リスト化はされる)
+DQ_VERIFIED_GENUINE_MOVES: set[tuple[str, str]] = {
+    # ルネサス: KKR出資検討報道で過去最大の+35%(Bloomberg 2012-08-29 報道で確認)
+    ("6723.T", "2012-08-29"),
+    # 任天堂: ポケモンGO相場。7/7比で1週間に約1.8倍・値幅制限拡大局面(東洋経済等で確認)
+    ("7974.T", "2016-07-12"),
+}
 
 
 # ---------------------------------------------------------------------------
@@ -181,6 +190,31 @@ def load_universe(tickers: list[str], cfg: Config, refresh: bool = False) -> dic
 # ---------------------------------------------------------------------------
 
 
+def drop_market_wide_zero_volume_days(
+    data: dict[str, pd.DataFrame], min_share: float = 0.9, min_tickers: int = 5
+) -> tuple[dict[str, pd.DataFrame], list[pd.Timestamp]]:
+    """全銘柄(9割以上)が同じ日に出来高0となっている日は、実際の営業日ではなく
+    データソース側の擬似営業日(祝日・記録漏れ)とみなし、全銘柄から行ごと除去する。
+    個別銘柄だけの出来高0(流動性の枯渇)は除去せず、従来どおり検証・除外条件に委ねる。"""
+    zero: dict[pd.Timestamp, int] = {}
+    present: dict[pd.Timestamp, int] = {}
+    for df in data.values():
+        zero_days = set(df.index[df["Volume"].fillna(0) == 0])
+        for d in df.index:
+            present[d] = present.get(d, 0) + 1
+            if d in zero_days:
+                zero[d] = zero.get(d, 0) + 1
+    bad = sorted(
+        d for d, z in zero.items()
+        if present[d] >= min_tickers and z / present[d] >= min_share
+    )
+    if not bad:
+        return data, []
+    bad_set = set(bad)
+    cleaned = {t: df[~df.index.isin(bad_set)] for t, df in data.items()}
+    return cleaned, bad
+
+
 def repair_price_glitches(
     df: pd.DataFrame, max_run: int = 3, jump: float = 1.35, revert_tol: float = 0.15
 ) -> tuple[pd.DataFrame, list[str]]:
@@ -191,7 +225,13 @@ def repair_price_glitches(
       場合のみグリッチとみなす。復帰しない本物の急騰・急落は補正しない
       (その場合は従来どおりデータ検証で停止する)。
     - 補正倍率が 10 の冪(0.01/0.1/10/100)に近い場合はその値にスナップする。
-    - 出来高は真正の可能性があるため補正しない。
+    - 例外(恒久シフト): 復帰しなくても、前日比が ±50% 超かつ倍率が 10 の冪に一致する
+      場合は「単位変更・分割調整漏れによる恒久的な水準シフト」とみなし、シフト日以前の
+      全期間を 10 の冪で遡及補正する(直近データ側を正とする)。本物の暴落は値幅制限の
+      ため1日で -50% を超えず、ちょうど 10 の冪にはならない。実例: 1306.T の
+      2015-01-05 以前が10倍単位で記録されていたケース。
+    - 出来高は真正の可能性があるため補正しない(恒久シフトの境界をまたぐ約20営業日は
+      出来高比率の計算が影響を受けうる。該当銘柄・日付は notes で確認できる)。
     - 補正内容はすべて呼び出し側へ返し、data_quality.md に記録される。
     """
     close = df["Close"].to_numpy(float).copy()
@@ -224,6 +264,18 @@ def repair_price_glitches(
                         i = j
                         repaired = True
                         break
+                if not repaired and (f > 2.0 or f < 0.5):
+                    # 恒久シフト: 倍率が 10 の冪に一致する場合のみ、以前の全期間を遡及補正
+                    for p in (0.01, 0.1, 10.0, 100.0):
+                        if abs(f / p - 1) <= revert_tol:
+                            out.iloc[:i, cols] = out.iloc[:i, cols] * p
+                            close[:i] = close[:i] * p
+                            notes.append(
+                                f"{out.index[i].date()} 以前の全期間: 価格を ×{p:g} 遡及補正"
+                                "(10の冪の恒久的水準シフト=単位変更・分割調整漏れを検出)"
+                            )
+                            repaired = True
+                            break
                 if repaired:
                     continue
         i += 1
@@ -239,6 +291,7 @@ def data_quality(
     data: dict[str, pd.DataFrame],
     names: dict[str, str],
     repairs: dict[str, list[str]] | None = None,
+    dropped_days: list[pd.Timestamp] | None = None,
 ) -> tuple[str, bool]:
     """データ品質レポート(markdown 文字列)と severe フラグを返す。"""
     union = pd.DatetimeIndex(sorted(set().union(*[set(df.index) for df in data.values()])))
@@ -248,8 +301,9 @@ def data_quality(
         f"- 生成日時: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
         f"- 基準カレンダー: 全銘柄の営業日の和集合({len(union)} 日, "
         f"{union[0].date()} 〜 {union[-1].date()})",
-        f"- 停止基準: 欠損率 > {DQ_MAX_MISSING_RATE:.0%} / 出来高0 > {DQ_MAX_ZERO_VOLUME_DAYS}日 / "
-        f"|日次リターン| > {DQ_HALT_RETURN_ABS:.0%}",
+        f"- 停止基準: 欠損率 > {DQ_MAX_MISSING_RATE:.0%} / "
+        f"出来高0 > max({DQ_MAX_ZERO_VOLUME_DAYS}日, 行数の{DQ_ZERO_VOLUME_RATE:.1%}) / "
+        f"|日次リターン| > {DQ_HALT_RETURN_ABS:.0%}(裏取り済み実イベントは適用除外)",
         "",
         "| 銘柄 | 上場内データ開始 | 行数 | 欠損率 | 出来高0日数 | \\|リターン\\|>30% | 分割日 | 判定 |",
         "|---|---|---|---|---|---|---|---|",
@@ -277,23 +331,34 @@ def data_quality(
         if missing_rate > DQ_MAX_MISSING_RATE:
             verdict = "NG"
             severe_msgs.append(f"{t}: 欠損率 {missing_rate:.1%} > {DQ_MAX_MISSING_RATE:.0%}")
-        if zero_vol > DQ_MAX_ZERO_VOLUME_DAYS:
+        zero_limit = max(DQ_MAX_ZERO_VOLUME_DAYS, int(DQ_ZERO_VOLUME_RATE * len(df)))
+        if zero_vol > zero_limit:
             verdict = "NG"
-            severe_msgs.append(f"{t}: 出来高0が {zero_vol} 日")
-        if (anomalies.abs() > DQ_HALT_RETURN_ABS).any():
+            severe_msgs.append(f"{t}: 出来高0が {zero_vol} 日 > 許容 {zero_limit} 日")
+        halting = [
+            (d, r) for d, r in anomalies.items()
+            if abs(r) > DQ_HALT_RETURN_ABS
+            and (t, str(d.date())) not in DQ_VERIFIED_GENUINE_MOVES
+        ]
+        if halting:
             verdict = "NG"
-            worst = anomalies.abs().max()
+            worst = max(abs(r) for _, r in halting)
             severe_msgs.append(f"{t}: |日次リターン| 最大 {worst:.1%} > {DQ_HALT_RETURN_ABS:.0%}")
         if split_issue:
             verdict = "NG"
             severe_msgs.append(f"{t}: {split_issue}")
         for d, r in anomalies.items():
-            anomaly_details.append(f"- {t} {names.get(t, '')} {d.date()}: {r:+.1%}")
+            tag = "(裏取り済み実イベント)" if (t, str(d.date())) in DQ_VERIFIED_GENUINE_MOVES else ""
+            anomaly_details.append(f"- {t} {names.get(t, '')} {d.date()}: {r:+.1%} {tag}".rstrip())
         lines.append(
             f"| {t} {names.get(t, '')} | {df.index[0].date()} | {len(df)} | "
             f"{missing_rate:.2%} | {zero_vol} | {len(anomalies)} | {n_splits} | {verdict} |"
         )
 
+    if dropped_days:
+        lines += ["", "## 除去した擬似営業日(全銘柄の9割以上が出来高0の日)", "",
+                  f"- {len(dropped_days)} 日を全銘柄から除去: "
+                  + ", ".join(str(d.date()) for d in dropped_days)]
     if repairs:
         lines += ["", "## 自動修復した価格グリッチ(修復後データで上表・本体を実行)", ""]
         for t, ns in repairs.items():
@@ -1055,6 +1120,9 @@ def main(argv: list[str] | None = None) -> int:
     data_all = load_universe(all_tickers, cfg, refresh=args.refresh)
 
     print("=== 2/7 データ検証 ===")
+    data_all, dropped_days = drop_market_wide_zero_volume_days(data_all)
+    if dropped_days:
+        print(f"  擬似営業日を除去: {len(dropped_days)} 日(全銘柄の9割以上が出来高0)")
     repairs: dict[str, list[str]] = {}
     for t in all_tickers:
         repaired, notes = repair_price_glitches(data_all[t])
@@ -1063,7 +1131,7 @@ def main(argv: list[str] | None = None) -> int:
             repairs[t] = notes
             for note in notes:
                 print(f"  価格グリッチ修復: {t} {note}")
-    dq_md, severe = data_quality(data_all, all_names, repairs)
+    dq_md, severe = data_quality(data_all, all_names, repairs, dropped_days)
     with open(os.path.join(out_dir, "data_quality.md"), "w", encoding="utf-8") as f:
         f.write(dq_md)
     print(f"  -> {out_dir}/data_quality.md")
