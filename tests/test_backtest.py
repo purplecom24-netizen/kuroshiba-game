@@ -19,6 +19,7 @@ from backtest import (  # noqa: E402
     Universe,
     build_rule_events,
     compute_signals,
+    repair_price_glitches,
     run_engine,
     run_random_baseline,
     verify_no_lookahead,
@@ -229,6 +230,41 @@ class TestPortfolioRules(unittest.TestCase):
         df = make_df(rows)
         res = run_single(df)
         self.assertEqual(len(res.trades), 1)
+
+
+class TestGlitchRepair(unittest.TestCase):
+    """データソースの一時的な価格水準グリッチの検出・補正。"""
+
+    @staticmethod
+    def _price_df(closes: list[float]) -> pd.DataFrame:
+        rows = [
+            {"Open": c * 1.001, "High": c * 1.01, "Low": c * 0.99, "Close": c, "Volume": 1e6}
+            for c in closes
+        ]
+        return make_df(rows)
+
+    def test_temporary_tenth_scale_glitch_repaired(self):
+        # 実データで観測されたパターン: 約383円 → 2日だけ約37円 → 約383円(1/10記録)
+        closes = [383.6, 382.6, 382.7, 37.64, 37.14, 389.2, 383.0, 386.6]
+        df = self._price_df(closes)
+        repaired, notes = repair_price_glitches(df)
+        self.assertEqual(len(notes), 1)
+        # 倍率は10の冪にスナップされ、2日分の終値が10倍に補正される
+        self.assertAlmostEqual(repaired["Close"].iloc[3], 376.4, places=6)
+        self.assertAlmostEqual(repaired["Close"].iloc[4], 371.4, places=6)
+        self.assertAlmostEqual(repaired["Open"].iloc[3], 37.64 * 1.001 * 10, places=6)
+        # 補正後は ±30% 超のリターンが消えている
+        self.assertFalse((repaired["Close"].pct_change().abs() > 0.30).any())
+        # 出来高は補正しない
+        self.assertEqual(repaired["Volume"].iloc[3], 1e6)
+
+    def test_genuine_crash_not_repaired(self):
+        # 下がったまま戻らない本物の急落は補正しない(データ検証で停止させる)
+        closes = [380.0, 382.0, 381.0, 200.0, 198.0, 195.0, 197.0, 196.0]
+        df = self._price_df(closes)
+        repaired, notes = repair_price_glitches(df)
+        self.assertEqual(notes, [])
+        pd.testing.assert_frame_equal(repaired, df)
 
 
 def synthetic_universe(seed: int = 7, n_days: int = 300, n_tickers: int = 4):

@@ -160,11 +160,69 @@ def load_universe(tickers: list[str], cfg: Config, refresh: bool = False) -> dic
 
 
 # ---------------------------------------------------------------------------
+# データ修復
+# ---------------------------------------------------------------------------
+
+
+def repair_price_glitches(
+    df: pd.DataFrame, max_run: int = 3, jump: float = 1.35, revert_tol: float = 0.15
+) -> tuple[pd.DataFrame, list[str]]:
+    """データソース側の一時的な価格水準グリッチ(例: 数日だけ1/10単位で記録され、
+    直後に元の水準へ復帰する)を検出して OHLC を補正する。
+
+    - 「前日比 ±35% 超のジャンプ」かつ「max_run 日以内に元の水準(±15%)へ復帰」した
+      場合のみグリッチとみなす。復帰しない本物の急騰・急落は補正しない
+      (その場合は従来どおりデータ検証で停止する)。
+    - 補正倍率が 10 の冪(0.01/0.1/10/100)に近い場合はその値にスナップする。
+    - 出来高は真正の可能性があるため補正しない。
+    - 補正内容はすべて呼び出し側へ返し、data_quality.md に記録される。
+    """
+    close = df["Close"].to_numpy(float).copy()
+    notes: list[str] = []
+    out = df.copy()
+    cols = [out.columns.get_loc(c) for c in ("Open", "High", "Low", "Close")]
+    n = len(close)
+    i = 1
+    while i < n:
+        prev = close[i - 1]
+        cur = close[i]
+        if prev > 0 and cur > 0 and not (math.isnan(prev) or math.isnan(cur)):
+            f = cur / prev
+            if f > jump or f < 1 / jump:
+                repaired = False
+                for j in range(i + 1, min(i + 1 + max_run, n)):
+                    nxt = close[j]
+                    if nxt > 0 and abs(nxt / prev - 1) <= revert_tol:
+                        scale = prev / cur
+                        for p in (0.01, 0.1, 10.0, 100.0):
+                            if abs(scale / p - 1) <= revert_tol:
+                                scale = p
+                                break
+                        out.iloc[i:j, cols] = out.iloc[i:j, cols] * scale
+                        close[i:j] = close[i:j] * scale
+                        notes.append(
+                            f"{out.index[i].date()}〜{out.index[j - 1].date()}: "
+                            f"価格を ×{scale:g} 補正(直後に元の水準へ復帰する一時的ズレを検出)"
+                        )
+                        i = j
+                        repaired = True
+                        break
+                if repaired:
+                    continue
+        i += 1
+    return out, notes
+
+
+# ---------------------------------------------------------------------------
 # データ検証(§7)
 # ---------------------------------------------------------------------------
 
 
-def data_quality(data: dict[str, pd.DataFrame], names: dict[str, str]) -> tuple[str, bool]:
+def data_quality(
+    data: dict[str, pd.DataFrame],
+    names: dict[str, str],
+    repairs: dict[str, list[str]] | None = None,
+) -> tuple[str, bool]:
     """データ品質レポート(markdown 文字列)と severe フラグを返す。"""
     union = pd.DatetimeIndex(sorted(set().union(*[set(df.index) for df in data.values()])))
     lines = [
@@ -219,6 +277,11 @@ def data_quality(data: dict[str, pd.DataFrame], names: dict[str, str]) -> tuple[
             f"{missing_rate:.2%} | {zero_vol} | {len(anomalies)} | {n_splits} | {verdict} |"
         )
 
+    if repairs:
+        lines += ["", "## 自動修復した価格グリッチ(修復後データで上表・本体を実行)", ""]
+        for t, ns in repairs.items():
+            for note in ns:
+                lines.append(f"- {t} {names.get(t, '')}: {note}")
     lines += ["", "## 日次リターン ±30% 超の異常値リスト", ""]
     lines += anomaly_details if anomaly_details else ["- なし"]
     if severe_msgs:
@@ -964,7 +1027,15 @@ def main(argv: list[str] | None = None) -> int:
     data_all = load_universe(all_tickers, cfg, refresh=args.refresh)
 
     print("=== 2/7 データ検証 ===")
-    dq_md, severe = data_quality(data_all, all_names)
+    repairs: dict[str, list[str]] = {}
+    for t in all_tickers:
+        repaired, notes = repair_price_glitches(data_all[t])
+        if notes:
+            data_all[t] = repaired
+            repairs[t] = notes
+            for note in notes:
+                print(f"  価格グリッチ修復: {t} {note}")
+    dq_md, severe = data_quality(data_all, all_names, repairs)
     with open(os.path.join(OUTPUT_DIR, "data_quality.md"), "w", encoding="utf-8") as f:
         f.write(dq_md)
     print(f"  -> {OUTPUT_DIR}/data_quality.md")
