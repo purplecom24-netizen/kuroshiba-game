@@ -190,8 +190,7 @@ function shibaSVG(mood, size) {
   const ink = "#14100c";
   const eyes = mood >= 3
     ? `<path d="M30 50 L40 58 M40 50 L30 58 M60 50 L70 58 M70 50 L60 58" stroke="${cream}" stroke-width="3" stroke-linecap="round"/>`
-    : `<circle cx="35" cy="54" r="3.8" fill="${ink}"/><circle cx="65" cy="54" r="3.8" fill="${ink}"/>
-       <circle cx="36.3" cy="52.7" r="1.3" fill="#fff"/><circle cx="66.3" cy="52.7" r="1.3" fill="#fff"/>`;
+    : `<circle cx="35" cy="54" r="3.8" fill="${ink}"/><circle cx="65" cy="54" r="3.8" fill="${ink}"/>`;
   const mouth = mood === 0
     ? `<path d="M50 71.5 Q45.5 77 40.5 74.5 M50 71.5 Q54.5 77 59.5 74.5" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
        <path d="M44.5 74 Q50 72.5 55.5 74 Q55 82.5 50 82.5 Q45 82.5 44.5 74" fill="#d94f4f"/>
@@ -209,10 +208,14 @@ function shibaSVG(mood, size) {
   const sweat2 = mood >= 3 ? `<path d="M14 30 q7 11.5 0 15.5 q-7 -4 0 -15.5" fill="#79c4ef"/>` : "";
   return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
     <circle cx="50" cy="52" r="46.5" fill="${badge}" stroke="#fff" stroke-width="2.5"/>
-    <path d="M40 35 C37 22 31 11 26.5 9 C24.5 8.2 22.8 9.8 22 12.5 C19.5 20 17.5 28 17 35.5 C24 40 34 39 40 35 Z" fill="${fur}"/>
-    <path d="M60 35 C63 22 69 11 73.5 9 C75.5 8.2 77.2 9.8 78 12.5 C80.5 20 82.5 28 83 35.5 C76 40 66 39 60 35 Z" fill="${fur}"/>
-    <path d="M35 33 C33 24 29.5 16 26.5 14.5 C25.2 14 24.2 15 23.6 17 C22 22 20.8 28 20.5 33.5 C25 36.5 31.5 36 35 33 Z" fill="${innerEar}"/>
-    <path d="M65 33 C67 24 70.5 16 73.5 14.5 C74.8 14 75.8 15 76.4 17 C78 22 79.2 28 79.5 33.5 C75 36.5 68.5 36 65 33 Z" fill="${innerEar}"/>
+    <g transform="translate(23 27) rotate(-28)">
+      <path d="M-11 14 C-11 2 -6 -12 0 -16 C6 -12 11 2 11 14 C4 18 -4 18 -11 14 Z" fill="${fur}"/>
+      <path d="M-6.5 12 C-6.5 3 -3.5 -7 0 -10.5 C3.5 -7 6.5 3 6.5 12 C2 14.5 -2 14.5 -6.5 12 Z" fill="${innerEar}"/>
+    </g>
+    <g transform="translate(77 27) rotate(28)">
+      <path d="M-11 14 C-11 2 -6 -12 0 -16 C6 -12 11 2 11 14 C4 18 -4 18 -11 14 Z" fill="${fur}"/>
+      <path d="M-6.5 12 C-6.5 3 -3.5 -7 0 -10.5 C3.5 -7 6.5 3 6.5 12 C2 14.5 -2 14.5 -6.5 12 Z" fill="${innerEar}"/>
+    </g>
     <ellipse cx="50" cy="55" rx="33" ry="28" fill="${fur}"/>
     <ellipse cx="50" cy="63" rx="31" ry="22" fill="${fur}"/>
     <circle cx="38" cy="68" r="14" fill="${cream}"/>
