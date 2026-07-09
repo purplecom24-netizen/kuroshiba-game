@@ -1,0 +1,13 @@
+{
+  "name": "クロシバのおさんぽ予報",
+  "short_name": "柴NAVI",
+  "description": "アスファルト路面温度を3日先まで予測。愛犬の肉球を守るおさんぽナビ。",
+  "start_url": "osanpo.html",
+  "display": "standalone",
+  "background_color": "#bfe3f8",
+  "theme_color": "#4a9fd8",
+  "icons": [
+    { "src": "img/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "img/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
