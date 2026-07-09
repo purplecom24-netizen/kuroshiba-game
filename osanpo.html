@@ -177,68 +177,11 @@
 <script>
 "use strict";
 
-/* ---------- 黒柴アイコン (SVG) ---------- */
+/* ---------- 黒柴アイコン ---------- */
 // lv: 0=じんじん 1=ひりひり 2=ひんやり 3=快適 4=警戒 5=危険 6=中止
-// 丸バッジの中に黒柴の顔。バッジ色はレベル色、麻呂眉はタン、鼻と口は縦線で連結。
+// デザイン画像から切り出したバッジPNG(img/shiba-lv0〜6.png)をそのまま使用
 function shibaSVG(lv, size) {
-  const badge = ["#8e3fa8", "#2c5cc5", "#38a1dc", "#43a854", "#f2c216", "#ef7d18", "#d5133a"][lv];
-  const fur = "#3d342b";        // 黒柴の毛色(こげ茶がかった黒)
-  const cream = "#faf3e3";      // マズル
-  const tan = "#c99a5f";        // 麻呂眉
-  const innerEar = "#e6c9a0";
-  const ink = "#14100c";
-  const eyes = lv === 6
-    ? `<path d="M30 50 L40 58 M40 50 L30 58 M60 50 L70 58 M70 50 L60 58" stroke="${cream}" stroke-width="3" stroke-linecap="round"/>`
-    : lv === 1
-      ? `<path d="M30 55 q5 -5 10 0 M60 55 q5 -5 10 0" stroke="${cream}" stroke-width="3" fill="none" stroke-linecap="round"/>`
-      : `<circle cx="35" cy="54" r="3.8" fill="${ink}"/><circle cx="65" cy="54" r="3.8" fill="${ink}"/>`;
-  // 鼻から縦線で口につながる(日本の定番の犬顔)
-  const noseLine = `<path d="M50 71 v3.5" stroke="${ink}" stroke-width="2.4" stroke-linecap="round"/>`;
-  const omega = `<path d="M50 74.5 Q45.5 79.5 40.5 76.5 M50 74.5 Q54.5 79.5 59.5 76.5" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
-  const openSmile = `<path d="M41.5 74.5 Q50 78 58.5 74.5 Q50 86.5 41.5 74.5 Z" fill="${ink}"/>
-       <ellipse cx="50" cy="79" rx="3.6" ry="2.3" fill="#d94f4f"/>`;
-  const mouth = noseLine + (
-    lv === 0 ? `<path d="M42.5 77 q3.75 -3 7.5 0 q3.75 3 7.5 0" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
-    : lv === 1 ? omega
-    : lv === 2 ? `<ellipse cx="50" cy="78" rx="2.8" ry="2.2" fill="#d94f4f"/>` + omega
-    : lv === 3 ? openSmile
-    : lv === 4 ? `<path d="M50 74.5 Q45.5 77.5 41.5 76 M50 74.5 Q54.5 77.5 58.5 76" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
-    : `<ellipse cx="50" cy="78.2" rx="4.4" ry="3.4" fill="${ink}"/>`);
-  const blush = lv >= 1 && lv <= 3
-    ? `<ellipse cx="30" cy="70" rx="4.6" ry="2.8" fill="#f5b0a6" opacity=".75"/>
-       <ellipse cx="70" cy="70" rx="4.6" ry="2.8" fill="#f5b0a6" opacity=".75"/>`
-    : "";
-  // 寒さ: ふるえ線 / 暑さ: 汗と青ざめ
-  const shiver = lv === 0
-    ? `<path d="M13 44 q-3.5 7 0 14 M19 41 q-3.5 8 0 16 M87 44 q3.5 7 0 14 M81 41 q3.5 8 0 16" stroke="#dceefb" stroke-width="2.4" fill="none" stroke-linecap="round"/>`
-    : "";
-  const sweat = lv >= 4 ? `<path d="M84 24 q8.5 13.5 0 18 q-8.5 -4.5 0 -18" fill="#79c4ef"/>` : "";
-  const sweat2 = lv >= 5 ? `<path d="M14 30 q7 11.5 0 15.5 q-7 -4 0 -15.5" fill="#79c4ef"/>` : "";
-  const sweat3 = lv >= 6
-    ? `<path d="M88 48 q7 11 0 15 q-7 -4 0 -15" fill="#79c4ef"/>
-       <path d="M32 33 v8 M37 31.5 v10 M42 30.5 v9" stroke="#7aa7d9" stroke-width="2" stroke-linecap="round"/>`
-    : "";
-  return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
-    <circle cx="50" cy="52" r="46.5" fill="${badge}" stroke="#fff" stroke-width="2.5"/>
-    <g transform="translate(25 27) rotate(-26) scale(.75)">
-      <path d="M-11 14 C-11 2 -6 -12 0 -16 C6 -12 11 2 11 14 C4 18 -4 18 -11 14 Z" fill="${fur}"/>
-      <path d="M-6.5 12 C-6.5 3 -3.5 -7 0 -10.5 C3.5 -7 6.5 3 6.5 12 C2 14.5 -2 14.5 -6.5 12 Z" fill="${innerEar}"/>
-    </g>
-    <g transform="translate(75 27) rotate(26) scale(.75)">
-      <path d="M-11 14 C-11 2 -6 -12 0 -16 C6 -12 11 2 11 14 C4 18 -4 18 -11 14 Z" fill="${fur}"/>
-      <path d="M-6.5 12 C-6.5 3 -3.5 -7 0 -10.5 C3.5 -7 6.5 3 6.5 12 C2 14.5 -2 14.5 -6.5 12 Z" fill="${innerEar}"/>
-    </g>
-    <ellipse cx="50" cy="55" rx="33" ry="28" fill="${fur}"/>
-    <ellipse cx="50" cy="63" rx="31" ry="22" fill="${fur}"/>
-    <circle cx="38" cy="68" r="14" fill="${cream}"/>
-    <circle cx="62" cy="68" r="14" fill="${cream}"/>
-    <ellipse cx="50" cy="74" rx="26" ry="15.5" fill="${cream}"/>
-    <ellipse cx="35" cy="44.5" rx="5.2" ry="3.4" fill="${tan}"/>
-    <ellipse cx="65" cy="44.5" rx="5.2" ry="3.4" fill="${tan}"/>
-    ${eyes}
-    <path d="M44.5 63 Q50 60.5 55.5 63 Q56 69 50 71.5 Q44 69 44.5 63" fill="${ink}"/>
-    ${mouth}${blush}${shiver}${sweat}${sweat2}${sweat3}
-  </svg>`;
+  return `<img src="img/shiba-lv${lv}.png" width="${size}" height="${size}" alt="" style="display:block" loading="lazy">`;
 }
 document.getElementById("headShiba").innerHTML = shibaSVG(3, 34);
 
