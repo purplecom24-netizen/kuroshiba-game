@@ -191,15 +191,18 @@ function shibaSVG(mood, size) {
   const eyes = mood >= 3
     ? `<path d="M30 50 L40 58 M40 50 L30 58 M60 50 L70 58 M70 50 L60 58" stroke="${cream}" stroke-width="3" stroke-linecap="round"/>`
     : `<circle cx="35" cy="54" r="3.8" fill="${ink}"/><circle cx="65" cy="54" r="3.8" fill="${ink}"/>`;
+  // 鼻から縦線で口につながる(日本の定番の犬顔)
+  const noseLine = `<path d="M50 71 v3.5" stroke="${ink}" stroke-width="2.4" stroke-linecap="round"/>`;
+  const omega = `<path d="M50 74.5 Q45.5 79.5 40.5 76.5 M50 74.5 Q54.5 79.5 59.5 76.5" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
   const mouth = mood === 0
-    ? `<path d="M50 71.5 Q45.5 77 40.5 74.5 M50 71.5 Q54.5 77 59.5 74.5" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>
-       <path d="M44.5 74 Q50 72.5 55.5 74 Q55 82.5 50 82.5 Q45 82.5 44.5 74" fill="#d94f4f"/>
-       <path d="M50 75 v6" stroke="#b93a3a" stroke-width="1.6" stroke-linecap="round"/>`
+    ? noseLine +
+      `<path d="M41.5 74.5 Q50 78 58.5 74.5 Q50 86.5 41.5 74.5 Z" fill="${ink}"/>
+       <ellipse cx="50" cy="79" rx="3.6" ry="2.3" fill="#d94f4f"/>`
     : mood === 1
-      ? `<path d="M50 71.5 Q45.5 77 40.5 74.5 M50 71.5 Q54.5 77 59.5 74.5" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+      ? noseLine + omega
       : mood === 2
-        ? `<path d="M44 76 Q50 78 56 76" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
-        : `<ellipse cx="50" cy="77.5" rx="4.6" ry="3.6" fill="${ink}"/>`;
+        ? noseLine + `<path d="M50 74.5 Q45.5 77.5 41.5 76 M50 74.5 Q54.5 77.5 58.5 76" stroke="${ink}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`
+        : noseLine + `<ellipse cx="50" cy="78.2" rx="4.4" ry="3.4" fill="${ink}"/>`;
   const blush = mood <= 1
     ? `<ellipse cx="30" cy="70" rx="4.6" ry="2.8" fill="#f5b0a6" opacity=".75"/>
        <ellipse cx="70" cy="70" rx="4.6" ry="2.8" fill="#f5b0a6" opacity=".75"/>`
@@ -208,11 +211,11 @@ function shibaSVG(mood, size) {
   const sweat2 = mood >= 3 ? `<path d="M14 30 q7 11.5 0 15.5 q-7 -4 0 -15.5" fill="#79c4ef"/>` : "";
   return `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true">
     <circle cx="50" cy="52" r="46.5" fill="${badge}" stroke="#fff" stroke-width="2.5"/>
-    <g transform="translate(23 27) rotate(-28)">
+    <g transform="translate(25 27) rotate(-26) scale(.75)">
       <path d="M-11 14 C-11 2 -6 -12 0 -16 C6 -12 11 2 11 14 C4 18 -4 18 -11 14 Z" fill="${fur}"/>
       <path d="M-6.5 12 C-6.5 3 -3.5 -7 0 -10.5 C3.5 -7 6.5 3 6.5 12 C2 14.5 -2 14.5 -6.5 12 Z" fill="${innerEar}"/>
     </g>
-    <g transform="translate(77 27) rotate(28)">
+    <g transform="translate(75 27) rotate(26) scale(.75)">
       <path d="M-11 14 C-11 2 -6 -12 0 -16 C6 -12 11 2 11 14 C4 18 -4 18 -11 14 Z" fill="${fur}"/>
       <path d="M-6.5 12 C-6.5 3 -3.5 -7 0 -10.5 C3.5 -7 6.5 3 6.5 12 C2 14.5 -2 14.5 -6.5 12 Z" fill="${innerEar}"/>
     </g>
