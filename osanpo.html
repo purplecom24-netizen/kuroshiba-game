@@ -16,6 +16,7 @@
     --sky-deep: #4a9fd8;
     --panel: #eaf6ff;
     --ink: #23405c;
+    --sub-ink: #5b7d9c;
     --safe: #4caf7d;
     --care: #e8c33a;
     --warn: #f0a24b;
@@ -24,13 +25,41 @@
     --care-bg: #faf0c8;
     --warn-bg: #fbe3c4;
     --danger-bg: #f6d2d8;
+    --bg1: #bfe3f8; --bg2: #e6f4fd; --bg3: #eef8ff;
+    --header-a: var(--sky-deep); --header-b: var(--sky);
+    --accent: var(--sky-deep);
+    --card-bg: #fff; --card-shadow: rgba(60,120,170,.12);
+    --tab-bg: #f2faff; --tab-border: #bcdcf2;
+    --table-th-bg: #eef5fb; --table-border: #e4eef6;
+    --cur-bg: #fff8dc;
+    --glass-bg: rgba(255,255,255,.55); --glass-border: rgba(255,255,255,.65);
+    --rt-0: #7a2f96; --rt-1: #24509e; --rt-2: #1f7fae; --rt-3: #2e7d44;
+    --rt-4: #8a6f0a; --rt-5: #b05a10; --rt-6: #cc1030;
+    --chart-axis: #5b7d9c;
+    --transition-theme: background .4s ease, color .4s ease, border-color .4s ease;
+  }
+  :root.night {
+    --ink: #eaf2fb; --sub-ink: #9fc0e0;
+    --bg1: #0f1a30; --bg2: #16223d; --bg3: #1b2a4a;
+    --header-a: #16223d; --header-b: #263a63;
+    --card-bg: #1c2b4a; --card-shadow: rgba(0,0,0,.35);
+    --tab-bg: #223354; --tab-border: #3a5580;
+    --table-th-bg: #24365a; --table-border: #33486e;
+    --cur-bg: rgba(255,214,110,.16);
+    --glass-bg: rgba(20,30,50,.55); --glass-border: rgba(255,255,255,.16);
+    --rt-0: #c9a4f5; --rt-1: #8db8f5; --rt-2: #7fd4f0; --rt-3: #7be0a0;
+    --rt-4: #ffd75e; --rt-5: #ffab5e; --rt-6: #ff8080;
+    --chart-axis: #9fc4ea;
+    --accent: #6fb3ec;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { transition: var(--transition-theme); }
   body {
     font-family: "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", Meiryo, sans-serif;
-    background: linear-gradient(#bfe3f8, #e6f4fd 300px, #eef8ff);
+    background: linear-gradient(var(--bg1), var(--bg2) 300px, var(--bg3));
     color: var(--ink);
     min-height: 100vh;
+    transition: var(--transition-theme);
   }
   .wrap { max-width: 560px; margin: 0 auto; padding: 0 12px calc(96px + env(safe-area-inset-bottom)); position: relative; z-index: 1; background: transparent; }
 
@@ -38,7 +67,7 @@
   #pullBar {
     position: fixed; top: 0; left: 0; right: 0; height: 52px; z-index: 0;
     display: flex; align-items: center; justify-content: center; gap: 8px;
-    background: #dcecf9; color: var(--sky-deep); font-size: 13px; font-weight: 600;
+    background: var(--table-th-bg); color: var(--accent); font-size: 13px; font-weight: 600;
     transform: translateY(-100%);
   }
   #pullBar #pullIcon { display: inline-block; font-size: 16px; transition: transform .2s; }
@@ -46,7 +75,7 @@
   @keyframes pullspin { to { transform: rotate(360deg); } }
 
   header {
-    background: linear-gradient(var(--sky-deep), var(--sky));
+    background: linear-gradient(var(--header-a), var(--header-b));
     border-radius: 0 0 24px 24px;
     padding: 18px 16px 30px;
     margin: 0 -12px 14px;
@@ -54,6 +83,7 @@
     text-align: center;
     position: relative;
     overflow: hidden;
+    transition: var(--transition-theme);
   }
   header h1, header .sub { position: relative; z-index: 1; }
   header h1 { font-size: 21px; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; }
@@ -77,7 +107,8 @@
   }
 
   #locName { font-size: 15px; font-weight: bold; margin: 10px 2px 10px; }
-  #locName small { font-weight: normal; color: #5b7d9c; }
+  #locName small { font-weight: normal; color: var(--sub-ink); }
+  .sub-ink { color: var(--sub-ink); }
 
   /* リキッドグラス調のフローティング検索ドック(画面下部に固定) */
   #searchDock {
@@ -86,11 +117,12 @@
     max-width: 560px; margin: 0 auto;
   }
   .glass {
-    background: rgba(255, 255, 255, .55);
+    background: var(--glass-bg);
     -webkit-backdrop-filter: blur(18px) saturate(180%);
     backdrop-filter: blur(18px) saturate(180%);
-    border: 1px solid rgba(255, 255, 255, .65);
+    border: 1px solid var(--glass-border);
     box-shadow: 0 8px 28px rgba(30, 60, 90, .22), inset 0 1px 0 rgba(255, 255, 255, .6);
+    transition: var(--transition-theme);
   }
   .glass-pill {
     flex: 1; display: flex; align-items: center; gap: 8px; border-radius: 999px;
@@ -101,41 +133,41 @@
     flex: 1; border: 0; background: transparent; font-size: 14px; color: var(--ink);
     min-width: 0; padding: 9px 0;
   }
-  .glass-pill input::placeholder { color: #6d87a0; }
+  .glass-pill input::placeholder { color: var(--sub-ink); }
+  .glass-pill input { color: var(--ink); }
   .glass-pill input:focus { outline: none; }
   .glass-pill button {
     flex: none; border: 0; border-radius: 999px; width: 36px; height: 36px; font-size: 15px;
-    background: var(--sky-deep); color: #fff; cursor: pointer;
+    background: var(--accent); color: #fff; cursor: pointer;
   }
   .glass-fab {
     flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0;
     display: flex; align-items: center; justify-content: center; font-size: 19px;
-    color: var(--sky-deep); cursor: pointer; pointer-events: auto;
+    color: var(--accent); cursor: pointer; pointer-events: auto;
   }
   .glass:active, .glass-fab:active { transform: scale(.96); }
-  @media (prefers-color-scheme: dark) {
-    .glass { background: rgba(30, 40, 55, .5); border-color: rgba(255,255,255,.14); }
-  }
 
   .card {
-    background: #fff; border-radius: 18px; padding: 14px;
-    box-shadow: 0 2px 10px rgba(60,120,170,.12); margin-bottom: 14px;
+    background: var(--card-bg); border-radius: 18px; padding: 14px;
+    box-shadow: 0 2px 10px var(--card-shadow); margin-bottom: 14px;
+    transition: var(--transition-theme);
   }
 
   .day-tabs { display: flex; gap: 6px; margin-bottom: 12px; }
   .day-tabs button {
-    flex: 1; border: 2px solid #bcdcf2; background: #f2faff; color: var(--ink);
+    flex: 1; border: 2px solid var(--tab-border); background: var(--tab-bg); color: var(--ink);
     border-radius: 12px; padding: 8px 2px; font-size: 12px; cursor: pointer; line-height: 1.4;
+    transition: var(--transition-theme);
   }
   .day-tabs button b { font-size: 14px; display: block; }
-  .day-tabs button.on { background: var(--sky-deep); border-color: var(--sky-deep); color: #fff; }
+  .day-tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 
   .now-box { display: flex; align-items: center; gap: 14px; padding: 4px 4px 10px; position: relative; z-index: 1; }
   .now-box .shiba-big { width: 72px; height: 72px; flex: none; }
   .now-box .temp { font-size: 34px; font-weight: bold; line-height: 1; }
   .now-box .temp small { font-size: 15px; }
   .now-box .lvl { font-size: 16px; font-weight: bold; }
-  .now-box .advice { font-size: 12px; color: #4a6a88; margin-top: 3px; }
+  .now-box .advice { font-size: 12px; color: var(--ink); margin-top: 3px; }
 
   .reco { border-radius: 12px; background: var(--safe-bg); padding: 10px 12px; font-size: 13px; margin-top: 6px; position: relative; z-index: 1; }
   .reco b { color: #1e7a4c; }
@@ -228,26 +260,27 @@
   .hgrid { display: grid; grid-template-columns: 58px repeat(24, 52px); width: max-content; }
   .hcell {
     display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px;
-    padding: 8px 2px; text-align: center; font-size: 13px; border-top: 1px solid #e4eef6; min-height: 40px;
+    padding: 8px 2px; text-align: center; font-size: 13px; border-top: 1px solid var(--table-border); min-height: 40px;
   }
   .hcell.label {
-    justify-content: center; align-items: flex-start; font-size: 12px; font-weight: 600; color: #5b7d9c;
-    background: #eef5fb; position: sticky; left: 0; z-index: 2; padding-left: 8px; border-top: 1px solid #dcecf7;
+    justify-content: center; align-items: flex-start; font-size: 12px; font-weight: 600; color: var(--sub-ink);
+    background: var(--table-th-bg); position: sticky; left: 0; z-index: 2; padding-left: 8px; border-top: 1px solid var(--table-border);
+    transition: var(--transition-theme);
   }
   .hgrid .hcell:nth-child(25n+1):first-child { border-top: none; }
   .hcell.hour { font-weight: 600; font-size: 13px; }
-  .hcell.hour.cur { color: var(--sky-deep); }
+  .hcell.hour.cur { color: var(--accent); }
   .hcell.past { opacity: .42; }
-  .hcell.cur { background: #fff8dc; }
+  .hcell.cur { background: var(--cur-bg); }
   .hcell .rt-badge { display: flex; flex-direction: column; align-items: center; gap: 1px; }
   .hcell .rt-badge b { font-size: 14px; }
-  .hgrid-date { font-size: 12px; color: #5b7d9c; margin-bottom: 8px; }
+  .hgrid-date { font-size: 12px; color: var(--sub-ink); margin-bottom: 8px; }
 
   table { width: 100%; border-collapse: collapse; font-size: 14px; }
-  th { background: #eef5fb; font-size: 12px; padding: 8px 4px; font-weight: 600; }
-  td { padding: 9px 4px; text-align: center; border-top: 1px solid #e4eef6; }
+  th { background: var(--table-th-bg); font-size: 12px; padding: 8px 4px; font-weight: 600; }
+  td { padding: 9px 4px; text-align: center; border-top: 1px solid var(--table-border); }
   tr.past { opacity: .42; }
-  tr.now-row td { background: #fff8dc; }
+  tr.now-row td { background: var(--cur-bg); }
   td.rt { font-size: 17px; font-weight: bold; }
   .lvl-chip {
     display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: bold;
@@ -260,14 +293,14 @@
   .lvl-4 { color: #8a6f0a; background: #faf0c8; }
   .lvl-5 { color: #b05a10; background: #fbe3c4; }
   .lvl-6 { color: #b3122f; background: #f6d2d8; }
-  .rt-0 { color: #7a2f96; } .rt-1 { color: #24509e; } .rt-2 { color: #1f7fae; } .rt-3 { color: #2e7d44; }
-  .rt-4 { color: #8a6f0a; } .rt-5 { color: #b05a10; } .rt-6 { color: #cc1030; }
+  .rt-0 { color: var(--rt-0); } .rt-1 { color: var(--rt-1); } .rt-2 { color: var(--rt-2); } .rt-3 { color: var(--rt-3); }
+  .rt-4 { color: var(--rt-4); } .rt-5 { color: var(--rt-5); } .rt-6 { color: var(--rt-6); }
 
   .legend { font-size: 12px; line-height: 1.9; }
   .legend .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 5px; }
-  .note { font-size: 11px; color: #6d8aa5; line-height: 1.7; margin-top: 10px; }
+  .note { font-size: 11px; color: var(--sub-ink); line-height: 1.7; margin-top: 10px; }
   .err { background: #ffe9e9; color: #a83232; padding: 10px 12px; border-radius: 12px; font-size: 13px; margin-bottom: 12px; display: none; }
-  #loading { text-align: center; padding: 30px 0 20px; font-size: 14px; color: #4a6a88; }
+  #loading { text-align: center; padding: 30px 0 20px; font-size: 14px; color: var(--sub-ink); }
   .paw { display: inline-block; animation: bounce 1s infinite; }
   @keyframes bounce { 0%,100% { transform: translateY(0);} 50% { transform: translateY(-6px);} }
   h2.sec { font-size: 14px; margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
@@ -301,14 +334,14 @@
     </div>
 
     <div class="card">
-      <h2 class="sec">🕐 時間別の気温・路面温度 <span id="hourGridDate" style="font-weight:normal;font-size:12px;color:#5b7d9c"></span></h2>
+      <h2 class="sec">🕐 時間別の気温・路面温度 <span id="hourGridDate" class="sub-ink" style="font-weight:normal;font-size:12px"></span></h2>
       <div class="hgrid-wrap">
         <div class="hgrid" id="hourGrid"></div>
       </div>
     </div>
 
     <div class="card">
-      <h2 class="sec">📈 路面温度の推移 <span id="chartDate" style="font-weight:normal;font-size:12px;color:#5b7d9c"></span></h2>
+      <h2 class="sec">📈 路面温度の推移 <span id="chartDate" class="sub-ink" style="font-weight:normal;font-size:12px"></span></h2>
       <svg class="chart" id="chartSvg" viewBox="0 0 520 260" role="img" aria-label="路面温度グラフ"></svg>
     </div>
 
@@ -583,6 +616,8 @@ function render() {
   buildTabs();
   const off = state.todayOffset + state.dayIdx * 24;
   const nowI = nowIndex();
+  state.night = !state.data.is_day[nowI];
+  document.documentElement.classList.toggle("night", state.night);
   renderNow(nowI);
   renderReco(nowI);
   renderChart(off, nowI);
@@ -599,7 +634,7 @@ function renderNow(nowI) {
   $("nowBox").innerHTML = `
     <div class="shiba-big">${shibaSVG(lv, 72)}</div>
     <div>
-      <div style="font-size:11px;color:#5b7d9c">いまの路面温度(推定)</div>
+      <div class="sub-ink" style="font-size:11px">いまの路面温度(推定)</div>
       <div class="temp rt-${lv}">${t}<small>℃</small></div>
       <div class="lvl rt-${lv}">${L.name}</div>
       <div class="advice">${L.advice}</div>
@@ -668,12 +703,13 @@ function renderChart(off, nowI) {
     if (t > yMin && t < yMax) s += `<text x="${mL + 4}" y="${Y(t) + 13}" font-size="11" fill="${col}" font-weight="bold">${name} 〜${t}℃</text>`;
   }
   // Y軸目盛
+  const axisCol = state.night ? "#9fc4ea" : "#5b7d9c";
   for (let t = yMin; t <= yMax; t += 5) {
-    s += `<text x="${mL - 5}" y="${Y(t) + 4}" font-size="11" fill="#5b7d9c" text-anchor="end">${t}</text>`;
+    s += `<text x="${mL - 5}" y="${Y(t) + 4}" font-size="11" fill="${axisCol}" text-anchor="end">${t}</text>`;
   }
   // X軸目盛
   for (let h = 0; h <= 23; h += 3) {
-    s += `<text x="${X(h)}" y="${H - 8}" font-size="11" fill="#5b7d9c" text-anchor="middle">${h}時</text>`;
+    s += `<text x="${X(h)}" y="${H - 8}" font-size="11" fill="${axisCol}" text-anchor="middle">${h}時</text>`;
   }
   // 現在時刻ライン
   if (nowI >= off && nowI < off + 24) {
