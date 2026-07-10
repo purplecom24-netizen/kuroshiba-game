@@ -711,6 +711,14 @@ function renderHourGrid(off, nowI) {
     }
   }
   $("hourGrid").innerHTML = html;
+
+  // 今日は現在時刻の1時間前の列が先頭(sticky列の右隣)に来るようスクロール、他の日は0時始まりに戻す
+  // (#appがまだdisplay:noneの場合があるため、表示確定後の次フレームまで遅らせる)
+  const targetIdx = off === state.todayOffset ? Math.max(0, (nowI - off) - 1) : 0;
+  requestAnimationFrame(() => {
+    const wrap = document.querySelector(".hgrid-wrap");
+    if (wrap) wrap.scrollLeft = targetIdx * 52;
+  });
 }
 
 /* ---------- プルリフレッシュ ---------- */
