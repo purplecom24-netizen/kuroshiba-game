@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>クロシバのおさんぽ予報 — 路面温度ナビ</title>
 <meta name="description" content="現在地のアスファルト路面温度を3日先まで全時間帯無料で予測。愛犬の肉球を守るおさんぽナビ。">
 <link rel="icon" type="image/png" sizes="32x32" href="img/favicon-32.png">
@@ -32,7 +32,7 @@
     color: var(--ink);
     min-height: 100vh;
   }
-  .wrap { max-width: 560px; margin: 0 auto; padding: 0 12px 60px; position: relative; z-index: 1; background: transparent; }
+  .wrap { max-width: 560px; margin: 0 auto; padding: 0 12px calc(96px + env(safe-area-inset-bottom)); position: relative; z-index: 1; background: transparent; }
 
   /* プルリフレッシュ(standaloneで開いた時に再読み込み手段がタスクキルしかない問題への対応) */
   #pullBar {
@@ -76,18 +76,46 @@
     .skyclouds .c { animation: none; }
   }
 
-  .loc-bar { display: flex; gap: 8px; margin-bottom: 10px; }
-  .loc-bar input {
-    flex: 1; border: 2px solid #bcdcf2; border-radius: 12px; padding: 10px 12px;
-    font-size: 14px; background: #fff; color: var(--ink); min-width: 0;
-  }
-  .loc-bar button {
-    border: 0; border-radius: 12px; padding: 10px 14px; font-size: 13px; font-weight: bold;
-    background: var(--sky-deep); color: #fff; cursor: pointer; white-space: nowrap;
-  }
-  .loc-bar button:active { transform: scale(.97); }
-  #locName { font-size: 15px; font-weight: bold; margin: 4px 2px 10px; }
+  #locName { font-size: 15px; font-weight: bold; margin: 10px 2px 10px; }
   #locName small { font-weight: normal; color: #5b7d9c; }
+
+  /* リキッドグラス調のフローティング検索ドック(画面下部に固定) */
+  #searchDock {
+    position: fixed; left: 0; right: 0; bottom: calc(14px + env(safe-area-inset-bottom));
+    display: flex; gap: 10px; padding: 0 14px; z-index: 20; pointer-events: none;
+    max-width: 560px; margin: 0 auto;
+  }
+  .glass {
+    background: rgba(255, 255, 255, .55);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    backdrop-filter: blur(18px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, .65);
+    box-shadow: 0 8px 28px rgba(30, 60, 90, .22), inset 0 1px 0 rgba(255, 255, 255, .6);
+  }
+  .glass-pill {
+    flex: 1; display: flex; align-items: center; gap: 8px; border-radius: 999px;
+    padding: 4px 6px 4px 16px; pointer-events: auto; min-width: 0;
+  }
+  .glass-pill .ic { font-size: 15px; opacity: .7; flex: none; }
+  .glass-pill input {
+    flex: 1; border: 0; background: transparent; font-size: 14px; color: var(--ink);
+    min-width: 0; padding: 9px 0;
+  }
+  .glass-pill input::placeholder { color: #6d87a0; }
+  .glass-pill input:focus { outline: none; }
+  .glass-pill button {
+    flex: none; border: 0; border-radius: 999px; width: 36px; height: 36px; font-size: 15px;
+    background: var(--sky-deep); color: #fff; cursor: pointer;
+  }
+  .glass-fab {
+    flex: none; width: 46px; height: 46px; border-radius: 50%; border: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 19px;
+    color: var(--sky-deep); cursor: pointer; pointer-events: auto;
+  }
+  .glass:active, .glass-fab:active { transform: scale(.96); }
+  @media (prefers-color-scheme: dark) {
+    .glass { background: rgba(30, 40, 55, .5); border-color: rgba(255,255,255,.14); }
+  }
 
   .card {
     background: #fff; border-radius: 18px; padding: 14px;
@@ -102,15 +130,92 @@
   .day-tabs button b { font-size: 14px; display: block; }
   .day-tabs button.on { background: var(--sky-deep); border-color: var(--sky-deep); color: #fff; }
 
-  .now-box { display: flex; align-items: center; gap: 14px; padding: 4px 4px 10px; }
+  .now-box { display: flex; align-items: center; gap: 14px; padding: 4px 4px 10px; position: relative; z-index: 1; }
   .now-box .shiba-big { width: 72px; height: 72px; flex: none; }
   .now-box .temp { font-size: 34px; font-weight: bold; line-height: 1; }
   .now-box .temp small { font-size: 15px; }
   .now-box .lvl { font-size: 16px; font-weight: bold; }
   .now-box .advice { font-size: 12px; color: #4a6a88; margin-top: 3px; }
 
-  .reco { border-radius: 12px; background: var(--safe-bg); padding: 10px 12px; font-size: 13px; margin-top: 6px; }
+  .reco { border-radius: 12px; background: var(--safe-bg); padding: 10px 12px; font-size: 13px; margin-top: 6px; position: relative; z-index: 1; }
   .reco b { color: #1e7a4c; }
+
+  /* 現在の天気に応じた背景モーション(晴れ/曇り/雨/雪/霧/雷) */
+  .weather-card { position: relative; overflow: hidden; transition: background 1s; }
+  .wscene { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; border-radius: inherit; }
+  .wscene .blob {
+    position: absolute; left: -55%; border-radius: 50%; will-change: transform;
+  }
+  @keyframes wdrift { from { transform: translateX(0); } to { transform: translateX(260vw); } }
+  @media (prefers-reduced-motion: reduce) {
+    .wscene .blob, .wscene .drop, .wscene .flake, .wscene .sun-core, .wscene .sun-ring { animation: none !important; }
+  }
+  /* 晴れ */
+  .wscene.k-sun { background: linear-gradient(155deg, #fff6d9, #ffedb0 55%, #fff); }
+  .wscene .sun-core {
+    position: absolute; top: 10px; right: 16px; width: 64px; height: 64px; border-radius: 50%;
+    background: radial-gradient(circle, #fff8dd, #ffd766 62%, transparent 74%);
+    animation: sun-pulse 3.4s ease-in-out infinite;
+  }
+  .wscene .sun-ring {
+    position: absolute; top: 10px; right: 16px; width: 64px; height: 64px; border-radius: 50%;
+    border: 2px solid rgba(255, 205, 90, .55); animation: sun-ring 3s ease-out infinite;
+  }
+  .wscene .sun-ring.r2 { animation-delay: 1.5s; }
+  @keyframes sun-pulse { 0%, 100% { transform: scale(1); opacity: .6; } 50% { transform: scale(1.14); opacity: .9; } }
+  @keyframes sun-ring { 0% { transform: scale(.65); opacity: .5; } 100% { transform: scale(1.7); opacity: 0; } }
+  /* 晴れ(夜) */
+  .wscene.k-clearnight { background: linear-gradient(155deg, #253357, #1b2745 55%, #fff); }
+  .wscene.k-clearnight .moon {
+    position: absolute; top: 12px; right: 18px; width: 46px; height: 46px; border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #fdfdf2, #e8e6cf 70%); box-shadow: 0 0 18px rgba(253,253,242,.55);
+  }
+  .wscene.k-clearnight .star {
+    position: absolute; width: 3px; height: 3px; background: #fff; border-radius: 50%;
+    animation: star-twinkle 2.4s ease-in-out infinite;
+  }
+  @keyframes star-twinkle { 0%, 100% { opacity: .25; } 50% { opacity: 1; } }
+  /* 曇り */
+  .wscene.k-cloud { background: linear-gradient(155deg, #e7eef4, #d7e2ea 55%, #fff); }
+  .wscene.k-cloud .blob { background: #c3d1dd; }
+  .wscene.k-cloud .b1 { width: 60%; height: 40px; top: 10%; opacity: .8; filter: blur(7px); animation: wdrift 30s linear infinite; }
+  .wscene.k-cloud .b2 { width: 46%; height: 30px; top: 42%; opacity: .6; filter: blur(9px); animation: wdrift 42s linear infinite; animation-delay: -12s; }
+  .wscene.k-cloud .b3 { width: 34%; height: 24px; top: 68%; opacity: .7; filter: blur(6px); animation: wdrift 24s linear infinite; animation-delay: -6s; }
+  /* 霧 */
+  .wscene.k-fog { background: linear-gradient(155deg, #eef1f2, #dfe4e6 55%, #fff); }
+  .wscene.k-fog .blob { background: #ccd3d6; }
+  .wscene.k-fog .b1 { width: 90%; height: 30px; top: 18%; opacity: .55; filter: blur(14px); animation: wdrift 46s linear infinite; }
+  .wscene.k-fog .b2 { width: 90%; height: 26px; top: 48%; opacity: .45; filter: blur(16px); animation: wdrift 60s linear infinite; animation-delay: -20s; }
+  .wscene.k-fog .b3 { width: 90%; height: 22px; top: 76%; opacity: .5; filter: blur(12px); animation: wdrift 36s linear infinite; animation-delay: -10s; }
+  /* 雨 */
+  .wscene.k-rain { background: linear-gradient(155deg, #d9e3ec, #c2d1de 55%, #fff); }
+  .wscene.k-rain .blob { background: #9fb0bf; }
+  .wscene.k-rain .b1 { width: 70%; height: 26px; top: 4%; opacity: .8; filter: blur(6px); animation: wdrift 26s linear infinite; }
+  .wscene .drop {
+    position: absolute; top: -12%; width: 2px; height: 14px; border-radius: 2px;
+    background: linear-gradient(to bottom, rgba(90, 130, 165, 0), rgba(90, 130, 165, .65));
+    animation: rain-fall linear infinite;
+  }
+  @keyframes rain-fall { from { transform: translate(0, -20%); opacity: .9; } to { transform: translate(10px, 480%); opacity: .35; } }
+  /* 雪 */
+  .wscene.k-snow { background: linear-gradient(155deg, #eef3f6, #dee9ef 55%, #fff); }
+  .wscene.k-snow .blob { background: #c9d6de; }
+  .wscene.k-snow .b1 { width: 60%; height: 30px; top: 6%; opacity: .7; filter: blur(7px); animation: wdrift 36s linear infinite; }
+  .wscene .flake {
+    position: absolute; top: -8%; border-radius: 50%; background: #fff;
+    animation: snow-fall linear infinite;
+  }
+  @keyframes snow-fall { from { transform: translate(0, -10%); opacity: .95; } to { transform: translate(18px, 480%); opacity: .5; } }
+  /* 雷雨 */
+  .wscene.k-storm { background: linear-gradient(155deg, #9aa7b6, #7c8b9c 55%, #fff); }
+  .wscene.k-storm .blob { background: #6d7c8d; }
+  .wscene.k-storm .b1 { width: 75%; height: 30px; top: 4%; opacity: .85; filter: blur(6px); animation: wdrift 20s linear infinite; }
+  .wscene.k-storm .flash {
+    position: absolute; inset: 0; background: #fff; opacity: 0; animation: storm-flash 5.5s ease-out infinite;
+  }
+  @keyframes storm-flash {
+    0%, 92%, 100% { opacity: 0; } 93% { opacity: .8; } 94% { opacity: .1; } 95% { opacity: .6; } 96% { opacity: 0; }
+  }
 
   svg.chart { width: 100%; height: auto; display: block; }
 
@@ -178,11 +283,6 @@
     <div class="sub">アスファルト路面温度ナビ 〜愛犬の肉球を守ろう〜</div>
   </header>
 
-  <div class="loc-bar">
-    <input id="searchBox" type="search" placeholder="地名で検索(例: 千葉市美浜区)" enterkeyhint="search">
-    <button id="searchBtn">検索</button>
-    <button id="geoBtn">📍 現在地</button>
-  </div>
   <div id="locName"></div>
   <div class="err" id="errBox"></div>
   <div id="loading"><span class="paw">🐾</span> よみこみ中…</div>
@@ -190,7 +290,8 @@
   <div id="app" style="display:none">
     <div class="day-tabs" id="dayTabs"></div>
 
-    <div class="card">
+    <div class="card weather-card" id="nowCard">
+      <div class="wscene" id="wscene" aria-hidden="true"></div>
       <div class="now-box" id="nowBox"></div>
       <div class="reco" id="recoBox"></div>
     </div>
@@ -216,6 +317,15 @@
       </div>
     </div>
   </div>
+</div>
+
+<div id="searchDock">
+  <div class="glass glass-pill">
+    <span class="ic">🔍</span>
+    <input id="searchBox" type="search" placeholder="地名で検索(例: 千葉市美浜区)" enterkeyhint="search">
+    <button id="searchBtn" aria-label="検索">➜</button>
+  </div>
+  <button id="geoBtn" class="glass glass-fab" aria-label="現在地">📍</button>
 </div>
 
 <script>
@@ -260,6 +370,71 @@ function wxEmoji(code, isDay) {
   if (code <= 82) return "🌧️";
   if (code <= 86) return "🌨️";
   return "⛈️";
+}
+
+/* ---------- 天気コード → シーン種別 ---------- */
+function weatherKind(code, isDay) {
+  if (code <= 2) return isDay ? "sun" : "clearnight";
+  if (code === 3) return "cloud";
+  if (code === 45 || code === 48) return "fog";
+  if (code <= 67) return "rain";
+  if (code <= 77) return "snow";
+  if (code <= 82) return "rain";
+  if (code <= 86) return "snow";
+  return "storm";
+}
+
+/* ---------- 天気モーション背景の生成 ---------- */
+function buildWeatherScene(kind) {
+  if (kind === "sun") {
+    return `<span class="sun-core"></span><span class="sun-ring"></span><span class="sun-ring r2"></span>`;
+  }
+  if (kind === "clearnight") {
+    let stars = "";
+    // 疑似乱数(seed固定)で毎回同じ配置にする
+    let seed = 42;
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    for (let i = 0; i < 14; i++) {
+      const x = (rnd() * 92 + 2).toFixed(1), y = (rnd() * 80 + 4).toFixed(1), d = (rnd() * 2).toFixed(1);
+      stars += `<span class="star" style="left:${x}%;top:${y}%;animation-delay:${d}s"></span>`;
+    }
+    return `<span class="moon"></span>${stars}`;
+  }
+  if (kind === "cloud") {
+    return `<span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>`;
+  }
+  if (kind === "fog") {
+    return `<span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>`;
+  }
+  if (kind === "rain" || kind === "storm") {
+    let drops = "";
+    let seed = 7;
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    for (let i = 0; i < 16; i++) {
+      const x = (rnd() * 100).toFixed(1), dur = (0.55 + rnd() * 0.4).toFixed(2), delay = (-rnd() * 1).toFixed(2);
+      drops += `<span class="drop" style="left:${x}%;animation-duration:${dur}s;animation-delay:${delay}s"></span>`;
+    }
+    const flash = kind === "storm" ? `<span class="flash"></span>` : "";
+    return `<span class="blob b1"></span>${drops}${flash}`;
+  }
+  if (kind === "snow") {
+    let flakes = "";
+    let seed = 19;
+    const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+    for (let i = 0; i < 14; i++) {
+      const x = (rnd() * 100).toFixed(1), size = (3 + rnd() * 3).toFixed(1), dur = (2.4 + rnd() * 1.6).toFixed(2), delay = (-rnd() * 3).toFixed(2);
+      flakes += `<span class="flake" style="left:${x}%;width:${size}px;height:${size}px;animation-duration:${dur}s;animation-delay:${delay}s"></span>`;
+    }
+    return `<span class="blob b1"></span>${flakes}`;
+  }
+  return "";
+}
+
+function renderWeatherScene(code, isDay) {
+  const kind = weatherKind(code, isDay);
+  const el = $("wscene");
+  el.className = "wscene k-" + kind;
+  el.innerHTML = buildWeatherScene(kind);
 }
 
 /* ---------- 路面温度推定モデル ----------
@@ -425,6 +600,7 @@ function renderNow(nowI) {
       <div class="lvl rt-${lv}">${L.name}</div>
       <div class="advice">${L.advice}</div>
     </div>`;
+  renderWeatherScene(state.data.weather_code[nowI], state.data.is_day[nowI]);
 }
 
 function renderReco(nowI) {
