@@ -48,25 +48,33 @@
   header {
     background: linear-gradient(var(--sky-deep), var(--sky));
     border-radius: 0 0 24px 24px;
-    padding: 18px 16px 26px;
+    padding: 18px 16px 30px;
     margin: 0 -12px 14px;
     color: #fff;
     text-align: center;
     position: relative;
     overflow: hidden;
   }
-  header .clouds {
-    position: absolute; inset: auto 0 -12px 0; height: 36px;
-    background:
-      radial-gradient(circle 26px at 12% 100%, #fff 98%, transparent),
-      radial-gradient(circle 34px at 30% 110%, #fff 98%, transparent),
-      radial-gradient(circle 24px at 48% 100%, #fff 98%, transparent),
-      radial-gradient(circle 32px at 66% 110%, #fff 98%, transparent),
-      radial-gradient(circle 26px at 85% 100%, #fff 98%, transparent),
-      radial-gradient(circle 20px at 99% 105%, #fff 98%, transparent);
-  }
+  header h1, header .sub { position: relative; z-index: 1; }
   header h1 { font-size: 21px; letter-spacing: 1px; display: flex; align-items: center; justify-content: center; gap: 10px; }
   header .sub { font-size: 12px; opacity: .92; margin-top: 4px; }
+
+  /* Apple純正天気アプリ風の、ゆっくり流れる雲レイヤー(視差っぽく速度・ぼかしを変える) */
+  .skyclouds { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; }
+  .skyclouds .c {
+    position: absolute; left: -55%; border-radius: 50%; background: #fff; will-change: transform;
+  }
+  .skyclouds .c1 { width: 62%; height: 46px; top: 4%;  opacity: .30; filter: blur(9px);  animation: cloud-drift 52s linear infinite; }
+  .skyclouds .c2 { width: 46%; height: 34px; top: 42%; opacity: .22; filter: blur(12px); animation: cloud-drift 74s linear infinite; animation-delay: -18s; }
+  .skyclouds .c3 { width: 34%; height: 26px; top: 68%; opacity: .40; filter: blur(6px);  animation: cloud-drift 38s linear infinite; animation-delay: -9s; }
+  .skyclouds .c4 { width: 26%; height: 20px; top: 20%; opacity: .18; filter: blur(10px); animation: cloud-drift 63s linear infinite; animation-delay: -30s; }
+  @keyframes cloud-drift {
+    from { transform: translateX(0); }
+    to   { transform: translateX(260vw); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skyclouds .c { animation: none; }
+  }
 
   .loc-bar { display: flex; gap: 8px; margin-bottom: 10px; }
   .loc-bar input {
@@ -160,9 +168,14 @@
 <div id="pullBar"><span id="pullIcon">↓</span><span id="pullText">下にひっぱって更新</span></div>
 <div class="wrap" id="pageWrap">
   <header>
+    <div class="skyclouds" aria-hidden="true">
+      <span class="c c1"></span>
+      <span class="c c2"></span>
+      <span class="c c3"></span>
+      <span class="c c4"></span>
+    </div>
     <h1><span id="headShiba"></span>クロシバのおさんぽ予報</h1>
     <div class="sub">アスファルト路面温度ナビ 〜愛犬の肉球を守ろう〜</div>
-    <div class="clouds"></div>
   </header>
 
   <div class="loc-bar">
