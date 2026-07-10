@@ -220,7 +220,11 @@
   svg.chart { width: 100%; height: auto; display: block; }
 
   /* 横スクロールの時間別グリッド(天気アプリ風) */
-  .hgrid-wrap { overflow-x: auto; margin: 0 -14px; padding: 0 14px 2px; -webkit-overflow-scrolling: touch; }
+  .hgrid-wrap {
+    overflow-x: auto; margin: 0 -14px; padding: 0 14px; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; -ms-overflow-style: none;
+  }
+  .hgrid-wrap::-webkit-scrollbar { display: none; }
   .hgrid { display: grid; grid-template-columns: 58px repeat(24, 52px); width: max-content; }
   .hcell {
     display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 2px;
