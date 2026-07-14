@@ -1,6 +1,12 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+<script>
+  (function () {
+    var h = new Date().getHours();
+    if (h < 5 || h >= 19) document.documentElement.classList.add("night");
+  })();
+</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>クロシバのおさんぽ予報 — 路面温度ナビ</title>
@@ -507,19 +513,48 @@ function showErr(msg) { const e = $("errBox"); e.textContent = msg; e.style.disp
 function clearErr() { $("errBox").style.display = "none"; }
 
 /* ---------- データ取得 ---------- */
+async function fetchHourly(model) {
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${state.lat}&longitude=${state.lon}` +
+    `&hourly=temperature_2m,shortwave_radiation,wind_speed_10m,precipitation,cloud_cover,weather_code,is_day` +
+    `&timezone=Asia%2FTokyo&past_days=1&forecast_days=4` +
+    (model ? `&models=${model}` : "");
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("forecast " + res.status);
+  return (await res.json()).hourly;
+}
+
+// 必須変数が十分に埋まっているか(モデルによっては一部変数が提供されずnullになる)
+function usableHourly(h) {
+  if (!h || !h.time || !h.time.length) return false;
+  const ok = a => Array.isArray(a) && a.filter(v => v != null).length >= a.length * 0.95;
+  return ok(h.temperature_2m) && ok(h.shortwave_radiation) && ok(h.wind_speed_10m) && ok(h.precipitation);
+}
+
+// 残った欠損は前の時間の値で埋める
+function fillGaps(h) {
+  for (const k of ["temperature_2m", "shortwave_radiation", "wind_speed_10m", "precipitation", "cloud_cover", "weather_code", "is_day"]) {
+    const a = h[k];
+    if (!a) continue;
+    for (let i = 0; i < a.length; i++) if (a[i] == null) a[i] = i > 0 ? a[i - 1] : 0;
+  }
+}
+
 async function loadForecast() {
   clearErr();
   $("loading").style.display = "block";
   $("app").style.display = "none";
   try {
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${state.lat}&longitude=${state.lon}` +
-      `&hourly=temperature_2m,shortwave_radiation,wind_speed_10m,precipitation,cloud_cover,weather_code,is_day` +
-      `&timezone=Asia%2FTokyo&past_days=1&forecast_days=4`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error("forecast " + res.status);
-    const json = await res.json();
-    state.data = json.hourly;
-    state.surface = estimateSurface(json.hourly);
+    // 日本国内の精度を優先して気象庁メソモデル(MSM)系のjma_seamlessをまず試し、
+    // 欠損・エラー時は標準のモデルブレンド(best_match)にフォールバック
+    let hourly = null;
+    try {
+      const h = await fetchHourly("jma_seamless");
+      if (usableHourly(h)) hourly = h;
+    } catch (e) { /* フォールバックへ */ }
+    if (!hourly) hourly = await fetchHourly("");
+    fillGaps(hourly);
+    state.data = hourly;
+    state.surface = estimateSurface(hourly);
     // past_days=1 なので配列の先頭24時間は昨日(モデルのウォームアップ用)。今日 = index 24〜
     state.todayOffset = 24;
     state.dayIdx = 0;
