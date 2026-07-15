@@ -356,7 +356,8 @@
       <div class="legend" id="legendBox"></div>
       <div class="note">
         ※ 路面温度は Open-Meteo の気象予報(気温・日射量・風速・降水)から、アスファルトの蓄熱・放熱を考慮した簡易モデルで推定した値です。実測値ではありません。日なた・風通し・路面の状態により実際とは差が出ます。おさんぽ前には必ず手で路面を確認してください。<br>
-        気象データ: <a href="https://open-meteo.com/">Open-Meteo</a> / 地名検索: Open-Meteo Geocoding / 住所表示: OpenStreetMap Nominatim
+        気象データ: <a href="https://open-meteo.com/">Open-Meteo</a> / 実測補正: 気象庁アメダス / 地名検索: Open-Meteo Geocoding / 住所表示: OpenStreetMap Nominatim<br>
+        <span id="verInfo"></span>
       </div>
     </div>
   </div>
@@ -505,7 +506,8 @@ function estimateSurface(hourly) {
 }
 
 /* ---------- 状態 ---------- */
-const state = { lat: 35.6345, lon: 140.0824, name: "", data: null, surface: null, dayIdx: 0, todayOffset: 0 };
+const APP_VERSION = "v2026.07.14";
+const state = { lat: 35.6345, lon: 140.0824, name: "", data: null, surface: null, dayIdx: 0, todayOffset: 0, model: "", bias: null };
 const $ = id => document.getElementById(id);
 const DOWJ = ["日","月","火","水","木","金","土"];
 
@@ -539,22 +541,77 @@ function fillGaps(h) {
   }
 }
 
+// 気象庁アメダスの最寄り観測所から最新の実測気温を取得(取れなければnull)
+async function fetchAmedasObs() {
+  try {
+    const tTxt = (await (await fetch("https://www.jma.go.jp/bosai/amedas/data/latest_time.txt")).text()).trim();
+    const m = tTxt.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/);
+    if (!m) return null;
+    const [, y, mo, da, hh, mi] = m;
+    const table = await (await fetch("https://www.jma.go.jp/bosai/amedas/const/amedastable.json")).json();
+    const cands = Object.entries(table).map(([id, s]) => {
+      const lat = s.lat[0] + s.lat[1] / 60, lon = s.lon[0] + s.lon[1] / 60;
+      const dy = lat - state.lat, dx = (lon - state.lon) * Math.cos(state.lat * Math.PI / 180);
+      return { id, name: s.kjName, d: dy * dy + dx * dx };
+    }).sort((a, b) => a.d - b.d).slice(0, 5);
+    const block = String(Math.floor(+hh / 3) * 3).padStart(2, "0");
+    const key = `${y}${mo}${da}${hh}${mi}00`;
+    for (const c of cands) {
+      try {
+        const pt = await (await fetch(`https://www.jma.go.jp/bosai/amedas/data/point/${c.id}/${y}${mo}${da}_${block}.json`)).json();
+        const rec = pt[key];
+        if (rec && rec.temp && rec.temp[1] === 0 && typeof rec.temp[0] === "number") {
+          return { temp: rec.temp[0], timeStr: `${y}-${mo}-${da}T${hh}:${mi}`, name: c.name };
+        }
+      } catch (e) { /* 温度が取れない観測所(雨量計のみ等)は次の候補へ */ }
+    }
+  } catch (e) { /* 実測が取れなくても予報だけで動作する */ }
+  return null;
+}
+
+// 実測と予報のズレを、観測時刻を中心に±24時間で減衰させながら気温系列へ反映
+function applyAmedasCorrection(hourly, obs) {
+  if (!obs) return null;
+  const hourKey = obs.timeStr.slice(0, 13);
+  const idx = hourly.time.findIndex(t => t.slice(0, 13) === hourKey);
+  if (idx < 0) return null;
+  let delta = obs.temp - hourly.temperature_2m[idx];
+  if (!isFinite(delta)) return null;
+  delta = Math.max(-6, Math.min(6, delta)); // 観測所と地点の環境差などの異常値ガード
+  for (let i = 0; i < hourly.temperature_2m.length; i++) {
+    const w = Math.max(0, 1 - Math.abs(i - idx) / 24);
+    hourly.temperature_2m[i] = Math.round((hourly.temperature_2m[i] + delta * w) * 10) / 10;
+  }
+  return { delta, name: obs.name };
+}
+
+function renderVerInfo() {
+  const bias = state.bias
+    ? `アメダス(${state.bias.name})実測補正 ${state.bias.delta >= 0 ? "+" : ""}${state.bias.delta.toFixed(1)}℃`
+    : "実測補正なし";
+  $("verInfo").textContent = `${APP_VERSION} / 予報モデル: ${state.model} / ${bias}`;
+}
+
 async function loadForecast() {
   clearErr();
   $("loading").style.display = "block";
   $("app").style.display = "none";
   try {
+    const amedasP = fetchAmedasObs(); // 予報取得と並行して実測値も取得
     // 日本国内の精度を優先して気象庁メソモデル(MSM)系のjma_seamlessをまず試し、
     // 欠損・エラー時は標準のモデルブレンド(best_match)にフォールバック
     let hourly = null;
+    state.model = "気象庁MSM";
     try {
       const h = await fetchHourly("jma_seamless");
       if (usableHourly(h)) hourly = h;
     } catch (e) { /* フォールバックへ */ }
-    if (!hourly) hourly = await fetchHourly("");
+    if (!hourly) { hourly = await fetchHourly(""); state.model = "標準"; }
     fillGaps(hourly);
+    state.bias = applyAmedasCorrection(hourly, await amedasP);
     state.data = hourly;
     state.surface = estimateSurface(hourly);
+    renderVerInfo();
     // past_days=1 なので配列の先頭24時間は昨日(モデルのウォームアップ用)。今日 = index 24〜
     state.todayOffset = 24;
     state.dayIdx = 0;
