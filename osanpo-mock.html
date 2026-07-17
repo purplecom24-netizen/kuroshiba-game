@@ -206,6 +206,44 @@
   :root.night .ht-0 { color: #7be0a0; } :root.night .ht-1 { color: #ffd75e; }
   :root.night .ht-2 { color: #ffab5e; } :root.night .ht-3 { color: #ff96a6; }
   :root.night .ht-4 { color: #ff8080; }
+  .heat-help {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; margin-left: 5px; padding: 0;
+    border: 1.4px solid var(--sub-ink); border-radius: 50%; background: none;
+    color: var(--sub-ink); font-size: 11px; font-weight: 700; cursor: pointer; vertical-align: 1px;
+  }
+
+  /* モーダル */
+  .modal-bg {
+    position: fixed; inset: 0; z-index: 60; background: rgba(10, 20, 40, .5);
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-bg[hidden] { display: none; }
+  .modal {
+    position: relative; background: var(--card-bg); color: var(--ink);
+    border-radius: 18px; padding: 18px 16px 16px; max-width: 420px; width: 100%;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 12px 40px rgba(0, 0, 0, .35);
+    animation: modal-pop .22s ease;
+  }
+  @keyframes modal-pop { from { transform: scale(.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h3 { font-size: 16px; margin-bottom: 10px; padding-right: 34px; }
+  .modal p { font-size: 13px; line-height: 1.75; margin-bottom: 10px; }
+  .modal-x {
+    position: absolute; top: 10px; right: 10px; width: 30px; height: 30px;
+    border: none; border-radius: 50%; background: var(--tab-bg); color: var(--sub-ink);
+    font-size: 14px; line-height: 1; cursor: pointer;
+  }
+  .modal-done {
+    display: block; width: 100%; margin-top: 4px; padding: 11px; border: none;
+    border-radius: 12px; background: var(--accent); color: #fff;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .wbgt-table { width: 100%; border-collapse: collapse; margin: 2px 0 12px; font-size: 12px; }
+  .wbgt-table td { padding: 6px 8px; border-top: 1px solid var(--table-border); }
+  .wbgt-table tr:last-child td { border-bottom: 1px solid var(--table-border); }
+  .wbgt-table td:first-child { font-weight: 700; white-space: nowrap; }
+  .wbgt-table td:nth-child(2) { white-space: nowrap; color: var(--sub-ink); }
 
   /* 現在の天気に応じた背景モーション(晴れ/曇り/雨/雪/霧/雷) */
   .weather-card { position: relative; overflow: hidden; transition: background 1s; }
@@ -404,6 +442,23 @@
     <button id="searchBtn" aria-label="検索">➜</button>
   </div>
   <button id="geoBtn" class="glass glass-fab" aria-label="現在地">📍</button>
+</div>
+
+<div id="wbgtModal" class="modal-bg" hidden onclick="if(event.target===this)closeWbgtModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wbgtModalTitle">
+    <button class="modal-x" aria-label="閉じる" onclick="closeWbgtModal()">✕</button>
+    <h3 id="wbgtModalTitle">🌡 暑さ指数(WBGT)ってなに?</h3>
+    <p>気温・湿度・日差し・風の4つから計算する、熱中症予防の国際的なものさしです。ポイントは<b>気温より湿度を重視</b>していること。湿度が高いと、犬がハァハァ(パンティング)しても水分が蒸発せず、体の熱を逃がせなくなるからです。</p>
+    <table class="wbgt-table">
+      <tr><td class="ht-0">安心</td><td>〜19</td><td>ふつうにおさんぽOK</td></tr>
+      <tr><td class="ht-1">注意</td><td>19〜23</td><td>お水を持って、様子を見ながら</td></tr>
+      <tr><td class="ht-2">警戒</td><td>23〜26</td><td>短め・日かげ中心に</td></tr>
+      <tr><td class="ht-3">厳重警戒</td><td>26〜29</td><td>日中は避けて朝晩に</td></tr>
+      <tr><td class="ht-4">危険</td><td>29〜</td><td>おさんぽ中止</td></tr>
+    </table>
+    <p>環境省の熱中症予防情報と同じ計算式(小野・登内式)で算出しています。区分は人間の運動時基準より2℃きびしめ — 犬は汗をかけないうえ、地面に近くて照り返しも受けやすいためです。</p>
+    <button class="modal-done" onclick="closeWbgtModal()">とじる</button>
+  </div>
 </div>
 
 <script>
@@ -777,7 +832,7 @@ function renderHeat(nowI) {
   const sun = sr >= 600 ? "日差し強" : sr >= 250 ? "日差し中" : sr >= 30 ? "日差し弱" : "日差しなし";
   $("heatBox").innerHTML = `
     <div class="heat-top">
-      <div><span class="heat-level ht-${lv}">${L.name}</span><span class="heat-wbgt">暑さ指数 ${Math.round(w)}</span></div>
+      <div><span class="heat-level ht-${lv}">${L.name}</span><span class="heat-wbgt">暑さ指数 ${Math.round(w)}</span><button class="heat-help" onclick="openWbgtModal()" aria-label="暑さ指数の説明を見る">?</button></div>
       <div class="heat-chips"><span>💧 ${rh}%</span><span>🌬 ${ws}m/s</span><span>☀️ ${sun}</span></div>
     </div>
     <div class="heat-meter">
@@ -993,6 +1048,11 @@ function renderHourGrid(off, nowI) {
     }
   });
 })();
+
+/* ---------- 暑さ指数モーダル ---------- */
+function openWbgtModal() { $("wbgtModal").hidden = false; document.body.style.overflow = "hidden"; }
+function closeWbgtModal() { $("wbgtModal").hidden = true; document.body.style.overflow = ""; }
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeWbgtModal(); });
 
 /* ---------- 起動 ---------- */
 $("geoBtn").onclick = () => useGeolocation(false);
