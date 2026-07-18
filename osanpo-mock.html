@@ -168,12 +168,17 @@
   .day-tabs button b { font-size: 14px; display: block; }
   .day-tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-  .now-box { display: flex; align-items: center; gap: 14px; padding: 4px 4px 10px; position: relative; z-index: 1; }
+  .now-box { padding: 4px 4px 10px; position: relative; z-index: 1; }
+  .now-main { display: flex; align-items: center; gap: 14px; }
   .now-box .shiba-big { width: 72px; height: 72px; flex: none; }
-  .now-box .temp { font-size: 34px; font-weight: bold; line-height: 1; }
-  .now-box .temp small { font-size: 15px; }
-  .now-box .lvl { font-size: 16px; font-weight: bold; }
+  .now-box .verdict { font-size: 30px; font-weight: 800; line-height: 1.15; }
   .now-box .advice { font-size: 12px; color: var(--ink); margin-top: 3px; }
+  .now-tiles { display: flex; gap: 8px; margin-top: 12px; }
+  .stile { flex: 1; background: rgba(255, 255, 255, .55); border-radius: 12px; padding: 7px 4px 6px; text-align: center; }
+  :root.night .stile { background: rgba(16, 28, 52, .55); }
+  .stile-l { font-size: 10px; color: var(--sub-ink); margin-bottom: 2px; white-space: nowrap; }
+  .stile-v { font-size: 18px; font-weight: 800; line-height: 1; }
+  .stile-v small { font-size: 11px; font-weight: 700; }
 
   .reco { border-radius: 12px; background: var(--safe-bg); color: #23405c; padding: 10px 12px; font-size: 13px; margin-top: 6px; position: relative; z-index: 1; }
   .reco b { color: #1e7a4c; }
@@ -427,7 +432,7 @@
       <h2 class="sec">🐕 レベルのめやす</h2>
       <div class="legend" id="legendBox"></div>
       <div class="note">
-        ※ 路面温度は Open-Meteo の気象予報(気温・日射量・風速・降水)から、アスファルトの蓄熱・放熱を考慮した簡易モデルで推定した値です。実測値ではありません。日なた・風通し・路面の状態により実際とは差が出ます。おさんぽ前には必ず手で路面を確認してください。<br>
+        ※ 路面温度は Open-Meteo の気象予報(気温・日射量・風速・降水)から、アスファルトの蓄熱・放熱を考慮した簡易モデルで推定した値です。実測値ではありません。日かげ路面・日かげの芝生は日射の効き方を弱めた参考値で、木かげの濃さや芝の状態によりさらに差が出ます。おさんぽ前には必ず手で路面を確認してください。<br>
         気象データ: <a href="https://open-meteo.com/">Open-Meteo</a> / 実測補正: 気象庁アメダス / 地名検索: Open-Meteo Geocoding / 住所表示: OpenStreetMap Nominatim<br>
         <span id="verInfo"></span>
       </div>
@@ -576,14 +581,16 @@ function renderWeatherScene(code, isDay) {
    - 雨で路面がぬれると蒸発冷却で大きく低下
    - 蓄熱遅れは1時間ごとの指数移動平均で表現(夕方も熱い/朝は冷えている)
 */
-function estimateSurface(hourly) {
+// kRad = 日射の効き方の係数。1 = 日なたアスファルト、
+// 0.18 = 日かげアスファルト(散乱光のみ)、0.06 = 日かげの芝生(散乱光+蒸散冷却+蓄熱小)
+function estimateSurface(hourly, kRad = 1) {
   const n = hourly.time.length;
   const out = new Array(n);
   let lag = 0;
   for (let i = 0; i < n; i++) {
-    const ghi = hourly.shortwave_radiation[i] ?? 0;      // W/m2
-    const wind = hourly.wind_speed_10m[i] ?? 0;          // km/h
-    const rain = hourly.precipitation[i] ?? 0;           // mm
+    const ghi = (hourly.shortwave_radiation[i] ?? 0) * kRad; // W/m2
+    const wind = hourly.wind_speed_10m[i] ?? 0;              // km/h
+    const rain = hourly.precipitation[i] ?? 0;               // mm
     let inst = 0.028 * ghi / (1 + 0.04 * wind);
     if (rain > 0.2) inst *= 0.25;
     lag += 0.5 * (inst - lag);
@@ -595,7 +602,7 @@ function estimateSurface(hourly) {
 }
 
 /* ---------- 状態 ---------- */
-const APP_VERSION = "v2026.07.15";
+const APP_VERSION = "v2026.07.15b";
 const state = { lat: 35.6345, lon: 140.0824, name: "", data: null, surface: null, dayIdx: 0, todayOffset: 0, model: "", bias: null };
 const $ = id => document.getElementById(id);
 const DOWJ = ["日","月","火","水","木","金","土"];
@@ -700,6 +707,8 @@ async function loadForecast() {
     state.bias = applyAmedasCorrection(hourly, await amedasP);
     state.data = hourly;
     state.surface = estimateSurface(hourly);
+    state.surfShade = estimateSurface(hourly, 0.18);
+    state.surfGrass = estimateSurface(hourly, 0.06);
     renderVerInfo();
     // past_days=1 なので配列の先頭24時間は昨日(モデルのウォームアップ用)。今日 = index 24〜
     state.todayOffset = 24;
@@ -859,18 +868,42 @@ function render() {
   $("hourGridDate").textContent = `${+d[1]}/${+d[2]}`;
 }
 
+// 路面レベル(0〜6)→ おさんぽ判定の深刻度(0〜4)。寒い側も暑い側も「歩けるか」で揃える
+const ROAD_SEV = [2, 1, 0, 0, 2, 3, 4];
+const VERDICTS = ["おさんぽ日和", "ちょい注意", "警戒", "厳重警戒", "おさんぽ中止"];
+
 function renderNow(nowI) {
   const t = Math.round(state.surface[nowI]);
   const lv = levelOf(t);
-  const L = LEVELS[lv];
+  const w = calcWBGT(nowI);
+  const hlv = w == null || !isFinite(w) ? null : heatLevelOf(w);
+  // 路面(肉球やけど・冷え)と熱中症の両軸で悪い方を総合判定にする
+  const roadSev = ROAD_SEV[lv];
+  const heatSev = hlv == null ? -1 : hlv;
+  const sev = Math.max(roadSev, heatSev);
+  const heatBinding = heatSev > roadSev;
+  const iconLv = heatBinding ? [3, 3, 4, 5, 6][sev] : lv;
+  const reason = sev === 0 ? "" : heatBinding ? "熱中症リスク" : lv <= 2 ? "路面の冷え" : "路面の熱さ";
+  const advice = heatBinding ? HEAT_LEVELS[hlv].advice : LEVELS[lv].advice;
+  const sevCls = heatBinding ? `ht-${hlv}` : `rt-${lv}`;
+  const tiles = [
+    ["☀️ 日なた路面", state.surface[nowI]],
+    ["🌳 日かげ路面", state.surfShade[nowI]],
+    ["🌿 日かげの芝生", state.surfGrass[nowI]],
+  ].map(([label, v]) => {
+    const tv = Math.round(v);
+    return `<div class="stile"><div class="stile-l">${label}</div><div class="stile-v rt-${levelOf(tv)}">${tv}<small>℃</small></div></div>`;
+  }).join("");
   $("nowBox").innerHTML = `
-    <div class="shiba-big">${shibaSVG(lv, 72)}</div>
-    <div>
-      <div class="sub-ink" style="font-size:11px">いまの路面温度(推定)</div>
-      <div class="temp rt-${lv}">${t}<small>℃</small></div>
-      <div class="lvl rt-${lv}">${L.name}</div>
-      <div class="advice">${L.advice}</div>
-    </div>`;
+    <div class="now-main">
+      <div class="shiba-big">${shibaSVG(iconLv, 72)}</div>
+      <div>
+        <div class="sub-ink" style="font-size:11px">いまのおさんぽ判定${reason ? `(${reason})` : ""}</div>
+        <div class="verdict ${sevCls}">${VERDICTS[sev]}</div>
+        <div class="advice">${advice}</div>
+      </div>
+    </div>
+    <div class="now-tiles">${tiles}</div>`;
   renderWeatherScene(state.data.weather_code[nowI], state.data.is_day[nowI]);
 }
 
@@ -881,7 +914,9 @@ function renderReco(nowI) {
   for (let i = nowI; i < Math.min(nowI + 24, state.surface.length); i++) {
     const h = +state.data.time[i].slice(11, 13);
     const lvI = levelOf(state.surface[i]);
-    const ok = lvI >= 2 && lvI <= 3 && h >= 5 && h <= 22;
+    const wI = calcWBGT(i);
+    const heatOk = wI == null || !isFinite(wI) || heatLevelOf(wI) <= 1; // 熱中症リスクが「注意」以下
+    const ok = lvI >= 2 && lvI <= 3 && heatOk && h >= 5 && h <= 22;
     if (ok && start < 0) start = i;
     if ((!ok || i === nowI + 23) && start >= 0) {
       slots.push([start, ok ? i : i - 1]);
