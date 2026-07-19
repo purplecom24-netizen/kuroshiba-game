@@ -499,8 +499,8 @@ const VERDICTS = [
   { name: "おさんぽ日和", icon: 3, desc: "路面も暑さも問題なし。いっぱい歩こう!" },
   { name: "ちょい注意",   icon: 4, desc: "冷えまたは暑さに軽めの注意。お水を持って様子を見ながら" },
   { name: "警戒",         icon: 5, desc: "短め・日かげ中心に。ハァハァしたらすぐ休憩" },
-  { name: "厳重警戒",     icon: 5, desc: "条件付きなら可: 朝晩の涼しい時間に、日かげ&芝生ルートで短時間だけ" },
-  { name: "おさんぽ中止", icon: 6, desc: "路面も暑さも危険レベル。涼しいお部屋で遊ぼう" },
+  { name: "厳重警戒",     icon: 6, desc: "条件付きなら可: 朝晩の涼しい時間に、日かげ&芝生ルートで短時間だけ" },
+  { name: "おさんぽ中止", icon: 7, desc: "路面も暑さも危険レベル。涼しいお部屋で遊ぼう" },
 ];
 
 // 路面(肉球)軸と熱中症軸の合成。両方とも赤(最悪)のときだけ「中止」、
@@ -907,7 +907,8 @@ function render() {
 function renderNow(nowI) {
   const v = verdictAt(nowI);
   const { sev, lv, hlv, heatBinding, conditional } = v;
-  const iconLv = heatBinding || conditional ? [3, 4, 5, 5, 6][sev] : lv;
+  // 中止は禁止マークの専用バッジ(lv7)、条件付き厳重警戒は旧中止顔(lv6)
+  const iconLv = sev === 4 ? 7 : heatBinding || conditional ? [3, 4, 5, 6][sev] : lv;
   const reason = sev === 0 ? "" : sev === 4 ? "路面×熱中症" : heatBinding ? "熱中症リスク" : lv <= 2 ? "路面の冷え" : "路面の熱さ";
   let advice;
   if (sev === 4) advice = VERDICTS[4].desc;
