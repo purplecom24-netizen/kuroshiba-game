@@ -429,7 +429,7 @@
     </div>
 
     <div class="card">
-      <h2 class="sec">🐕 レベルのめやす</h2>
+      <h2 class="sec">🐕 おさんぽ判定のめやす</h2>
       <div class="legend" id="legendBox"></div>
       <div class="note">
         ※ 路面温度は Open-Meteo の気象予報(気温・日射量・風速・降水)から、アスファルトの蓄熱・放熱を考慮した簡易モデルで推定した値です。実測値ではありません。日かげ路面・日かげの芝生は日射の効き方を弱めた参考値で、木かげの濃さや芝の状態によりさらに差が出ます。おさんぽ前には必ず手で路面を確認してください。<br>
@@ -459,7 +459,7 @@
       <tr><td class="ht-1">注意</td><td>19〜23</td><td>お水を持って、様子を見ながら</td></tr>
       <tr><td class="ht-2">警戒</td><td>23〜26</td><td>短め・日かげ中心に</td></tr>
       <tr><td class="ht-3">厳重警戒</td><td>26〜29</td><td>日中は避けて朝晩に</td></tr>
-      <tr><td class="ht-4">危険</td><td>29〜</td><td>おさんぽ中止</td></tr>
+      <tr><td class="ht-4">危険</td><td>29〜</td><td>歩くなら朝晩ほんの数分だけ</td></tr>
     </table>
     <p>環境省の熱中症予防情報と同じ計算式(小野・登内式)で算出しています。区分は人間の運動時基準より2℃きびしめ — 犬は汗をかけないうえ、地面に近くて照り返しも受けやすいためです。</p>
     <button class="modal-done" onclick="closeWbgtModal()">とじる</button>
@@ -490,11 +490,47 @@ const LEVELS = [
 function levelOf(t) {
   return t >= 45 ? 6 : t >= 40 ? 5 : t >= 30 ? 4 : t >= 17 ? 3 : t >= 8 ? 2 : t >= 0 ? 1 : 0;
 }
-document.getElementById("legendBox").innerHTML = LEVELS.map((L, i) =>
-  `<div style="display:flex;align-items:center;gap:9px;margin:5px 0">
-     <span style="flex:none;line-height:0">${shibaSVG(i, 28)}</span>
-     <span><b>${L.name}</b>(${L.range}):${L.advice}</span>
-   </div>`).join("");
+
+/* ---------- おさんぽ判定(5段階) ---------- */
+// 路面レベル(0〜6)→ 判定深刻度(0〜4)。寒い側も暑い側も「歩けるか」で揃える
+const ROAD_SEV = [2, 1, 0, 0, 2, 3, 4];
+const SEV_CLS = ["rt-3", "ht-1", "ht-2", "ht-3", "ht-4"];
+const VERDICTS = [
+  { name: "おさんぽ日和", icon: 3, desc: "路面も暑さも問題なし。いっぱい歩こう!" },
+  { name: "ちょい注意",   icon: 4, desc: "冷えまたは暑さに軽めの注意。お水を持って様子を見ながら" },
+  { name: "警戒",         icon: 5, desc: "短め・日かげ中心に。ハァハァしたらすぐ休憩" },
+  { name: "厳重警戒",     icon: 5, desc: "条件付きなら可: 朝晩の涼しい時間に、日かげ&芝生ルートで短時間だけ" },
+  { name: "おさんぽ中止", icon: 6, desc: "路面も暑さも危険レベル。涼しいお部屋で遊ぼう" },
+];
+
+// 路面(肉球)軸と熱中症軸の合成。両方とも赤(最悪)のときだけ「中止」、
+// 片方だけ赤なら条件付きの「厳重警戒」に緩和する
+function verdictAt(i) {
+  const lv = levelOf(state.surface[i]);
+  const w = calcWBGT(i);
+  const hlv = w == null || !isFinite(w) ? null : heatLevelOf(w);
+  const roadSev = ROAD_SEV[lv];
+  const heatSev = hlv == null ? -1 : hlv;
+  const heatBinding = heatSev > roadSev;
+  let sev, conditional = false;
+  if (roadSev >= 4 && heatSev >= 4) sev = 4;
+  else {
+    sev = Math.max(roadSev, heatSev, 0);
+    if (sev >= 4) { sev = 3; conditional = true; }
+  }
+  return { sev, lv, hlv, heatBinding, conditional };
+}
+
+document.getElementById("legendBox").innerHTML =
+  VERDICTS.map((V, i) =>
+    `<div style="display:flex;align-items:center;gap:9px;margin:5px 0">
+       <span style="flex:none;line-height:0">${shibaSVG(V.icon, 28)}</span>
+       <span><b class="${SEV_CLS[i]}">${V.name}</b>:${V.desc}</span>
+     </div>`).join("") +
+  `<div style="font-size:11px;color:var(--sub-ink);margin-top:8px;line-height:1.8">
+     路面が冷たい側(冬場)の判定では青系の顔になります。<br>
+     温度の色分け: <span class="rt-3">17〜30℃ 快適</span> / <span class="rt-4">30〜40 警戒</span> / <span class="rt-5">40〜45 危険</span> / <span class="rt-6">45℃〜 中止</span> / <span class="rt-2">8〜17 ひんやり</span> / <span class="rt-1">0〜8 ひりひり</span> / <span class="rt-0">0℃未満 じんじん</span>
+   </div>`;
 
 /* ---------- 天気コード → 絵文字 ---------- */
 function wxEmoji(code, isDay) {
@@ -602,7 +638,7 @@ function estimateSurface(hourly, kRad = 1) {
 }
 
 /* ---------- 状態 ---------- */
-const APP_VERSION = "v2026.07.15b";
+const APP_VERSION = "v2026.07.16";
 const state = { lat: 35.6345, lon: 140.0824, name: "", data: null, surface: null, dayIdx: 0, todayOffset: 0, model: "", bias: null };
 const $ = id => document.getElementById(id);
 const DOWJ = ["日","月","火","水","木","金","土"];
@@ -808,7 +844,7 @@ const HEAT_LEVELS = [
   { name: "注意",     bg: "#faf0c8", advice: "こまめにお水を。舌を出してハァハァが続いたら、日かげでひと休みしよう" },
   { name: "警戒",     bg: "#fbe3c4", advice: "短め&日かげルートで。ハァハァが激しくなったらすぐ休憩+お水" },
   { name: "厳重警戒", bg: "#f6d2d8", advice: "日中のおさんぽは避けて朝晩に。歩くなら日かげを数分だけ、保冷グッズがあると安心" },
-  { name: "危険",     bg: "#f8c9d3", advice: "おさんぽは中止!涼しいお部屋で過ごそう。ぐったり・大量のよだれはすぐ病院へ" },
+  { name: "危険",     bg: "#f8c9d3", advice: "熱中症の危険大。歩くなら朝晩にほんの数分。ぐったり・大量のよだれはすぐ病院へ" },
 ];
 
 // 小野・登内(2014)の近似式によるWBGT(暑さ指数)。SRはkW/m²、風はm/s
@@ -868,24 +904,18 @@ function render() {
   $("hourGridDate").textContent = `${+d[1]}/${+d[2]}`;
 }
 
-// 路面レベル(0〜6)→ おさんぽ判定の深刻度(0〜4)。寒い側も暑い側も「歩けるか」で揃える
-const ROAD_SEV = [2, 1, 0, 0, 2, 3, 4];
-const VERDICTS = ["おさんぽ日和", "ちょい注意", "警戒", "厳重警戒", "おさんぽ中止"];
-
 function renderNow(nowI) {
-  const t = Math.round(state.surface[nowI]);
-  const lv = levelOf(t);
-  const w = calcWBGT(nowI);
-  const hlv = w == null || !isFinite(w) ? null : heatLevelOf(w);
-  // 路面(肉球やけど・冷え)と熱中症の両軸で悪い方を総合判定にする
-  const roadSev = ROAD_SEV[lv];
-  const heatSev = hlv == null ? -1 : hlv;
-  const sev = Math.max(roadSev, heatSev);
-  const heatBinding = heatSev > roadSev;
-  const iconLv = heatBinding ? [3, 3, 4, 5, 6][sev] : lv;
-  const reason = sev === 0 ? "" : heatBinding ? "熱中症リスク" : lv <= 2 ? "路面の冷え" : "路面の熱さ";
-  const advice = heatBinding ? HEAT_LEVELS[hlv].advice : LEVELS[lv].advice;
-  const sevCls = heatBinding ? `ht-${hlv}` : `rt-${lv}`;
+  const v = verdictAt(nowI);
+  const { sev, lv, hlv, heatBinding, conditional } = v;
+  const iconLv = heatBinding || conditional ? [3, 4, 5, 5, 6][sev] : lv;
+  const reason = sev === 0 ? "" : sev === 4 ? "路面×熱中症" : heatBinding ? "熱中症リスク" : lv <= 2 ? "路面の冷え" : "路面の熱さ";
+  let advice;
+  if (sev === 4) advice = VERDICTS[4].desc;
+  else if (conditional) advice = heatBinding
+    ? "熱中症の危険大。歩くなら朝晩の涼しい時間に日かげを数分だけ。お水必携!"
+    : "日なた路面は火傷級。日かげ&芝生ルートの超短時間なら可。出る前に手の甲でチェック!";
+  else advice = heatBinding ? HEAT_LEVELS[hlv].advice : LEVELS[lv].advice;
+  const sevCls = SEV_CLS[sev];
   const tiles = [
     ["☀️ 日なた路面", state.surface[nowI]],
     ["🌳 日かげ路面", state.surfShade[nowI]],
@@ -899,7 +929,7 @@ function renderNow(nowI) {
       <div class="shiba-big">${shibaSVG(iconLv, 72)}</div>
       <div>
         <div class="sub-ink" style="font-size:11px">いまのおさんぽ判定${reason ? `(${reason})` : ""}</div>
-        <div class="verdict ${sevCls}">${VERDICTS[sev]}</div>
+        <div class="verdict ${sevCls}">${VERDICTS[sev].name}</div>
         <div class="advice">${advice}</div>
       </div>
     </div>
@@ -913,10 +943,8 @@ function renderReco(nowI) {
   let start = -1;
   for (let i = nowI; i < Math.min(nowI + 24, state.surface.length); i++) {
     const h = +state.data.time[i].slice(11, 13);
-    const lvI = levelOf(state.surface[i]);
-    const wI = calcWBGT(i);
-    const heatOk = wI == null || !isFinite(wI) || heatLevelOf(wI) <= 1; // 熱中症リスクが「注意」以下
-    const ok = lvI >= 2 && lvI <= 3 && heatOk && h >= 5 && h <= 22;
+    const ok = verdictAt(i).sev <= 1 && h >= 5 && h <= 22; // 判定が「ちょい注意」以下の時間帯
+
     if (ok && start < 0) start = i;
     if ((!ok || i === nowI + 23) && start >= 0) {
       slots.push([start, ok ? i : i - 1]);
@@ -933,7 +961,7 @@ function renderReco(nowI) {
     $("recoBox").innerHTML = `🐾 <b>おすすめおさんぽタイム:</b> ${txt}`;
     $("recoBox").style.background = "var(--safe-bg)";
   } else {
-    $("recoBox").innerHTML = `💦 この24時間はおさんぽ向きの路面温度(8〜30℃)の時間帯が見つかりませんでした。出る前に必ず手で路面を確認してね。`;
+    $("recoBox").innerHTML = `💦 この24時間は判定「ちょい注意」以下の時間帯が見つかりませんでした。歩くなら朝晩の涼しい時間に日かげ&芝生で短時間。出る前に必ず手で路面を確認してね。`;
     $("recoBox").style.background = "var(--warn-bg)";
   }
 }
@@ -1002,8 +1030,7 @@ function renderHourGrid(off, nowI) {
     { label: "気温", cls: "", cell: i => `${Math.round(state.data.temperature_2m[i])}℃` },
     { label: "路面温度", cls: "", cell: i => {
         const t = Math.round(state.surface[i]);
-        const lv = levelOf(t);
-        return `<span class="rt-badge rt-${lv}">${shibaSVG(lv, 22)}<b>${t}℃</b></span>`;
+        return `<b class="rt-${levelOf(t)}">${t}℃</b>`;
       } },
   ];
   let html = "";
