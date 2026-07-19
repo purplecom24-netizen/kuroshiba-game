@@ -168,15 +168,87 @@
   .day-tabs button b { font-size: 14px; display: block; }
   .day-tabs button.on { background: var(--accent); border-color: var(--accent); color: #fff; }
 
-  .now-box { display: flex; align-items: center; gap: 14px; padding: 4px 4px 10px; position: relative; z-index: 1; }
+  .now-box { padding: 4px 4px 10px; position: relative; z-index: 1; }
+  .now-main { display: flex; align-items: center; gap: 14px; }
   .now-box .shiba-big { width: 72px; height: 72px; flex: none; }
-  .now-box .temp { font-size: 34px; font-weight: bold; line-height: 1; }
-  .now-box .temp small { font-size: 15px; }
-  .now-box .lvl { font-size: 16px; font-weight: bold; }
+  .now-box .verdict { font-size: 30px; font-weight: 800; line-height: 1.15; }
   .now-box .advice { font-size: 12px; color: var(--ink); margin-top: 3px; }
+  .now-tiles { display: flex; gap: 8px; margin-top: 12px; }
+  .stile { flex: 1; background: rgba(255, 255, 255, .55); border-radius: 12px; padding: 7px 4px 6px; text-align: center; }
+  :root.night .stile { background: rgba(16, 28, 52, .55); }
+  .stile-l { font-size: 10px; color: var(--sub-ink); margin-bottom: 2px; white-space: nowrap; }
+  .stile-v { font-size: 18px; font-weight: 800; line-height: 1; }
+  .stile-v small { font-size: 11px; font-weight: 700; }
 
   .reco { border-radius: 12px; background: var(--safe-bg); color: #23405c; padding: 10px 12px; font-size: 13px; margin-top: 6px; position: relative; z-index: 1; }
   .reco b { color: #1e7a4c; }
+
+  /* 犬の熱中症チェック */
+  .heat-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 8px; flex-wrap: wrap; }
+  .heat-level { font-size: 24px; font-weight: 800; line-height: 1; }
+  .heat-wbgt { font-size: 11px; color: var(--sub-ink); margin-left: 7px; }
+  .heat-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .heat-chips span {
+    background: var(--tab-bg); border: 1px solid var(--tab-border); border-radius: 999px;
+    padding: 3px 9px; font-size: 11px; color: var(--sub-ink); white-space: nowrap;
+  }
+  .heat-meter { position: relative; display: flex; gap: 4px; margin: 16px 0 6px; height: 12px; }
+  .heat-meter i { flex: 1; border-radius: 6px; opacity: .26; transition: opacity .3s; }
+  .heat-meter i.on { opacity: 1; }
+  .heat-meter .m0 { background: #3fae7a; } .heat-meter .m1 { background: #e5c245; }
+  .heat-meter .m2 { background: #f29a4a; } .heat-meter .m3 { background: #e2697a; }
+  .heat-meter .m4 { background: #c9264a; }
+  .heat-paw {
+    position: absolute; top: -15px; font-size: 13px; transform: translateX(-50%);
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,.3)); transition: left .4s ease;
+  }
+  .heat-scale { display: flex; gap: 4px; margin-bottom: 12px; }
+  .heat-scale span { flex: 1; text-align: center; font-size: 10px; color: var(--sub-ink); opacity: .7; }
+  .heat-scale span.on { font-weight: 700; opacity: 1; }
+  .heat-advice { border-radius: 12px; padding: 10px 12px; font-size: 13px; color: #23405c; line-height: 1.65; }
+  .ht-0 { color: #2e7d44; } .ht-1 { color: #8a6f0a; } .ht-2 { color: #b05a10; }
+  .ht-3 { color: #c23a52; } .ht-4 { color: #b3122f; }
+  :root.night .ht-0 { color: #7be0a0; } :root.night .ht-1 { color: #ffd75e; }
+  :root.night .ht-2 { color: #ffab5e; } :root.night .ht-3 { color: #ff96a6; }
+  :root.night .ht-4 { color: #ff8080; }
+  .heat-help {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 17px; height: 17px; margin-left: 5px; padding: 0;
+    border: 1.4px solid var(--sub-ink); border-radius: 50%; background: none;
+    color: var(--sub-ink); font-size: 11px; font-weight: 700; cursor: pointer; vertical-align: 1px;
+  }
+
+  /* モーダル */
+  .modal-bg {
+    position: fixed; inset: 0; z-index: 60; background: rgba(10, 20, 40, .5);
+    backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+    display: flex; align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-bg[hidden] { display: none; }
+  .modal {
+    position: relative; background: var(--card-bg); color: var(--ink);
+    border-radius: 18px; padding: 18px 16px 16px; max-width: 420px; width: 100%;
+    max-height: 82vh; overflow-y: auto; box-shadow: 0 12px 40px rgba(0, 0, 0, .35);
+    animation: modal-pop .22s ease;
+  }
+  @keyframes modal-pop { from { transform: scale(.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .modal h3 { font-size: 16px; margin-bottom: 10px; padding-right: 34px; }
+  .modal p { font-size: 13px; line-height: 1.75; margin-bottom: 10px; }
+  .modal-x {
+    position: absolute; top: 10px; right: 10px; width: 30px; height: 30px;
+    border: none; border-radius: 50%; background: var(--tab-bg); color: var(--sub-ink);
+    font-size: 14px; line-height: 1; cursor: pointer;
+  }
+  .modal-done {
+    display: block; width: 100%; margin-top: 4px; padding: 11px; border: none;
+    border-radius: 12px; background: var(--accent); color: #fff;
+    font-size: 14px; font-weight: 700; cursor: pointer;
+  }
+  .wbgt-table { width: 100%; border-collapse: collapse; margin: 2px 0 12px; font-size: 12px; }
+  .wbgt-table td { padding: 6px 8px; border-top: 1px solid var(--table-border); }
+  .wbgt-table tr:last-child td { border-bottom: 1px solid var(--table-border); }
+  .wbgt-table td:first-child { font-weight: 700; white-space: nowrap; }
+  .wbgt-table td:nth-child(2) { white-space: nowrap; color: var(--sub-ink); }
 
   /* 現在の天気に応じた背景モーション(晴れ/曇り/雨/雪/霧/雷) */
   .weather-card { position: relative; overflow: hidden; transition: background 1s; }
@@ -339,6 +411,11 @@
       <div class="reco" id="recoBox"></div>
     </div>
 
+    <div class="card" id="heatCard" style="display:none">
+      <h2 class="sec">🐶 犬の熱中症チェック <span class="sub-ink" style="font-weight:normal;font-size:12px">いま</span></h2>
+      <div id="heatBox"></div>
+    </div>
+
     <div class="card">
       <h2 class="sec">🕐 時間別の気温・路面温度 <span id="hourGridDate" class="sub-ink" style="font-weight:normal;font-size:12px"></span></h2>
       <div class="hgrid-wrap">
@@ -355,7 +432,7 @@
       <h2 class="sec">🐕 レベルのめやす</h2>
       <div class="legend" id="legendBox"></div>
       <div class="note">
-        ※ 路面温度は Open-Meteo の気象予報(気温・日射量・風速・降水)から、アスファルトの蓄熱・放熱を考慮した簡易モデルで推定した値です。実測値ではありません。日なた・風通し・路面の状態により実際とは差が出ます。おさんぽ前には必ず手で路面を確認してください。<br>
+        ※ 路面温度は Open-Meteo の気象予報(気温・日射量・風速・降水)から、アスファルトの蓄熱・放熱を考慮した簡易モデルで推定した値です。実測値ではありません。日かげ路面・日かげの芝生は日射の効き方を弱めた参考値で、木かげの濃さや芝の状態によりさらに差が出ます。おさんぽ前には必ず手で路面を確認してください。<br>
         気象データ: <a href="https://open-meteo.com/">Open-Meteo</a> / 実測補正: 気象庁アメダス / 地名検索: Open-Meteo Geocoding / 住所表示: OpenStreetMap Nominatim<br>
         <span id="verInfo"></span>
       </div>
@@ -370,6 +447,23 @@
     <button id="searchBtn" aria-label="検索">➜</button>
   </div>
   <button id="geoBtn" class="glass glass-fab" aria-label="現在地">📍</button>
+</div>
+
+<div id="wbgtModal" class="modal-bg" hidden onclick="if(event.target===this)closeWbgtModal()">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="wbgtModalTitle">
+    <button class="modal-x" aria-label="閉じる" onclick="closeWbgtModal()">✕</button>
+    <h3 id="wbgtModalTitle">🌡 暑さ指数(WBGT)ってなに?</h3>
+    <p>気温・湿度・日差し・風の4つから計算する、熱中症予防の国際的なものさしです。ポイントは<b>気温より湿度を重視</b>していること。湿度が高いと、犬がハァハァ(パンティング)しても水分が蒸発せず、体の熱を逃がせなくなるからです。</p>
+    <table class="wbgt-table">
+      <tr><td class="ht-0">安心</td><td>〜19</td><td>ふつうにおさんぽOK</td></tr>
+      <tr><td class="ht-1">注意</td><td>19〜23</td><td>お水を持って、様子を見ながら</td></tr>
+      <tr><td class="ht-2">警戒</td><td>23〜26</td><td>短め・日かげ中心に</td></tr>
+      <tr><td class="ht-3">厳重警戒</td><td>26〜29</td><td>日中は避けて朝晩に</td></tr>
+      <tr><td class="ht-4">危険</td><td>29〜</td><td>おさんぽ中止</td></tr>
+    </table>
+    <p>環境省の熱中症予防情報と同じ計算式(小野・登内式)で算出しています。区分は人間の運動時基準より2℃きびしめ — 犬は汗をかけないうえ、地面に近くて照り返しも受けやすいためです。</p>
+    <button class="modal-done" onclick="closeWbgtModal()">とじる</button>
+  </div>
 </div>
 
 <script>
@@ -487,14 +581,16 @@ function renderWeatherScene(code, isDay) {
    - 雨で路面がぬれると蒸発冷却で大きく低下
    - 蓄熱遅れは1時間ごとの指数移動平均で表現(夕方も熱い/朝は冷えている)
 */
-function estimateSurface(hourly) {
+// kRad = 日射の効き方の係数。1 = 日なたアスファルト、
+// 0.18 = 日かげアスファルト(散乱光のみ)、0.06 = 日かげの芝生(散乱光+蒸散冷却+蓄熱小)
+function estimateSurface(hourly, kRad = 1) {
   const n = hourly.time.length;
   const out = new Array(n);
   let lag = 0;
   for (let i = 0; i < n; i++) {
-    const ghi = hourly.shortwave_radiation[i] ?? 0;      // W/m2
-    const wind = hourly.wind_speed_10m[i] ?? 0;          // km/h
-    const rain = hourly.precipitation[i] ?? 0;           // mm
+    const ghi = (hourly.shortwave_radiation[i] ?? 0) * kRad; // W/m2
+    const wind = hourly.wind_speed_10m[i] ?? 0;              // km/h
+    const rain = hourly.precipitation[i] ?? 0;               // mm
     let inst = 0.028 * ghi / (1 + 0.04 * wind);
     if (rain > 0.2) inst *= 0.25;
     lag += 0.5 * (inst - lag);
@@ -506,7 +602,7 @@ function estimateSurface(hourly) {
 }
 
 /* ---------- 状態 ---------- */
-const APP_VERSION = "v2026.07.14";
+const APP_VERSION = "v2026.07.15b";
 const state = { lat: 35.6345, lon: 140.0824, name: "", data: null, surface: null, dayIdx: 0, todayOffset: 0, model: "", bias: null };
 const $ = id => document.getElementById(id);
 const DOWJ = ["日","月","火","水","木","金","土"];
@@ -517,7 +613,7 @@ function clearErr() { $("errBox").style.display = "none"; }
 /* ---------- データ取得 ---------- */
 async function fetchHourly(model) {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${state.lat}&longitude=${state.lon}` +
-    `&hourly=temperature_2m,shortwave_radiation,wind_speed_10m,precipitation,cloud_cover,weather_code,is_day` +
+    `&hourly=temperature_2m,relative_humidity_2m,shortwave_radiation,wind_speed_10m,precipitation,cloud_cover,weather_code,is_day` +
     `&timezone=Asia%2FTokyo&past_days=1&forecast_days=4` +
     (model ? `&models=${model}` : "");
   const res = await fetch(url);
@@ -529,12 +625,12 @@ async function fetchHourly(model) {
 function usableHourly(h) {
   if (!h || !h.time || !h.time.length) return false;
   const ok = a => Array.isArray(a) && a.filter(v => v != null).length >= a.length * 0.95;
-  return ok(h.temperature_2m) && ok(h.shortwave_radiation) && ok(h.wind_speed_10m) && ok(h.precipitation);
+  return ok(h.temperature_2m) && ok(h.relative_humidity_2m) && ok(h.shortwave_radiation) && ok(h.wind_speed_10m) && ok(h.precipitation);
 }
 
 // 残った欠損は前の時間の値で埋める
 function fillGaps(h) {
-  for (const k of ["temperature_2m", "shortwave_radiation", "wind_speed_10m", "precipitation", "cloud_cover", "weather_code", "is_day"]) {
+  for (const k of ["temperature_2m", "relative_humidity_2m", "shortwave_radiation", "wind_speed_10m", "precipitation", "cloud_cover", "weather_code", "is_day"]) {
     const a = h[k];
     if (!a) continue;
     for (let i = 0; i < a.length; i++) if (a[i] == null) a[i] = i > 0 ? a[i - 1] : 0;
@@ -611,6 +707,8 @@ async function loadForecast() {
     state.bias = applyAmedasCorrection(hourly, await amedasP);
     state.data = hourly;
     state.surface = estimateSurface(hourly);
+    state.surfShade = estimateSurface(hourly, 0.18);
+    state.surfGrass = estimateSurface(hourly, 0.06);
     renderVerInfo();
     // past_days=1 なので配列の先頭24時間は昨日(モデルのウォームアップ用)。今日 = index 24〜
     state.todayOffset = 24;
@@ -704,6 +802,56 @@ function nowIndex() {
 }
 
 /* ---------- 描画 ---------- */
+/* ---------- 犬の熱中症チェック(WBGT) ---------- */
+const HEAT_LEVELS = [
+  { name: "安心",     bg: "#ddf3e7", advice: "熱中症の心配はほぼなし。お水を持って、楽しくおさんぽ!" },
+  { name: "注意",     bg: "#faf0c8", advice: "こまめにお水を。舌を出してハァハァが続いたら、日かげでひと休みしよう" },
+  { name: "警戒",     bg: "#fbe3c4", advice: "短め&日かげルートで。ハァハァが激しくなったらすぐ休憩+お水" },
+  { name: "厳重警戒", bg: "#f6d2d8", advice: "日中のおさんぽは避けて朝晩に。歩くなら日かげを数分だけ、保冷グッズがあると安心" },
+  { name: "危険",     bg: "#f8c9d3", advice: "おさんぽは中止!涼しいお部屋で過ごそう。ぐったり・大量のよだれはすぐ病院へ" },
+];
+
+// 小野・登内(2014)の近似式によるWBGT(暑さ指数)。SRはkW/m²、風はm/s
+function calcWBGT(i) {
+  const h = state.data;
+  if (!h.relative_humidity_2m) return null;
+  const Ta = h.temperature_2m[i], RH = h.relative_humidity_2m[i];
+  if (Ta == null || RH == null) return null;
+  const SR = (h.shortwave_radiation[i] || 0) / 1000;
+  const WS = (h.wind_speed_10m[i] || 0) / 3.6;
+  return 0.735 * Ta + 0.0374 * RH + 0.00292 * Ta * RH + 7.619 * SR - 4.557 * SR * SR - 0.0572 * WS - 4.064;
+}
+
+// 犬は汗をかけずパンティングでしか放熱できないため、人間の運動時基準より2℃厳しめの区分
+function heatLevelOf(w) { return w < 19 ? 0 : w < 23 ? 1 : w < 26 ? 2 : w < 29 ? 3 : 4; }
+
+function renderHeat(nowI) {
+  const w = calcWBGT(nowI);
+  if (w == null || !isFinite(w)) { $("heatCard").style.display = "none"; return; }
+  $("heatCard").style.display = "block";
+  const lv = heatLevelOf(w);
+  const L = HEAT_LEVELS[lv];
+  // 肉球マーカーの位置: 各レベル帯の中でのWBGTの位置を連続的に反映
+  const bounds = [15, 19, 23, 26, 29, 33];
+  const frac = Math.max(0, Math.min(1, (w - bounds[lv]) / (bounds[lv + 1] - bounds[lv])));
+  const pos = ((lv + frac) / 5) * 100;
+  const rh = Math.round(state.data.relative_humidity_2m[nowI]);
+  const ws = Math.round(state.data.wind_speed_10m[nowI] / 3.6 * 10) / 10;
+  const sr = state.data.shortwave_radiation[nowI] || 0;
+  const sun = sr >= 600 ? "日差し強" : sr >= 250 ? "日差し中" : sr >= 30 ? "日差し弱" : "日差しなし";
+  $("heatBox").innerHTML = `
+    <div class="heat-top">
+      <div><span class="heat-level ht-${lv}">${L.name}</span><span class="heat-wbgt">暑さ指数 ${Math.round(w)}</span><button class="heat-help" onclick="openWbgtModal()" aria-label="暑さ指数の説明を見る">?</button></div>
+      <div class="heat-chips"><span>💧 ${rh}%</span><span>🌬 ${ws}m/s</span><span>☀️ ${sun}</span></div>
+    </div>
+    <div class="heat-meter">
+      ${[0, 1, 2, 3, 4].map(i => `<i class="m${i}${i === lv ? " on" : ""}"></i>`).join("")}
+      <div class="heat-paw" style="left:${pos.toFixed(1)}%">🐾</div>
+    </div>
+    <div class="heat-scale">${HEAT_LEVELS.map((l, i) => `<span class="${i === lv ? `on ht-${i}` : ""}">${l.name}</span>`).join("")}</div>
+    <div class="heat-advice" style="background:${L.bg}">${L.advice}</div>`;
+}
+
 function render() {
   buildTabs();
   const off = state.todayOffset + state.dayIdx * 24;
@@ -711,6 +859,7 @@ function render() {
   state.night = !state.data.is_day[nowI];
   document.documentElement.classList.toggle("night", state.night);
   renderNow(nowI);
+  renderHeat(nowI);
   renderReco(nowI);
   renderChart(off, nowI);
   renderHourGrid(off, nowI);
@@ -719,18 +868,42 @@ function render() {
   $("hourGridDate").textContent = `${+d[1]}/${+d[2]}`;
 }
 
+// 路面レベル(0〜6)→ おさんぽ判定の深刻度(0〜4)。寒い側も暑い側も「歩けるか」で揃える
+const ROAD_SEV = [2, 1, 0, 0, 2, 3, 4];
+const VERDICTS = ["おさんぽ日和", "ちょい注意", "警戒", "厳重警戒", "おさんぽ中止"];
+
 function renderNow(nowI) {
   const t = Math.round(state.surface[nowI]);
   const lv = levelOf(t);
-  const L = LEVELS[lv];
+  const w = calcWBGT(nowI);
+  const hlv = w == null || !isFinite(w) ? null : heatLevelOf(w);
+  // 路面(肉球やけど・冷え)と熱中症の両軸で悪い方を総合判定にする
+  const roadSev = ROAD_SEV[lv];
+  const heatSev = hlv == null ? -1 : hlv;
+  const sev = Math.max(roadSev, heatSev);
+  const heatBinding = heatSev > roadSev;
+  const iconLv = heatBinding ? [3, 3, 4, 5, 6][sev] : lv;
+  const reason = sev === 0 ? "" : heatBinding ? "熱中症リスク" : lv <= 2 ? "路面の冷え" : "路面の熱さ";
+  const advice = heatBinding ? HEAT_LEVELS[hlv].advice : LEVELS[lv].advice;
+  const sevCls = heatBinding ? `ht-${hlv}` : `rt-${lv}`;
+  const tiles = [
+    ["☀️ 日なた路面", state.surface[nowI]],
+    ["🌳 日かげ路面", state.surfShade[nowI]],
+    ["🌿 日かげの芝生", state.surfGrass[nowI]],
+  ].map(([label, v]) => {
+    const tv = Math.round(v);
+    return `<div class="stile"><div class="stile-l">${label}</div><div class="stile-v rt-${levelOf(tv)}">${tv}<small>℃</small></div></div>`;
+  }).join("");
   $("nowBox").innerHTML = `
-    <div class="shiba-big">${shibaSVG(lv, 72)}</div>
-    <div>
-      <div class="sub-ink" style="font-size:11px">いまの路面温度(推定)</div>
-      <div class="temp rt-${lv}">${t}<small>℃</small></div>
-      <div class="lvl rt-${lv}">${L.name}</div>
-      <div class="advice">${L.advice}</div>
-    </div>`;
+    <div class="now-main">
+      <div class="shiba-big">${shibaSVG(iconLv, 72)}</div>
+      <div>
+        <div class="sub-ink" style="font-size:11px">いまのおさんぽ判定${reason ? `(${reason})` : ""}</div>
+        <div class="verdict ${sevCls}">${VERDICTS[sev]}</div>
+        <div class="advice">${advice}</div>
+      </div>
+    </div>
+    <div class="now-tiles">${tiles}</div>`;
   renderWeatherScene(state.data.weather_code[nowI], state.data.is_day[nowI]);
 }
 
@@ -741,7 +914,9 @@ function renderReco(nowI) {
   for (let i = nowI; i < Math.min(nowI + 24, state.surface.length); i++) {
     const h = +state.data.time[i].slice(11, 13);
     const lvI = levelOf(state.surface[i]);
-    const ok = lvI >= 2 && lvI <= 3 && h >= 5 && h <= 22;
+    const wI = calcWBGT(i);
+    const heatOk = wI == null || !isFinite(wI) || heatLevelOf(wI) <= 1; // 熱中症リスクが「注意」以下
+    const ok = lvI >= 2 && lvI <= 3 && heatOk && h >= 5 && h <= 22;
     if (ok && start < 0) start = i;
     if ((!ok || i === nowI + 23) && start >= 0) {
       slots.push([start, ok ? i : i - 1]);
@@ -908,6 +1083,11 @@ function renderHourGrid(off, nowI) {
     }
   });
 })();
+
+/* ---------- 暑さ指数モーダル ---------- */
+function openWbgtModal() { $("wbgtModal").hidden = false; document.body.style.overflow = "hidden"; }
+function closeWbgtModal() { $("wbgtModal").hidden = true; document.body.style.overflow = ""; }
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeWbgtModal(); });
 
 /* ---------- 起動 ---------- */
 $("geoBtn").onclick = () => useGeolocation(false);
