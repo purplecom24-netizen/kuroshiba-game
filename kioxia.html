@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ja" class="no-js">
+<head>
+<script>document.documentElement.classList.remove('no-js');</script>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>キオクシア攻略マップ 2026 — 285A</title>
+<meta name="description" content="1カ月で-66%、2週間で+35%。AIメモリ相場の主役キオクシア(285A)を、事実ベースの年表・業績・需給・監視指標で丸裸にする戦略マップ。" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  /* ============================================================
+     キオクシア攻略マップ — NAND / フラッシュテーマ
+       --void #06070B / --carbon #0E1118 / --slab #161B25
+       --flash #FFB020（フラッシュ・アンバー）/ --volt #6C8CFF
+       --white #EEF1F7（本文）/ --gray #94A3B8（副次）
+       --up #3DDC97 / --down #FF5C7A
+     ============================================================ */
+  :root{
+    --void:#06070B; --carbon:#0E1118; --slab:#161B25; --slab-2:#1D2430;
+    --glass:rgba(148,163,184,.055);
+    --line:rgba(160,190,230,.14); --line-soft:rgba(160,190,230,.075);
+    --flash:#FFB020; --flash-soft:#FFD173; --volt:#6C8CFF;
+    --white:#EEF1F7; --gray:#94A3B8; --gray-dim:#64748B;
+    --up:#3DDC97; --up-soft:rgba(61,220,151,.15);
+    --down:#FF5C7A; --down-soft:rgba(255,92,122,.15);
+    --warn:#FFB020; --warn-soft:rgba(255,176,32,.12);
+    --maxw:620px; --ease:cubic-bezier(.16,.84,.34,1);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+
+  body{
+    font-family:'Zen Kaku Gothic New','Space Grotesk',system-ui,sans-serif;
+    color:var(--white); background:var(--void);
+    line-height:1.75; letter-spacing:.01em; overflow-x:hidden;
+    background-image:linear-gradient(180deg,#121722 0%,#0E141E 10%,#0A0F17 34%,#080B12 62%,#06070B 100%);
+    background-attachment:fixed;
+  }
+
+  /* 環境光 */
+  .ambient{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .ambient span{position:absolute;border-radius:50%;filter:blur(100px);opacity:.45}
+  .ambient .a1{width:48vw;height:48vw;top:-14vw;right:-12vw;background:radial-gradient(circle,rgba(255,176,32,.20),transparent 66%)}
+  .ambient .a2{width:40vw;height:40vw;top:44%;left:-14vw;background:radial-gradient(circle,rgba(108,140,255,.18),transparent 66%)}
+  .ambient .a3{width:52vw;height:52vw;bottom:-20vw;left:26%;background:radial-gradient(circle,rgba(30,42,66,.5),transparent 70%)}
+  /* メモリセル格子 */
+  .grid-bg{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:.22;
+    background-image:linear-gradient(rgba(160,190,230,.16) 1px,transparent 1px),
+                     linear-gradient(90deg,rgba(160,190,230,.16) 1px,transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 0%,transparent 72%);
+            mask-image:radial-gradient(ellipse 90% 55% at 50% 0%,#000 0%,transparent 72%)}
+
+  .app{position:relative;z-index:2;max-width:var(--maxw);margin:0 auto;padding:0 16px 64px}
+
+  /* ---------- トップバー ---------- */
+  .topbar{position:sticky;top:0;z-index:20;margin:0 -16px;padding:13px 16px;
+    background:linear-gradient(180deg,rgba(8,11,18,.94),rgba(8,11,18,.76) 68%,transparent);
+    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+  .brand{display:flex;align-items:center;gap:10px}
+  .brand .mk{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--flash)}
+  .brand .sep{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .brand .tag{font-family:'Space Mono',monospace;font-size:10px;color:var(--gray-dim);letter-spacing:.12em}
+
+  /* ---------- 共通パネル ---------- */
+  .panel{border:1px solid var(--line);border-radius:18px;overflow:hidden;margin-top:14px;scroll-margin-top:62px;
+    background:linear-gradient(180deg,rgba(26,33,46,.5),rgba(12,16,24,.55));
+    backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+  .panel__h{display:flex;align-items:center;gap:10px;padding:16px 18px 0}
+  .panel__h .ic{font-size:15px}
+  .panel__h h2{font-size:15px;font-weight:700;letter-spacing:.01em}
+  .panel__b{padding:14px 18px 18px}
+  .muted{color:var(--gray)}
+  .mono{font-family:'Space Mono',monospace}
+  .up{color:var(--up)} .down{color:var(--down)} .flash{color:var(--flash-soft)}
+
+  /* ---------- 銘柄ヘッダー ---------- */
+  .dhead{display:flex;align-items:flex-start;gap:14px;padding:18px 18px 0}
+  .dlogo{width:46px;height:46px;border-radius:13px;flex-shrink:0;display:grid;place-items:center;
+    font-family:'Space Mono',monospace;font-weight:700;font-size:15px;color:#1A1204;
+    background:linear-gradient(135deg,var(--flash-soft),var(--flash));
+    box-shadow:0 6px 22px -8px rgba(255,176,32,.65)}
+  .dmeta{flex:1;min-width:0}
+  .dname{font-size:21px;font-weight:700;line-height:1.25}
+  .dcode{font-family:'Space Mono',monospace;font-size:12px;color:var(--gray);margin-top:4px;
+    display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+  .dpill{display:inline-block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.05em;
+    padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--gray)}
+  .dpill--hot{color:var(--flash);border-color:rgba(255,176,32,.34);background:rgba(255,176,32,.09)}
+
+  /* ---------- 価格ブロック ---------- */
+  .price{padding:16px 18px 18px}
+  .price .asof{font-family:'Space Mono',monospace;font-size:11px;color:var(--gray-dim);letter-spacing:.04em}
+  .price .row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:8px;flex-wrap:wrap}
+  .price .lab{font-size:12px;color:var(--gray);display:block}
+  .price .big{font-family:'Space Mono',monospace;font-size:36px;font-weight:700;line-height:1;letter-spacing:-.02em}
+  .price .big .u{font-size:17px;color:var(--gray);margin-left:3px}
+  .price .chg{text-align:right;font-family:'Space Mono',monospace}
+  .price .chg b{font-size:20px;font-weight:700;display:block}
+  .price .chg span{font-size:11px;color:var(--gray-dim)}
+  .vol-strip{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:15px}
+  .vol-box{border:1px solid var(--line-soft);border-radius:12px;padding:10px 12px;background:rgba(10,14,21,.55)}
+  .vol-box span{font-size:10.5px;color:var(--gray-dim);display:block;letter-spacing:.02em}
+  .vol-box b{font-family:'Space Mono',monospace;font-size:17px;font-weight:700;display:block;margin-top:2px}
+  .vol-box em{font-style:normal;font-size:10px;color:var(--gray-dim);display:block;margin-top:1px}
+
+  /* ---------- 結論ボックス ---------- */
+  .thesis{border:1px solid rgba(255,176,32,.3);border-radius:18px;margin-top:14px;overflow:hidden;
+    background:linear-gradient(150deg,rgba(42,31,10,.6),rgba(14,18,26,.6))}
+  .thesis .th{display:flex;align-items:center;gap:9px;padding:15px 18px 0}
+  .thesis .th h2{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--flash)}
+  .thesis ol{list-style:none;padding:13px 18px 18px;counter-reset:t}
+  .thesis li{counter-increment:t;position:relative;padding-left:30px;font-size:14px;line-height:1.85}
+  .thesis li + li{margin-top:11px}
+  .thesis li::before{content:counter(t);position:absolute;left:0;top:4px;width:20px;height:20px;
+    border-radius:6px;display:grid;place-items:center;font-family:'Space Mono',monospace;
+    font-size:11px;font-weight:700;color:#1A1204;background:linear-gradient(135deg,var(--flash-soft),var(--flash))}
+  .thesis li b{color:var(--flash-soft)}
+
+  /* ---------- チャート ---------- */
+  .chart-note{display:flex;align-items:center;gap:7px;padding:0 18px 10px;flex-wrap:wrap;
+    font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--gray-dim)}
+  .chart-note .badge{color:var(--flash);border:1px solid rgba(255,176,32,.3);background:rgba(255,176,32,.07);
+    border-radius:999px;padding:2px 8px}
+  .chart-wrap{position:relative;width:100%;height:300px;padding:0 6px}
+  #anchorChart{display:block;width:100%;height:100%}
+  .legend{display:flex;flex-wrap:wrap;gap:12px;padding:10px 18px 4px;font-size:11px;color:var(--gray)}
+  .legend i{display:inline-block;width:16px;height:2px;vertical-align:middle;margin-right:6px;border-radius:2px}
+  .legend .l1 i{background:var(--flash)}
+  .legend .l2 i{background:var(--volt);height:0;border-top:2px dashed var(--volt)}
+
+  /* ---------- 年表 ---------- */
+  .tl{position:relative;padding-left:22px}
+  .tl::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:1px;
+    background:linear-gradient(180deg,transparent,var(--line) 8%,var(--line) 92%,transparent)}
+  .tlitem{position:relative;padding-bottom:16px}
+  .tlitem:last-child{padding-bottom:0}
+  .tlitem::before{content:"";position:absolute;left:-21px;top:7px;width:9px;height:9px;border-radius:50%;
+    background:var(--slab-2);border:1.5px solid var(--gray-dim)}
+  .tlitem.hi::before{background:var(--flash);border-color:var(--flash);box-shadow:0 0 0 4px rgba(255,176,32,.14)}
+  .tlitem.bad::before{background:var(--down);border-color:var(--down);box-shadow:0 0 0 4px rgba(255,92,122,.14)}
+  .tlitem.good::before{background:var(--up);border-color:var(--up);box-shadow:0 0 0 4px rgba(61,220,151,.14)}
+  .tlitem .dt{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;color:var(--gray-dim)}
+  .tlitem .tx{font-size:13.5px;color:var(--gray);line-height:1.7;margin-top:1px}
+  .tlitem .tx b{color:var(--white)}
+  .tlitem .px{font-family:'Space Mono',monospace;font-size:12px;margin-left:6px}
+
+  /* ---------- 業績バー ---------- */
+  .fbars{display:flex;align-items:flex-end;gap:14px;height:190px;padding:22px 4px 0}
+  .fcol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:7px}
+  .fcol .bv{font-family:'Space Mono',monospace;font-size:11px;font-weight:700;color:var(--white);white-space:nowrap}
+  .fcol .bar{width:100%;max-width:64px;border-radius:8px 8px 0 0;min-height:4px;
+    background:linear-gradient(180deg,rgba(148,163,184,.45),rgba(148,163,184,.16));
+    transition:height .9s var(--ease)}
+  .fcol.cur .bar{background:linear-gradient(180deg,var(--flash-soft),var(--flash))}
+  .fcol.gd .bar{background:linear-gradient(180deg,var(--volt),rgba(108,140,255,.35))}
+  .fcol .bl{font-size:10.5px;color:var(--gray-dim);text-align:center;line-height:1.45;margin-top:5px}
+  .fcol.cur .bl,.fcol.gd .bl{color:var(--gray)}
+  .punch{margin-top:16px;border-left:2px solid var(--flash);padding:2px 0 2px 13px;
+    font-size:13.5px;color:var(--gray);line-height:1.8}
+  .punch b{color:var(--flash-soft)}
+
+  .kvgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px}
+  .kvbox{border:1px solid var(--line-soft);border-radius:12px;padding:10px 12px;background:rgba(10,14,21,.5)}
+  .kvbox span{font-size:10.5px;color:var(--gray-dim);display:block}
+  .kvbox b{font-family:'Space Mono',monospace;font-size:15px;color:var(--white);font-weight:700;display:block;margin-top:3px}
+
+  /* ---------- 強気 / 弱気 ---------- */
+  .duo{display:grid;gap:10px}
+  .side{border:1px solid var(--line-soft);border-radius:14px;padding:13px 15px;background:rgba(10,14,21,.5)}
+  .side h3{font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px}
+  .side.bull{border-color:rgba(61,220,151,.26)} .side.bull h3{color:var(--up)}
+  .side.bear{border-color:rgba(255,92,122,.26)} .side.bear h3{color:var(--down)}
+  .side ul{list-style:none}
+  .side li{position:relative;padding-left:16px;font-size:13px;color:var(--gray);line-height:1.7}
+  .side li + li{margin-top:8px}
+  .side li::before{content:"";position:absolute;left:0;top:9px;width:5px;height:5px;border-radius:50%}
+  .side.bull li::before{background:var(--up)} .side.bear li::before{background:var(--down)}
+  .side li b{color:var(--white)}
+
+  /* ---------- PERの罠 ---------- */
+  .trap-svg{width:100%;height:auto;display:block;margin:6px 0 4px}
+  .trap-legend{display:flex;flex-wrap:wrap;gap:14px;font-size:11px;color:var(--gray);margin-top:2px}
+  .trap-legend i{display:inline-block;width:14px;height:2px;vertical-align:middle;margin-right:5px;border-radius:2px}
+
+  /* ---------- 監視チェックリスト ---------- */
+  .watch{list-style:none}
+  .witem{display:flex;gap:11px;align-items:flex-start;padding:11px 0;border-top:1px solid var(--line-soft)}
+  .witem:first-child{border-top:none;padding-top:2px}
+  .wbox{flex-shrink:0;width:20px;height:20px;margin-top:2px;border-radius:6px;cursor:pointer;
+    border:1.5px solid var(--gray-dim);background:rgba(10,14,21,.6);display:grid;place-items:center;
+    color:#1A1204;font-size:12px;font-weight:700;line-height:1;transition:all .22s var(--ease);padding:0}
+  .wbox[aria-pressed="true"]{background:linear-gradient(135deg,var(--flash-soft),var(--flash));border-color:transparent}
+  .wbox span{opacity:0;transition:opacity .18s}
+  .wbox[aria-pressed="true"] span{opacity:1}
+  .wtx{flex:1;min-width:0}
+  .wtx .wk{font-size:13.5px;font-weight:700;color:var(--white)}
+  .wtx .wd{font-size:12.5px;color:var(--gray);line-height:1.65;margin-top:2px}
+  .wtx .wf{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.06em;color:var(--flash);
+    border:1px solid rgba(255,176,32,.26);background:rgba(255,176,32,.07);border-radius:999px;
+    padding:1px 7px;display:inline-block;margin-top:6px}
+  .watch-reset{margin-top:12px;font-family:'Space Mono',monospace;font-size:10.5px;letter-spacing:.06em;
+    color:var(--gray-dim);background:none;border:1px solid var(--line-soft);border-radius:999px;
+    padding:5px 12px;cursor:pointer;transition:all .22s}
+  .watch-reset:hover{color:var(--white);border-color:var(--line)}
+
+  /* ---------- カレンダー ---------- */
+  .cal{width:100%;border-collapse:collapse;font-size:13px}
+  .cal th{text-align:left;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.08em;
+    text-transform:uppercase;color:var(--gray-dim);font-weight:400;padding:0 0 8px}
+  .cal td{padding:11px 0;border-top:1px solid var(--line-soft);color:var(--gray);vertical-align:top}
+  .cal td:first-child{width:88px;font-family:'Space Mono',monospace;font-size:11.5px;color:var(--white);white-space:nowrap}
+  .cal td b{color:var(--white)}
+  .cal tr.next td{background:linear-gradient(90deg,rgba(255,176,32,.07),transparent)}
+
+  /* ---------- ルール ---------- */
+  .rules{list-style:none;counter-reset:r}
+  .rule{counter-increment:r;position:relative;padding:12px 0 12px 36px;border-top:1px solid var(--line-soft)}
+  .rule:first-child{border-top:none}
+  .rule::before{content:counter(r,decimal-leading-zero);position:absolute;left:0;top:14px;
+    font-family:'Space Mono',monospace;font-size:12px;font-weight:700;color:var(--flash);opacity:.75}
+  .rule .rk{font-size:14px;font-weight:700;color:var(--white)}
+  .rule .rd{font-size:13px;color:var(--gray);line-height:1.75;margin-top:3px}
+  .rule .rd b{color:var(--flash-soft)}
+
+  /* ---------- 免責 ---------- */
+  .disclaimer{border:1px solid rgba(255,92,122,.26);border-radius:16px;padding:17px;margin-top:16px;
+    background:linear-gradient(140deg,rgba(34,14,20,.5),rgba(14,18,26,.5))}
+  .disclaimer h3{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--down);margin-bottom:10px}
+  .disclaimer p{font-size:12px;color:var(--gray);line-height:1.85}
+  .disclaimer p + p{margin-top:8px}
+  .disclaimer b{color:var(--white)}
+
+  .srcs{margin-top:14px;padding:0 2px}
+  .srcs h3{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:.12em;
+    text-transform:uppercase;color:var(--gray-dim);margin-bottom:8px}
+  .srcs ul{list-style:none;display:flex;flex-wrap:wrap;gap:6px}
+  .srcs li{font-family:'Space Mono',monospace;font-size:10px;color:var(--gray-dim);
+    border:1px solid var(--line-soft);border-radius:999px;padding:3px 9px}
+
+  .foot{text-align:center;margin-top:22px;font-family:'Space Mono',monospace;
+    font-size:10px;letter-spacing:.1em;color:var(--gray-dim)}
+  .foot a{color:var(--flash);text-decoration:none}
+
+  /* reveal / a11y */
+  .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s var(--ease),transform .7s var(--ease)}
+  .reveal.in{opacity:1;transform:none}
+  .no-js .reveal{opacity:1;transform:none;transition:none}
+  @media (prefers-reduced-motion:reduce){.reveal{opacity:1;transform:none;transition:none}}
+  button:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--flash);outline-offset:3px;border-radius:6px}
+
+  @media (min-width:520px){ .duo{grid-template-columns:1fr 1fr} }
+  @media (max-width:400px){
+    .price .big{font-size:31px}
+    .vol-strip,.kvgrid{grid-template-columns:1fr}
+    .chart-wrap{height:260px}
+  }
+</style>
+</head>
+<body>
+
+<div class="ambient" aria-hidden="true"><span class="a1"></span><span class="a2"></span><span class="a3"></span></div>
+<div class="grid-bg" aria-hidden="true"></div>
+
+<div class="app">
+
+  <!-- ===== トップバー ===== -->
+  <div class="topbar">
+    <div class="brand">
+      <span class="mk">Kioxia Playbook</span>
+      <span class="sep"></span>
+      <span class="tag">2026 / 285A</span>
+    </div>
+  </div>
+
+  <!-- ===== 銘柄ヘッダー + 価格 ===== -->
+  <section class="panel reveal">
+    <div class="dhead">
+      <div class="dlogo">NAND</div>
+      <div class="dmeta">
+        <div class="dname">キオクシアホールディングス</div>
+        <div class="dcode">
+          <span>285A</span>
+          <span class="dpill">東証プライム</span>
+          <span class="dpill dpill--hot">超高ボラティリティ景気循環株</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="price">
+      <div class="asof">終値 2026/08/31 15:30 時点</div>
+      <div class="row">
+        <div>
+          <span class="lab">株価</span>
+          <span class="big flash">49,990<span class="u">円</span></span>
+        </div>
+        <div class="chg up">
+          <b>+4.36%</b>
+          <span>前日比 +2,090 円</span>
+        </div>
+      </div>
+      <div class="vol-strip">
+        <div class="vol-box">
+          <span>上場来高値からの下落率</span>
+          <b class="down">-55.6%</b>
+          <em>高値 112,700円（2026/06/22）</em>
+        </div>
+        <div class="vol-box">
+          <span>高値 → 7/29終値（37日間）</span>
+          <b class="down">-65.9%</b>
+          <em>112,700 → 38,380円</em>
+        </div>
+        <div class="vol-box">
+          <span>7/29 → 8/13（15日間）</span>
+          <b class="up">+35.0%</b>
+          <em>38,380 → 51,800円</em>
+        </div>
+        <div class="vol-box">
+          <span>会社の自社株買い平均取得単価</span>
+          <b>49,586<em style="display:inline;font-size:11px"> 円</em></b>
+          <em>8,000億円 / 16,133,500株</em>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 結論 ===== -->
+  <div class="thesis reveal">
+    <div class="th"><span>🎯</span><h2>この銘柄で「勝つ」とは何か</h2></div>
+    <ol>
+      <li><b>これは成長株ではなく景気循環株。</b>5週間で-66%、その2週間後に+35%。同じ株が同じ四半期にこれをやる。買い方ではなく<b>ロットと出口</b>で勝負が決まる。</li>
+      <li><b>PER 6倍台は「安い」ではなく、サイクル株の警告灯。</b>利益がピークだから分母が膨らんでいるだけ。循環株が最も割安に見える瞬間が、最も危ない瞬間。</li>
+      <li><b>上がる材料はほぼ出尽くした。</b>ベイン売却完了・日経225採用・8,000億円自社株買い、すべて終了済み。ここから先を動かすのは<b>NAND価格の前月比</b>ただ一つ。</li>
+    </ol>
+  </div>
+
+  <!-- ===== アンカーチャート ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">📉</span><h2>2026年夏、何が起きたか</h2></div>
+    <div class="chart-note" style="padding-top:12px">
+      <span class="badge">実績値のみ</span>
+      <span>報道で確認できた終値5点をつないだ線。間の日々の値動きは含みません</span>
+    </div>
+    <div class="chart-wrap">
+      <canvas id="anchorChart"></canvas>
+    </div>
+    <div class="legend">
+      <span class="l1"><i></i>確認済みの終値</span>
+      <span class="l2"><i></i>自社株買い平均取得単価 49,586円</span>
+    </div>
+    <div class="panel__b" style="padding-top:12px">
+      <p class="muted" style="font-size:13.5px">
+        いま株価は<b class="flash">会社自身が8,000億円を投じて買った値段とほぼ同じ水準</b>にいる。
+        経営陣が「ここは安い」と判断して全力で買った価格に、市場が戻してきた形。
+        ここを上回れば会社の判断が正しかったことになり、割り込めば市場が会社より弱気だという意思表示になる。
+        分かりやすい心理的な分水嶺。
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 年表 ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">🗓️</span><h2>2026年 出来事年表</h2></div>
+    <div class="panel__b">
+      <div class="tl">
+        <div class="tlitem"><div class="dt">2024/12/18</div><div class="tx">東証プライムに上場。<b>公開価格 1,455円</b></div></div>
+        <div class="tlitem good"><div class="dt">2025/11</div><div class="tx">MSCI指数に新規採用。海外パッシブ資金の受け皿に</div></div>
+        <div class="tlitem"><div class="dt">2026/02 – 03</div><div class="tx">ベインキャピタルが段階売却。保有比率 <b>44% → 37% → 29.13%</b> と3分の1を割る</div></div>
+        <div class="tlitem good"><div class="dt">2026/03/05</div><div class="tx"><b>日経平均株価225銘柄に採用</b>決定（4/1算出分から）</div></div>
+        <div class="tlitem"><div class="dt">2026/06/02</div><div class="tx">IR Day 開催。AIエージェント時代のNANDの重要性を提示し、証券会社が目標株価を引き上げ</div></div>
+        <div class="tlitem hi"><div class="dt">2026/06/22</div><div class="tx"><b>上場来高値 112,700円</b><span class="px up">天井</span></div></div>
+        <div class="tlitem good"><div class="dt">2026/07/08 – 09</div><div class="tx">ベインが<b>全保有株の売却完了</b>。最大のオーバーハングが消滅し、報道当日は株価急騰</div></div>
+        <div class="tlitem bad"><div class="dt">2026/07/16</div><div class="tx">米ビアサットとの特許訴訟で陪審評決。損害賠償 <b>約2.29億ドル（約371億円）</b></div></div>
+        <div class="tlitem bad"><div class="dt">2026/07/29</div><div class="tx">終値 <b>38,380円（-13.85%）</b>。高値から<b>1カ月強で約-66%</b>。SKハイニックスの巨額NAND投資が需給を崩す懸念、半導体スーパーサイクル論の後退が主因<span class="px down">大底圏</span></div></div>
+        <div class="tlitem hi"><div class="dt">2026/07/31</div><div class="tx">1Q決算が過去最高。同時に<b>上限8,000億円の自社株買い</b>と<b>1:3株式分割</b>を発表 → 株価は約+18%</div></div>
+        <div class="tlitem hi"><div class="dt">2026/08/03 – 08/10</div><div class="tx">自社株買いを<b>わずか6営業日で完了</b>。1,613万3,500株・7,999億9,768万9,000円。以後「会社の買い」は消滅</div></div>
+        <div class="tlitem bad"><div class="dt">2026/08/13</div><div class="tx">4–6月期のNAND出荷シェアで<b>中国YMTCに抜かれ4位に後退</b>（サムスン25%・SKハイニックス22%・YMTC 14%・キオクシア14%）</div></div>
+        <div class="tlitem"><div class="dt">2026/08/27</div><div class="tx">北上工場<b>K3棟</b>建設を発表。サンディスクと合わせ<b>2032年までに約5兆円の対日投資</b>を見込む（政府支援が前提）</div></div>
+        <div class="tlitem bad"><div class="dt">2026/08/28</div><div class="tx"><b>好材料に反落</b>。材料出尽くしと米メモリー株安。「良いニュースで上がらない」需給の変質が表面化</div></div>
+        <div class="tlitem hi"><div class="dt">2026/09/30</div><div class="tx">株式分割の<b>権利基準日</b></div></div>
+        <div class="tlitem hi"><div class="dt">2026/10/01</div><div class="tx"><b>1:3株式分割 効力発生</b></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 業績 ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">🚀</span><h2>業績 — 数字は本物、だからこそ怖い</h2></div>
+    <div class="panel__b">
+      <div class="fbars" id="fbars" aria-hidden="true">
+        <div class="fcol"><span class="bv">2兆3,376億</span><div class="bar" data-v="2337.6"></div><span class="bl">2026/3期<br>通期実績</span></div>
+        <div class="fcol cur"><span class="bv">1兆7,671億</span><div class="bar" data-v="1767.1"></div><span class="bl">2027/3期<br>1Q実績</span></div>
+        <div class="fcol gd"><span class="bv">2兆3,900億</span><div class="bar" data-v="2390.0"></div><span class="bl">2027/3期<br>2Q会社予想</span></div>
+      </div>
+      <div style="text-align:right;font-family:'Space Mono',monospace;font-size:10px;color:var(--gray-dim);margin-top:8px">売上収益（億円）</div>
+
+      <p class="punch"><b>2Qの会社予想（2兆3,900億円）だけで、前期通期の売上（2兆3,376億円）を超える。</b>それが今のNAND相場の異常さ。</p>
+
+      <div class="kvgrid">
+        <div class="kvbox"><span>1Q 売上収益 前年同期比</span><b class="up">+415.5%</b></div>
+        <div class="kvbox"><span>1Q 営業利益</span><b class="up">1兆2,700億円</b></div>
+        <div class="kvbox"><span>1Q 親会社帰属利益</span><b class="up">8,422億円</b></div>
+        <div class="kvbox"><span>1Q 売上総利益率</span><b>78%</b></div>
+        <div class="kvbox"><span>NAND平均単価 前四半期比</span><b class="up">+約70%</b></div>
+        <div class="kvbox"><span>ビット出荷 前四半期比</span><b class="muted">+1〜3%</b></div>
+        <div class="kvbox"><span>2Q 非GAAP営業利益率 予想</span><b class="up">79.9%</b></div>
+        <div class="kvbox"><span>1Q 設備投資</span><b>524億円</b></div>
+      </div>
+
+      <p class="punch" style="margin-top:15px">
+        利益の伸びは<b>ほぼ全額が値上げ由来</b>。数量はほとんど増えていない（ビット出荷+1〜3%）。
+        つまり業績は<b>NAND価格そのもの</b>であり、価格が止まれば利益も同時に止まる。
+        一方で1Qの設備投資は市場予想（約925億円）を大きく下回る524億円。
+        「価格・利益優先、盲目的な増産はしない」という規律は、少なくとも数字では守られている。
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== PERの罠 ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">🪤</span><h2>低PERの罠 — 循環株の最重要概念</h2></div>
+    <div class="panel__b">
+      <p class="muted" style="font-size:13.5px;margin-bottom:6px">
+        証券会社の2027/3期予想EPSは <b class="flash">7,888.9円</b>。株価49,990円なら <b class="flash">PER 約6.3倍</b>。
+        普通の株なら破格に安い。だが循環株では、この形が<b style="color:var(--white)">天井のサイン</b>になる。
+      </p>
+
+      <svg class="trap-svg" viewBox="0 0 340 170" role="img" aria-label="循環株では利益がピークのときPERが最小になり、そこが株価の天井になりやすいことを示す図">
+        <defs>
+          <linearGradient id="epsG" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#3DDC97" stop-opacity=".28"/>
+            <stop offset="100%" stop-color="#3DDC97" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <!-- 軸 -->
+        <line x1="26" y1="140" x2="326" y2="140" stroke="rgba(160,190,230,.2)" stroke-width="1"/>
+        <text x="26" y="158" fill="#64748B" font-family="'Space Mono',monospace" font-size="9">不況</text>
+        <text x="160" y="158" fill="#64748B" font-family="'Space Mono',monospace" font-size="9" text-anchor="middle">好況ピーク</text>
+        <text x="326" y="158" fill="#64748B" font-family="'Space Mono',monospace" font-size="9" text-anchor="end">不況</text>
+        <!-- EPS 山 -->
+        <path d="M26 136 C 80 132, 120 40, 170 26 C 220 40, 260 132, 326 136 L326 140 L26 140 Z" fill="url(#epsG)"/>
+        <path d="M26 136 C 80 132, 120 40, 170 26 C 220 40, 260 132, 326 136" fill="none" stroke="#3DDC97" stroke-width="2"/>
+        <!-- PER 谷 -->
+        <path d="M26 34 C 80 40, 120 108, 170 118 C 220 108, 260 40, 326 34" fill="none" stroke="#FF5C7A" stroke-width="2" stroke-dasharray="5 4"/>
+        <!-- ピーク印 -->
+        <line x1="170" y1="20" x2="170" y2="140" stroke="#FFB020" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/>
+        <circle cx="170" cy="26" r="4" fill="#3DDC97"/>
+        <circle cx="170" cy="118" r="4" fill="#FF5C7A"/>
+        <text x="176" y="16" fill="#FFB020" font-family="'Space Mono',monospace" font-size="9.5" font-weight="700">いまここ</text>
+        <text x="176" y="132" fill="#FF5C7A" font-family="'Space Mono',monospace" font-size="9">PER 最小</text>
+      </svg>
+      <div class="trap-legend">
+        <span><i style="background:#3DDC97"></i>1株利益（EPS）</span>
+        <span><i style="border-top:2px dashed #FF5C7A;height:0"></i>PER</span>
+      </div>
+
+      <p class="muted" style="font-size:13.5px;margin-top:12px">
+        循環株のPERは<b style="color:var(--white)">利益がピークの時に最小</b>、赤字の底で無限大か測定不能になる。
+        だから「PERが低いから買い」は、循環株では逆張りではなく<b style="color:var(--white)">高値づかみの手順書</b>になりうる。
+        見るべきはPERではなく、<b class="flash">その利益が何年続くか</b>——つまりNAND価格が高止まりする期間の見積もり。
+        証券会社の目標株価12万円も、PER10倍前後という「利益がしばらく続く」前提の上に立っている。前提が崩れれば目標株価も崩れる。
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== 強気 / 弱気 ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">⚖️</span><h2>強気材料と弱気材料</h2></div>
+    <div class="panel__b">
+      <div class="duo">
+        <div class="side bull">
+          <h3>▲ 強気シナリオ</h3>
+          <ul>
+            <li>AIデータセンター・エンタープライズ向けSSDが<b>売上の6割超</b>。単価も付加価値も高いミックス</li>
+            <li>会社自身が<b>2027年も需給逼迫が続く</b>と想定。NAND不足は2028年まで続くとの見方も</li>
+            <li><b>盲目的に増産しない</b>方針。1Qの設備投資が予想を大きく下回ったのは規律の証拠</li>
+            <li>ベインの<b>オーバーハングが完全消滅</b>（7月に全株売却完了）</li>
+            <li>日経225・MSCI採用済みでパッシブの受け皿が確立</li>
+            <li>10/1の<b>1:3分割</b>で最低投資額が約500万円→約167万円に。買える人が3倍に増える</li>
+          </ul>
+        </div>
+        <div class="side bear">
+          <h3>▼ 弱気シナリオ</h3>
+          <ul>
+            <li><b>値上げの息切れ</b>。1Qは前四半期比+70%だったNAND単価が、26年3Qは10%台〜0〜5%まで鈍化するとの予測</li>
+            <li>SKハイニックスの<b>巨額NAND投資</b>が需給を崩す懸念。7月暴落の主犯</li>
+            <li>中国<b>YMTCが出荷シェアで逆転</b>し3位に。低コスト勢の台頭、上場準備も進行</li>
+            <li><b>自社株買いが8/10に終了</b>。最大の買い手がいなくなった後の地力が問われる局面</li>
+            <li>キオクシア自身の<b>5兆円投資計画</b>は、業界全体の供給増＝サイクル終焉の引き金にもなりうる</li>
+            <li>ビアサット特許訴訟の賠償約371億円。<b>通期ガイダンス非開示</b>で不確実性も残る</li>
+            <li>8/27の好材料に8/28は反落。<b>好材料で上がらない</b>のは需給が変わった典型サイン</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 監視指標 ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">📡</span><h2>監視指標 — 勝敗を分けるのはここ</h2></div>
+    <div class="panel__b">
+      <p class="muted" style="font-size:13px;margin-bottom:12px">
+        株価を当てにいくのではなく、<b style="color:var(--white)">どちらの相場つきにいるか</b>を判定するための観測点。
+        チェックはこの端末にのみ保存されます。
+      </p>
+      <ul class="watch" id="watchList">
+        <li class="witem">
+          <button class="wbox" data-k="w1" aria-pressed="false" aria-label="確認済みにする"><span>✓</span></button>
+          <div class="wtx">
+            <div class="wk">NAND契約価格の前月比</div>
+            <div class="wd">最重要。プラス幅の縮小は減速、<b style="color:var(--down)">マイナス転換は相場つきの転換</b>。この一点だけでも追う価値がある</div>
+            <span class="wf">月次</span>
+          </div>
+        </li>
+        <li class="witem">
+          <button class="wbox" data-k="w2" aria-pressed="false" aria-label="確認済みにする"><span>✓</span></button>
+          <div class="wtx">
+            <div class="wk">競合の設備投資アナウンス</div>
+            <div class="wd">サムスン・SKハイニックス・マイクロン・YMTC。増産表明は数四半期先の値崩れの予告。7月の暴落もこれが引き金</div>
+            <span class="wf">随時</span>
+          </div>
+        </li>
+        <li class="witem">
+          <button class="wbox" data-k="w3" aria-pressed="false" aria-label="確認済みにする"><span>✓</span></button>
+          <div class="wtx">
+            <div class="wk">マイクロンの四半期決算</div>
+            <div class="wd">米国決算のためキオクシアより先に出る。メモリ市況の<b>先行指標</b>として使える</div>
+            <span class="wf">四半期</span>
+          </div>
+        </li>
+        <li class="witem">
+          <button class="wbox" data-k="w4" aria-pressed="false" aria-label="確認済みにする"><span>✓</span></button>
+          <div class="wtx">
+            <div class="wk">キオクシア自身の設備投資ガイダンス</div>
+            <div class="wd">規律の生命線。<b style="color:var(--down)">会社が増産へ舵を切った時がサイクル終盤のサイン</b>。1Qの524億円という低水準が崩れるかを見る</div>
+            <span class="wf">四半期</span>
+          </div>
+        </li>
+        <li class="witem">
+          <button class="wbox" data-k="w5" aria-pressed="false" aria-label="確認済みにする"><span>✓</span></button>
+          <div class="wtx">
+            <div class="wk">好材料への株価の反応</div>
+            <div class="wd">8/27の5兆円投資→8/28反落がまさにこれ。<b>良いニュースで上がらなくなったら</b>買い手が尽きている</div>
+            <span class="wf">都度</span>
+          </div>
+        </li>
+        <li class="witem">
+          <button class="wbox" data-k="w6" aria-pressed="false" aria-label="確認済みにする"><span>✓</span></button>
+          <div class="wtx">
+            <div class="wk">49,586円（会社の取得単価）との位置関係</div>
+            <div class="wd">会社が8,000億円を投じた水準。上か下かで、市場が経営陣より強気か弱気かが読める</div>
+            <span class="wf">日次</span>
+          </div>
+        </li>
+      </ul>
+      <button class="watch-reset" id="watchReset" type="button">チェックをリセット</button>
+    </div>
+  </section>
+
+  <!-- ===== カレンダー ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">⏱️</span><h2>これから来るイベント</h2></div>
+    <div class="panel__b">
+      <table class="cal">
+        <thead><tr><th>日付</th><th>イベント</th></tr></thead>
+        <tbody>
+          <tr class="next">
+            <td>2026/09/28</td>
+            <td><b>分割の権利付最終日（目安）</b><br><span style="font-size:12px">受渡ベースの一般的な計算。実際の日付は取引所・証券会社の案内で必ず確認を</span></td>
+          </tr>
+          <tr>
+            <td>2026/09/29</td>
+            <td><b>権利落ち日</b><br><span style="font-size:12px">株価は形式的に約1/3へ調整される</span></td>
+          </tr>
+          <tr>
+            <td>2026/09/30</td>
+            <td><b>株式分割 権利基準日</b></td>
+          </tr>
+          <tr>
+            <td>2026/10/01</td>
+            <td><b>1:3株式分割 効力発生</b><br><span style="font-size:12px">最低投資額 約500万円 → 約167万円。NISA成長投資枠でも扱いやすい水準に</span></td>
+          </tr>
+          <tr>
+            <td>2026/10/30</td>
+            <td>当初設定されていた自社株買いの取得期限<br><span style="font-size:12px">実際には8/10に上限まで消化して終了済み</span></td>
+          </tr>
+          <tr>
+            <td>2026/10下旬<br>〜11上旬</td>
+            <td><b>2027/3期 2Q決算</b><br><span style="font-size:12px">売上収益2兆3,900億円・非GAAP営業利益1兆9,000億円の会社予想に対する着地と、3Q見通しが最大の勝負どころ</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ===== 分割の意味 ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">✂️</span><h2>1:3分割の正しい読み方</h2></div>
+    <div class="panel__b">
+      <p class="muted" style="font-size:13.5px">
+        <b style="color:var(--white)">分割そのものは1円も価値を生みません。</b>
+        1株が3株になり、株価が1/3になるだけ。権利落ち日に自動で調整されるので、
+        「分割前に慌てて買う」ことに経済的な意味はありません。
+      </p>
+      <p class="muted" style="font-size:13.5px;margin-top:11px">
+        意味があるのは<b class="flash">最低投資額が約500万円から約167万円に下がること</b>。
+        東証が望ましいとする「50万円未満」にはまだ遠いものの、買える投資家層は確実に広がります。
+        同時に、<b style="color:var(--white)">1単元あたりの金額が下がる＝刻んで買える</b>ようになるのは、
+        このボラティリティの銘柄では実務上かなり大きい。分割後は分散エントリーの設計がしやすくなります。
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== ルール ===== -->
+  <section class="panel reveal">
+    <div class="panel__h"><span class="ic">🛡️</span><h2>負けないための7つのルール</h2></div>
+    <div class="panel__b">
+      <ul class="rules">
+        <li class="rule">
+          <div class="rk">ロットは「ゼロでも生活が変わらない額」から逆算する</div>
+          <div class="rd">-66%は予想ではなく、<b>この夏に実際に起きたこと</b>。同じことがもう一度起きる前提で金額を決める。銘柄選びより先に決めるべき唯一の変数。</div>
+        </li>
+        <li class="rule">
+          <div class="rk">信用取引で触らない</div>
+          <div class="rd">7月の暴落では追証が続出した。日次で±14%動く銘柄にレバレッジをかけると、<b>方向が合っていても資金が先に尽きる</b>。</div>
+        </li>
+        <li class="rule">
+          <div class="rk">入る前に出口を決める</div>
+          <div class="rd">「＋何%で半分利確、−何%で撤退」を注文を出す前に紙に書く。循環株は<b>利益が最高の瞬間が最も危ない</b>ので、好決算は利確の検討材料であって買い増しの理由ではない。</div>
+        </li>
+        <li class="rule">
+          <div class="rk">一括で入らない、分割後に刻む</div>
+          <div class="rd">10/1以降は1単元が約167万円。<b>3回以上に分けて</b>時間分散する。天井も底も当てられない前提の設計にする。</div>
+        </li>
+        <li class="rule">
+          <div class="rk">PERを買い判断に使わない</div>
+          <div class="rd">6倍台は安さではなくピーク利益の裏返し。判断材料はNAND価格の前月比と、競合の増産アナウンス。<b>指標ではなく市況を見る</b>。</div>
+        </li>
+        <li class="rule">
+          <div class="rk">好材料への反応で相場つきを判定する</div>
+          <div class="rd">8/27の5兆円投資計画に対して8/28は反落した。<b>良いニュースが効かない相場は、買い手が枯れている相場</b>。逆に悪材料で下げ止まれば売り手が枯れた合図。</div>
+        </li>
+        <li class="rule">
+          <div class="rk">「勝ち」を株価当てではなく手順の遵守で定義する</div>
+          <div class="rd">この銘柄で長く生き残る人は、<b>当てた人ではなくルールを守った人</b>。1回のトレードの結果ではなく、10回分の合計で判定する。</div>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ===== 免責 ===== -->
+  <div class="disclaimer reveal">
+    <h3>⚠ Disclaimer · 注意書き</h3>
+    <p>本ページは公開情報の整理であり、<b>特定銘柄の売買を推奨するものではありません</b>。作成者は金融アドバイザーではありません。投資判断はご自身の責任で行ってください。</p>
+    <p>株価・業績・シェア等の数値はすべて<b>2026年8月31日時点で報道・公表されていた情報</b>に基づく引用です。数値は更新され、また引用過程での誤りが含まれる可能性があります。<b>発注前に必ず証券会社のライブ値と会社の適時開示（決算短信・IR）で原典を確認してください</b>。</p>
+    <p>権利付最終日・権利落ち日は受渡日基準の一般的な計算による目安です。正式な日付は取引所および利用中の証券会社の案内をご確認ください。</p>
+    <p>この銘柄は<b>1カ月で約-66%、2週間で約+35%</b>という値動きを実際に記録しています。想定より速く、想定より深く動くことを前提にしてください。</p>
+  </div>
+
+  <div class="srcs reveal">
+    <h3>主な参照元</h3>
+    <ul>
+      <li>キオクシアHD 2027/3期 1Q決算短信・決算説明</li>
+      <li>日本経済新聞</li>
+      <li>Bloomberg</li>
+      <li>ロイター</li>
+      <li>トレーダーズ・ウェブ</li>
+      <li>みんかぶ / 株探</li>
+      <li>EE Times Japan</li>
+      <li>ITmedia NEWS</li>
+      <li>楽天証券トウシル</li>
+      <li>KIOXIA ニュースリリース</li>
+    </ul>
+  </div>
+
+  <div class="foot">
+    KIOXIA PLAYBOOK 2026 · <a href="./rareearthmap.html">レアアース投資マップ →</a>
+  </div>
+
+</div><!-- /.app -->
+
+<script>
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- reveal ---------- */
+  var items = document.querySelectorAll('.reveal');
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, {threshold:0.06, rootMargin:'0px 0px -5% 0px'});
+    items.forEach(function(el){ io.observe(el); });
+  } else { items.forEach(function(el){ el.classList.add('in'); }); }
+  setTimeout(function(){ items.forEach(function(el){ el.classList.add('in'); }); }, 2600);
+
+  /* ---------- 業績バー ---------- */
+  (function(){
+    var cols = document.querySelectorAll('#fbars .bar');
+    var max = 0;
+    cols.forEach(function(b){ max = Math.max(max, parseFloat(b.dataset.v)); });
+    function fill(){ cols.forEach(function(b){ b.style.height = (parseFloat(b.dataset.v)/max*100)+'%'; }); }
+    if('IntersectionObserver' in window && !reduce){
+      var o = new IntersectionObserver(function(es){
+        es.forEach(function(e){ if(e.isIntersecting){ fill(); o.disconnect(); } });
+      }, {threshold:0.3});
+      o.observe(document.getElementById('fbars'));
+    } else { fill(); }
+  })();
+
+  /* ---------- アンカーチャート ---------- */
+  (function(){
+    var canvas = document.getElementById('anchorChart');
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    // 報道で確認できた終値のみ
+    var PTS = [
+      {t:'2026-06-22', p:112700, lab:'上場来高値', side:'below', align:'left'},
+      {t:'2026-07-29', p:38380,  lab:'7/29 安値圏', side:'below'},
+      {t:'2026-08-13', p:51800,  lab:'8/13 戻り高値', side:'above'},
+      {t:'2026-08-28', p:47900,  lab:'8/28 反落',    side:'below'},
+      {t:'2026-08-31', p:49990,  lab:'8/31 現在',    side:'above'}
+    ];
+    var BUYBACK = 49586;
+
+    function ts(s){ var a = s.split('-'); return Date.UTC(+a[0], +a[1]-1, +a[2]); }
+    var T0 = ts('2026-06-15'), T1 = ts('2026-09-05');
+
+    var W = 0, H = 0;
+    var PAD = {l:10, r:56, t:26, b:26};
+
+    function resize(){
+      var r = canvas.parentElement.getBoundingClientRect();
+      if(r.width < 2 || r.height < 2){ requestAnimationFrame(resize); return; }
+      W = r.width; H = r.height;
+      canvas.width = Math.floor(W*dpr); canvas.height = Math.floor(H*dpr);
+      ctx.setTransform(dpr,0,0,dpr,0,0);
+      draw();
+    }
+
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      var lo = 30000, hi = 120000;
+      var pl = PAD.l, pr = W - PAD.r, pt = PAD.t, pb = H - PAD.b;
+      var pw = pr - pl, ph = pb - pt;
+      function X(t){ return pl + (t - T0)/(T1 - T0) * pw; }
+      function Y(v){ return pt + (hi - v)/(hi - lo) * ph; }
+
+      // グリッド
+      ctx.font = "10px 'Space Mono',monospace";
+      ctx.textBaseline = 'middle';
+      for(var g = 40000; g <= 120000; g += 20000){
+        var gy = Y(g);
+        ctx.strokeStyle = 'rgba(160,190,230,0.08)'; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(pl, gy); ctx.lineTo(pr, gy); ctx.stroke();
+        ctx.fillStyle = 'rgba(100,116,139,0.95)'; ctx.textAlign = 'left';
+        ctx.fillText((g/10000) + '万', pr + 7, gy);
+      }
+
+      // 自社株買いライン
+      var by = Y(BUYBACK);
+      ctx.setLineDash([5,4]);
+      ctx.strokeStyle = 'rgba(108,140,255,0.85)'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pl, by); ctx.lineTo(pr, by); ctx.stroke();
+      ctx.setLineDash([]);
+
+      // 折れ線
+      ctx.strokeStyle = '#FFB020'; ctx.lineWidth = 2.2;
+      ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+      ctx.beginPath();
+      PTS.forEach(function(d,i){
+        var x = X(ts(d.t)), y = Y(d.p);
+        if(i === 0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+
+      // 点 + ラベル
+      PTS.forEach(function(d){
+        var x = X(ts(d.t)), y = Y(d.p);
+        ctx.beginPath(); ctx.arc(x, y, 4.5, 0, 6.2832);
+        ctx.fillStyle = '#FFB020'; ctx.fill();
+        ctx.strokeStyle = '#0A0F17'; ctx.lineWidth = 2; ctx.stroke();
+
+        var above = d.side === 'above';
+        // align:'left' はマーカーの右側に寄せる（注記線との重なりを避ける）
+        var leftAligned = d.align === 'left';
+        ctx.textAlign = leftAligned ? 'left' : 'center';
+        ctx.textBaseline = above ? 'bottom' : 'top';
+        ctx.fillStyle = '#EEF1F7';
+        ctx.font = "700 11px 'Space Mono',monospace";
+        var vy = above ? y - 17 : y + 15;
+        var lx = leftAligned ? x + 9 : Math.max(pl + 26, Math.min(pr - 26, x));
+        ctx.fillText(d.p.toLocaleString('en-US'), lx, vy);
+        ctx.fillStyle = 'rgba(148,163,184,0.95)';
+        ctx.font = "9.5px 'Zen Kaku Gothic New',sans-serif";
+        ctx.fillText(d.lab, lx, above ? vy - 12 : vy + 13);
+      });
+
+      // 下落幅の注記
+      var xA = X(ts('2026-06-22')), yA = Y(112700);
+      var xB = X(ts('2026-07-29')), yB = Y(38380);
+      ctx.strokeStyle = 'rgba(255,92,122,0.5)'; ctx.lineWidth = 1;
+      ctx.setLineDash([3,3]);
+      ctx.beginPath(); ctx.moveTo(xA, yA); ctx.lineTo(xA, yB); ctx.lineTo(xB, yB); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#FF5C7A';
+      ctx.font = "700 12px 'Space Mono',monospace";
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillText('-65.9%', xA + 7, (yA + yB)/2);
+    }
+
+    resize();
+    addEventListener('resize', resize, {passive:true});
+  })();
+
+  /* ---------- 監視チェックリスト（端末内保存） ---------- */
+  (function(){
+    var KEY = 'kioxia-watch-v1';
+    var boxes = document.querySelectorAll('.wbox');
+    var state = {};
+    try { state = JSON.parse(localStorage.getItem(KEY) || '{}') || {}; } catch(e){ state = {}; }
+
+    function save(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e){} }
+
+    boxes.forEach(function(b){
+      var k = b.dataset.k;
+      if(state[k]) b.setAttribute('aria-pressed','true');
+      b.addEventListener('click', function(){
+        var on = b.getAttribute('aria-pressed') === 'true';
+        b.setAttribute('aria-pressed', on ? 'false' : 'true');
+        state[k] = !on;
+        save();
+      });
+    });
+
+    var reset = document.getElementById('watchReset');
+    if(reset) reset.addEventListener('click', function(){
+      state = {};
+      boxes.forEach(function(b){ b.setAttribute('aria-pressed','false'); });
+      save();
+    });
+  })();
+})();
+</script>
+</body>
+</html>
