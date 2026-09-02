@@ -14,110 +14,73 @@
   --ink-3:#8a94a4;
   --up:#12916d;
   --down:#d3364b;
-  --rng:#a8741a;
-  --rng-soft:rgba(168,116,26,.13);
-  --brk:#2f6fd0;
-  --brk-soft:rgba(47,111,208,.13);
+  --rev:#2f6fd0;
+  --rev-soft:rgba(47,111,208,.13);
+  --bear:#a8741a;
+  --bear-soft:rgba(168,116,26,.13);
   --grid:#e9edf3;
   --hatch:rgba(90,104,126,.10);
   --shadow:0 1px 2px rgba(18,23,34,.05), 0 8px 24px -14px rgba(18,23,34,.22);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-theme="light"]){
-    --bg:#0d1016;
-    --panel:#151a23;
-    --panel-2:#1a202b;
-    --line:#28313f;
-    --line-soft:#212936;
-    --ink:#e7ecf4;
-    --ink-2:#98a3b4;
-    --ink-3:#6a7587;
-    --up:#2bb98f;
-    --down:#f0526a;
-    --rng:#d9a441;
-    --rng-soft:rgba(217,164,65,.15);
-    --brk:#5b9bf5;
-    --brk-soft:rgba(91,155,245,.15);
-    --grid:#1f2733;
-    --hatch:rgba(154,167,190,.08);
+    --bg:#0d1016; --panel:#151a23; --panel-2:#1a202b;
+    --line:#28313f; --line-soft:#212936;
+    --ink:#e7ecf4; --ink-2:#98a3b4; --ink-3:#6a7587;
+    --up:#2bb98f; --down:#f0526a;
+    --rev:#5b9bf5; --rev-soft:rgba(91,155,245,.15);
+    --bear:#d9a441; --bear-soft:rgba(217,164,65,.15);
+    --grid:#1f2733; --hatch:rgba(154,167,190,.08);
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
   }
 }
 :root[data-theme="dark"]{
-  --bg:#0d1016;
-  --panel:#151a23;
-  --panel-2:#1a202b;
-  --line:#28313f;
-  --line-soft:#212936;
-  --ink:#e7ecf4;
-  --ink-2:#98a3b4;
-  --ink-3:#6a7587;
-  --up:#2bb98f;
-  --down:#f0526a;
-  --rng:#d9a441;
-  --rng-soft:rgba(217,164,65,.15);
-  --brk:#5b9bf5;
-  --brk-soft:rgba(91,155,245,.15);
-  --grid:#1f2733;
-  --hatch:rgba(154,167,190,.08);
+  --bg:#0d1016; --panel:#151a23; --panel-2:#1a202b;
+  --line:#28313f; --line-soft:#212936;
+  --ink:#e7ecf4; --ink-2:#98a3b4; --ink-3:#6a7587;
+  --up:#2bb98f; --down:#f0526a;
+  --rev:#5b9bf5; --rev-soft:rgba(91,155,245,.15);
+  --bear:#d9a441; --bear-soft:rgba(217,164,65,.15);
+  --grid:#1f2733; --hatch:rgba(154,167,190,.08);
   --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.8);
 }
 
 *{box-sizing:border-box}
 body{
-  background:var(--bg);
-  color:var(--ink);
+  background:var(--bg); color:var(--ink);
   font-family:"Zen Kaku Gothic New","Hiragino Kaku Gothic ProN","Yu Gothic",system-ui,sans-serif;
-  font-size:15px;
-  line-height:1.75;
-  -webkit-font-smoothing:antialiased;
+  font-size:15px; line-height:1.75; -webkit-font-smoothing:antialiased;
 }
 .mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;font-variant-numeric:tabular-nums}
 .wrap{max-width:1300px;margin:0 auto;padding:28px 20px 72px;display:flex;flex-direction:column;gap:26px}
 .col{max-width:960px;width:100%}
 
-/* ---- instrument header ---- */
 .inst{display:flex;flex-wrap:wrap;align-items:baseline;gap:10px 14px}
-.tick{
-  font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.08em;
-  border:1px solid var(--line);border-radius:3px;padding:2px 7px;color:var(--ink-2);
-  background:var(--panel);
-}
+.tick{font-family:"IBM Plex Mono",monospace;font-size:12px;font-weight:600;letter-spacing:.08em;
+  border:1px solid var(--line);border-radius:3px;padding:2px 7px;color:var(--ink-2);background:var(--panel)}
 .inst h1{font-size:20px;font-weight:700;margin:0;letter-spacing:.01em}
 .last{font-family:"IBM Plex Mono",monospace;font-size:20px;font-weight:600;font-variant-numeric:tabular-nums}
 .chg{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--down)}
 .tf{font-size:11px;color:var(--ink-3);letter-spacing:.1em;border-left:1px solid var(--line);padding-left:14px}
-
 .lede{max-width:64ch;color:var(--ink-2);font-size:14.5px;margin:0}
 .lede b{color:var(--ink);font-weight:500}
 
-/* ---- chart board ---- */
-.board{
-  background:var(--panel);border:1px solid var(--line);border-radius:6px;
-  box-shadow:var(--shadow);overflow:hidden;
-}
-.bar{
-  display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;
-  padding:11px 14px;border-bottom:1px solid var(--line-soft);
-  background:var(--panel-2);
-}
+.board{background:var(--panel);border:1px solid var(--line);border-radius:6px;box-shadow:var(--shadow);overflow:hidden}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;padding:11px 14px;
+  border-bottom:1px solid var(--line-soft);background:var(--panel-2)}
 .seg{display:flex;border:1px solid var(--line);border-radius:4px;overflow:hidden;background:var(--panel)}
-.seg button{
-  font-family:inherit;font-size:12.5px;font-weight:500;letter-spacing:.02em;
-  padding:5px 13px;border:0;background:transparent;color:var(--ink-2);cursor:pointer;
-  border-right:1px solid var(--line);transition:background .12s,color .12s;
-}
+.seg button{font-family:inherit;font-size:12.5px;font-weight:500;letter-spacing:.02em;padding:5px 13px;
+  border:0;background:transparent;color:var(--ink-2);cursor:pointer;border-right:1px solid var(--line);
+  transition:background .12s,color .12s}
 .seg button:last-child{border-right:0}
 .seg button:hover{background:var(--panel-2);color:var(--ink)}
 .seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:700}
-.seg button:focus-visible{outline:2px solid var(--brk);outline-offset:-2px}
+.seg button:focus-visible{outline:2px solid var(--rev);outline-offset:-2px}
 .seg.k button[aria-pressed="true"]{background:var(--panel-2);color:var(--ink)}
 
-.readout{
-  display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;margin-left:auto;
+.readout{display:flex;gap:14px;flex-wrap:wrap;align-items:baseline;margin-left:auto;
   font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-3);
-  font-variant-numeric:tabular-nums;min-height:18px;
-}
+  font-variant-numeric:tabular-nums;min-height:18px}
 .readout .d{color:var(--ink-2)}
 .readout .v{color:var(--ink);font-weight:500}
 .readout .tag{font-family:"Zen Kaku Gothic New",sans-serif;font-size:11px;padding:1px 6px;border-radius:3px}
@@ -125,17 +88,13 @@ body{
 .scroller{overflow-x:auto;-webkit-overflow-scrolling:touch}
 .scroller svg{display:block;min-width:940px;width:100%;height:auto}
 
-.legend{
-  display:flex;flex-wrap:wrap;gap:8px 20px;padding:10px 14px;
-  border-top:1px solid var(--line-soft);background:var(--panel-2);
-  font-size:12px;color:var(--ink-2);
-}
+.legend{display:flex;flex-wrap:wrap;gap:8px 20px;padding:10px 14px;border-top:1px solid var(--line-soft);
+  background:var(--panel-2);font-size:12px;color:var(--ink-2)}
 .legend span{display:inline-flex;align-items:center;gap:7px}
 .swatch{width:16px;height:3px;border-radius:2px;display:inline-block}
 .swatch.sq{width:9px;height:9px;border-radius:1px}
 
-/* ---- stats strip ---- */
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:0;
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));gap:0;
   border:1px solid var(--line);border-radius:6px;background:var(--panel);overflow:hidden}
 .stat{padding:13px 16px;border-right:1px solid var(--line-soft)}
 .stat:last-child{border-right:0}
@@ -144,53 +103,58 @@ body{
   font-variant-numeric:tabular-nums;letter-spacing:-.01em}
 .stat dd small{font-size:11.5px;color:var(--ink-3);font-weight:400;margin-left:5px;letter-spacing:0}
 
-/* ---- sections ---- */
 h2{font-size:16.5px;font-weight:700;margin:0 0 4px;letter-spacing:.01em;text-wrap:balance}
-h2 .no{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);
-  font-weight:500;margin-right:10px;letter-spacing:.06em}
+h2 .no{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--ink-3);font-weight:500;
+  margin-right:10px;letter-spacing:.06em}
 section{display:flex;flex-direction:column;gap:14px}
 section > p{margin:0;max-width:64ch;color:var(--ink-2)}
 section > p b{color:var(--ink);font-weight:500}
 
-/* ---- comparison table ---- */
-.cmp{width:100%;border-collapse:collapse;font-size:14px;min-width:620px}
 .cmpwrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--panel)}
+.cmp{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
 .cmp th,.cmp td{padding:12px 16px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line-soft)}
 .cmp tr:last-child th,.cmp tr:last-child td{border-bottom:0}
-.cmp thead th{font-size:12px;letter-spacing:.05em;color:var(--ink-3);font-weight:500;
-  background:var(--panel-2);border-bottom:1px solid var(--line);padding-top:10px;padding-bottom:10px}
-.cmp tbody th{font-weight:500;color:var(--ink-2);font-size:13px;width:132px;white-space:nowrap;
+.cmp thead th{font-size:12px;letter-spacing:.05em;color:var(--ink-3);font-weight:500;background:var(--panel-2);
+  border-bottom:1px solid var(--line);padding-top:10px;padding-bottom:10px}
+.cmp tbody th{font-weight:500;color:var(--ink-2);font-size:13px;width:126px;white-space:nowrap;
   background:var(--panel-2);border-right:1px solid var(--line-soft)}
 .cmp td{color:var(--ink)}
 .cmp td .mono{color:var(--ink);font-size:13.5px}
-.hdr-r,.hdr-b{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700}
-.hdr-r{color:var(--rng)} .hdr-b{color:var(--brk)}
-.hdr-r .swatch,.hdr-b .swatch{width:14px;height:3px}
-.col-r{background:var(--rng-soft)} .col-b{background:var(--brk-soft)}
+.shared td{background:var(--panel-2);color:var(--ink-2)}
+.shared td b{color:var(--ink);font-weight:500}
+.hdr-a,.hdr-b{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;font-weight:700}
+.hdr-a{color:var(--rev)} .hdr-b{color:var(--bear)}
+.hdr-a .swatch,.hdr-b .swatch{width:14px;height:3px}
+.col-a{background:var(--rev-soft)} .col-b{background:var(--bear-soft)}
 
-/* ---- math strip ---- */
-.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:1px;
-  background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(228px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:6px;overflow:hidden}
 .calc div{background:var(--panel);padding:14px 16px}
 .calc h3{margin:0 0 6px;font-size:12px;font-weight:500;color:var(--ink-3);letter-spacing:.03em}
-.calc p{margin:0;font-family:"IBM Plex Mono",monospace;font-size:13.5px;line-height:1.6;
+.calc p{margin:0;font-family:"IBM Plex Mono",monospace;font-size:13px;line-height:1.6;
   font-variant-numeric:tabular-nums;color:var(--ink-2)}
-.calc p strong{color:var(--brk);font-weight:600;font-size:15px}
-.zone{border-left:3px solid var(--brk)!important}
+.calc p strong{color:var(--rev);font-weight:600;font-size:15px}
+.zone{border-left:3px solid var(--rev)!important}
 
-/* ---- watch list ---- */
-.watch{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:1px;
-  background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
-.watch li{background:var(--panel);padding:13px 16px;display:grid;
-  grid-template-columns:118px 1fr;gap:4px 18px;align-items:baseline}
-.watch b{font-family:"IBM Plex Mono",monospace;font-size:13.5px;font-weight:600;
-  font-variant-numeric:tabular-nums;color:var(--ink)}
-.watch span{color:var(--ink-2);font-size:14px}
-@media (max-width:560px){.watch li{grid-template-columns:1fr}}
+.gates{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:6px;overflow:hidden;counter-reset:g}
+.gates li{background:var(--panel);padding:13px 16px 13px 52px;position:relative;color:var(--ink-2);font-size:14px}
+.gates li::before{counter-increment:g;content:counter(g);position:absolute;left:16px;top:13px;
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;color:var(--rev);
+  border:1px solid var(--rev);border-radius:50%;width:20px;height:20px;display:grid;place-items:center;line-height:1}
+.gates b{color:var(--ink);font-weight:500}
+.gates .mono{color:var(--ink);font-weight:500}
 
-.note{border-left:3px solid var(--rng);background:var(--panel);border-radius:0 6px 6px 0;
-  padding:15px 18px;border-top:1px solid var(--line);border-right:1px solid var(--line);
-  border-bottom:1px solid var(--line)}
+.kill{border-left:3px solid var(--bear);background:var(--panel);border-radius:0 6px 6px 0;padding:15px 18px;
+  border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
+.kill h3{margin:0 0 8px;font-size:13px;font-weight:700;color:var(--bear);letter-spacing:.02em}
+.kill ul{margin:0;padding-left:19px;color:var(--ink-2);font-size:14px}
+.kill li{margin-bottom:5px}
+.kill li:last-child{margin-bottom:0}
+.kill b{color:var(--ink);font-weight:500}
+
+.note{border-left:3px solid var(--ink-3);background:var(--panel);border-radius:0 6px 6px 0;padding:15px 18px;
+  border-top:1px solid var(--line);border-right:1px solid var(--line);border-bottom:1px solid var(--line)}
 .note p{margin:0 0 10px;max-width:64ch;color:var(--ink-2);font-size:14px}
 .note p:last-child{margin-bottom:0}
 .note b{color:var(--ink);font-weight:500}
@@ -198,7 +162,6 @@ section > p b{color:var(--ink);font-weight:500}
 footer{border-top:1px solid var(--line);padding-top:16px;color:var(--ink-3);font-size:12.5px;
   max-width:70ch;line-height:1.7}
 footer b{color:var(--ink-2);font-weight:500}
-
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
@@ -212,15 +175,15 @@ footer b{color:var(--ink-2);font-weight:500}
       <span class="chg">−40（−0.08%）</span>
       <span class="tf mono">日足 / JPY</span>
     </div>
-    <p class="lede">6月高値からの下落と8月の投げ売りを経て、現在は<b>46,500〜62,000円のボックス下寄り</b>に位置しています。ここから3ヶ月先まで、<b>レンジ</b>と<b>崩れ</b>の2つの経路を日足の値動きと出来高として描き出しました。</p>
+    <p class="lede">9月中に<b>36,000円へ突っ込んで直近のしこりを一掃し、そこから急反転する</b>という想定を軸に置いています。ウォッシュアウトまでの経路は両シナリオ共通で、分かれ目は<b>36,000円を付けたあと戻せるかどうか</b>の一点です。</p>
   </header>
 
   <div class="board">
     <div class="bar">
       <div class="seg" role="group" aria-label="表示するシナリオ">
-        <button type="button" data-mode="both" aria-pressed="true">両シナリオ</button>
-        <button type="button" data-mode="range" aria-pressed="false">レンジ</button>
-        <button type="button" data-mode="break" aria-pressed="false">崩れ</button>
+        <button type="button" data-mode="rev" aria-pressed="true">本命：V字反転</button>
+        <button type="button" data-mode="bear" aria-pressed="false">否定：続落</button>
+        <button type="button" data-mode="both" aria-pressed="false">分岐を見る</button>
       </div>
       <div class="seg k" role="group" aria-label="価格軸のスケール">
         <button type="button" data-scale="lin" aria-pressed="true">通常</button>
@@ -228,103 +191,122 @@ footer b{color:var(--ink-2);font-weight:500}
       </div>
       <div class="readout" id="ro"></div>
     </div>
-    <div class="scroller"><svg id="chart" role="img" aria-label="キオクシアホールディングス日足チャートと3ヶ月先までの2つの想定経路"></svg></div>
+    <div class="scroller"><svg id="chart" role="img" aria-label="キオクシアホールディングス日足チャート。9月のウォッシュアウトを経てV字反転する本命シナリオと、続落する否定シナリオを12月初旬まで描いています。"></svg></div>
     <div class="legend">
       <span><i class="swatch sq" style="background:var(--up)"></i>陽線</span>
       <span><i class="swatch sq" style="background:var(--down)"></i>陰線</span>
-      <span><i class="swatch" style="background:var(--rng)"></i>シナリオA レンジ</span>
-      <span><i class="swatch" style="background:var(--brk)"></i>シナリオB 崩れ</span>
+      <span><i class="swatch" style="background:var(--rev)"></i>本命：V字反転</span>
+      <span><i class="swatch" style="background:var(--bear)"></i>否定：続落</span>
       <span style="color:var(--ink-3)">縦の破線より右は想定（実データではありません）</span>
     </div>
   </div>
 
   <dl class="stats col">
-    <div class="stat"><dt>6月高値からの下落率</dt><dd>−53.7%<small>110,000 → 50,960</small></dd></div>
-    <div class="stat"><dt>8月安値からの戻り</dt><dd>+33.1%<small>38,300 → 50,960</small></dd></div>
-    <div class="stat"><dt>直近ボックスの幅</dt><dd>15,500<small>46,500 – 62,000</small></dd></div>
-    <div class="stat"><dt>ボックス内の位置</dt><dd>28.8%<small>下寄り</small></dd></div>
+    <div class="stat"><dt>想定の底</dt><dd>36,000<small>8月安値 −6.0%</small></dd></div>
+    <div class="stat"><dt>現在値からの下落率</dt><dd>−29.4%<small>50,960 → 36,000</small></dd></div>
+    <div class="stat"><dt>反転後の到達</dt><dd>73,500<small>底から +104%</small></dd></div>
+    <div class="stat"><dt>高値からの戻り率</dt><dd>50.7%<small>110,000 の半値</small></dd></div>
   </dl>
 
   <section class="col">
-    <h2><span class="no">A / B</span>2つの経路の設計</h2>
-    <p>どちらも起点は同じです。まず 55,000〜57,000円へ戻りを試し、<b>ボックス上限 58,000円の手前で頭打ちになる</b>ところまでは共通。分岐は、そこから押した先で <b>46,500円を守るか割るか</b>の一点です。</p>
+    <h2><span class="no">MECHANISM</span>なぜ 36,000 を「割る」必要があるのか</h2>
+    <p>8月安値 38,300円をヒゲで下回ることに意味があります。単なる二番底ではなく、<b>安値を一度更新してから戻す</b>形でなければ、しこりは解けないからです。</p>
+    <p>いま上値を抑えているのは、<b>8月安値から拾って46,000〜56,000円で動けなくなっている買い方</b>です。この層は戻るたびに同値売りを出すので、上昇の初動が必ず重くなります。安値を更新すると、この層は最後の一人まで投げに回り、同時に「もう下だ」と見て売り込んだ空売りが安値の下に溜まります。そこから戻せば、<b>売り物が消えたところへ踏み上げの買い戻しが重なる</b>——これが急上昇の燃料です。</p>
+    <p>ただし正確に言うと、これで消えるのは<b>直近のしこりだけ</b>です。70,000〜110,000円の巨大な出来高帯はそのまま残ります。もっとも、その層は含み損が大きすぎてすでに戻り待ちの主体ではなく、当面の上値では売りの中心になりません。3ヶ月の射程で効くのは、あくまで46,000〜56,000円の解消です。</p>
+  </section>
+
+  <section class="col">
+    <h2><span class="no">PATH</span>2つの経路と、その分かれ目</h2>
+    <p>9月下旬の突っ込みまでは<b>まったく同じ値動き</b>として描いています。チャートの分岐点は 9/22 の安値 35,300円。そこから先だけが2本に分かれます。</p>
     <div class="cmpwrap">
       <table class="cmp">
         <thead>
           <tr>
             <th></th>
-            <th class="col-r"><span class="hdr-r"><i class="swatch" style="background:var(--rng)"></i>A｜レンジ</span></th>
-            <th class="col-b"><span class="hdr-b"><i class="swatch" style="background:var(--brk)"></i>B｜崩れ</span></th>
+            <th class="col-a"><span class="hdr-a"><i class="swatch" style="background:var(--rev)"></i>本命｜V字反転</span></th>
+            <th class="col-b"><span class="hdr-b"><i class="swatch" style="background:var(--bear)"></i>否定｜続落</span></th>
           </tr>
         </thead>
         <tbody>
-          <tr><th>9月</th>
-            <td>57,200円まで戻したのち反落。<span class="mono">48,200</span>円で下げ止まる。</td>
-            <td>56,800円まで戻したのち反落。<span class="mono">46,500</span>円を出来高増で明確に割る。</td></tr>
+          <tr class="shared"><th>9月前半</th>
+            <td colspan="2"><b>共通</b>：52,800円まで小戻ししたのち 46,500円を割り、出来高を増やしながら下げ加速。</td></tr>
+          <tr class="shared"><th>9/22</th>
+            <td colspan="2"><b>共通</b>：8月安値を下回り <span class="mono">35,300</span>円まで突っ込む。8月を上回る大商い、長い下ヒゲ。</td></tr>
+          <tr><th>9月末</th>
+            <td>翌日に大陽線。<span class="mono">39,800</span>円で 8月安値を即日回復し、下ヒゲが本物になる。</td>
+            <td>戻りは 37,600円止まり。<span class="mono">35,400</span>円へ再度沈み、安値圏に居座る。</td></tr>
           <tr><th>10月</th>
-            <td>再び 56,000円へ。上下とも前回の折り返し点に届かず、値幅が縮む。</td>
-            <td>41,000円台まで下げ、戻り売りをこなしながら 8月安値 <span class="mono">38,300</span>円を再テスト。</td></tr>
+            <td>押し目の出来高が枯れ、40,500円で二番底。<span class="mono">47,500</span>円で 46,500円を奪回——ここで確定。</td>
+            <td>階段状に切り下げ、<span class="mono">31,000</span>円の測定値幅に到達。戻りは毎回小さくなる。</td></tr>
           <tr><th>11月</th>
-            <td><span class="mono">47,600 – 52,800</span>円へ収れん。三角持ち合いの形。</td>
-            <td>安値を割り込み <span class="mono">30,000</span>円台前半へ。大商いで下ヒゲを出して反発。</td></tr>
+            <td>上昇日の出来高が下落日を上回り続ける。<span class="mono">62,800</span>円で 8月戻り高値を上抜け。</td>
+            <td>27,800円まで下げて底打ちを探る。高値からは <span class="mono">−75%</span>。</td></tr>
           <tr><th>12月初旬</th>
-            <td>50,000円前後。値幅は <span class="mono">15,500 → 約11,000</span>円に収縮。</td>
-            <td>34,000〜36,000円で戻りを試す。高値からは <span class="mono">−68%</span>。</td></tr>
+            <td><span class="mono">73,500</span>円。下落幅の半値戻しに到達。</td>
+            <td><span class="mono">30,200</span>円。戻りきれずに横ばい。</td></tr>
           <tr><th>出来高の型</th>
-            <td>一貫して逓減。3ヶ月で現在の<b>約半分</b>まで枯れる。売りも買いも手が引く。</td>
-            <td>下落局面で明確に膨張。<b>節目割れごとに出来高スパイク</b>、最安値で最大の商い。</td></tr>
-          <tr><th>このシナリオが<br>否定される条件</th>
-            <td>46,500円割れ、または出来高を伴う 58,000円上抜け。どちらでも保ち合いは終了。</td>
-            <td>46,500円を明確に割ったあと、<b>3日以内に同水準を回復</b>（ダマシの下放れ）。</td></tr>
+            <td>底で最大 → 押し目で<b>枯れる</b> → 上昇とともに再拡大。理想的な反転の形。</td>
+            <td>下落局面でだけ膨らみ、<b>戻り局面では細る</b>。売りが売りを呼ぶ形。</td></tr>
         </tbody>
       </table>
     </div>
   </section>
 
   <section class="col">
-    <h2><span class="no">TARGET</span>崩れた場合の下値目標</h2>
-    <p>ボックスを下放れたときの目標値は、複数の測り方が<b>ほぼ同じ水準に収束</b>します。チャート上のシナリオBはこの帯を到達点として描いています。</p>
+    <h2><span class="no">GATES</span>本命が本物である条件</h2>
+    <p>36,000円を付けること自体は、どちらのシナリオでも起きます。<b>本物のウォッシュアウトかどうかは、突っ込んだ「後」の5つの挙動でしか判別できません</b>。上から順に、時間軸どおりに並べています。</p>
+    <ol class="gates">
+      <li>突っ込んだ当日の出来高が、<b>8月の投げ売りを上回る</b>こと。下回るなら、まだ売り切っていません。</li>
+      <li>安値から<span class="mono">3営業日以内</span>に <b>38,300円（8月安値）を終値で回復</b>すること。下に居座るほど、ヒゲは支持ではなく通過点になります。</li>
+      <li>回復後の押し目で<b>出来高が明確に減る</b>こと。売り物が尽きた唯一の直接的な証拠で、5つの中で最も重要です。</li>
+      <li><b>46,500円を出来高増で奪回</b>すること。ここを取り返した時点で本命が確定します。チャートでは10月中旬。</li>
+      <li>以降、<b>上昇日の出来高が下落日を継続して上回る</b>こと。これが崩れたら、上昇は買い戻しだけで実需が入っていません。</li>
+    </ol>
+    <div class="kill">
+      <h3>この時点で本命は否定される</h3>
+      <ul>
+        <li>36,000円を割ったまま <b>5営業日以上</b> 38,300円を回復できない</li>
+        <li>戻り局面の出来高が、下落局面より<b>小さいまま</b>推移する</li>
+        <li>46,500円を回復できずに、<b>36,000円を再び割り込む</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="col">
+    <h2><span class="no">TARGET</span>反転した場合の上値</h2>
+    <p>底を 36,000円と置いたときの上値目標です。チャートの終点は第3目標に置いています。</p>
     <div class="calc">
       <div>
-        <h3>ボックスの測定値幅</h3>
-        <p>46,500 − ( 62,000 − 46,500 )<br>= <strong>31,000</strong></p>
+        <h3>第1目標 — N計算</h3>
+        <p>8月の上昇幅 62,000−38,300<br>36,000 + 23,700 = <strong>59,700</strong></p>
       </div>
       <div>
-        <h3>直近下落波のN計算</h3>
-        <p>62,000 → 46,500 ＝ 15,500<br>46,500 − 15,500 = <strong>31,000</strong></p>
-      </div>
-      <div>
-        <h3>高値からの下落率</h3>
-        <p>110,000 × ( 1 − 0.72 )<br>= <strong>30,800</strong></p>
+        <h3>第2目標 — 38.2%戻し</h3>
+        <p>下落幅 110,000−36,000 = 74,000<br>36,000 + 28,300 = <strong>64,300</strong></p>
       </div>
       <div class="zone">
-        <h3>収束する下値ゾーン</h3>
-        <p><strong>30,000 – 32,000</strong><br>現在値から −37% 〜 −41%</p>
+        <h3>第3目標 — 半値戻し</h3>
+        <p>36,000 + 37,000<br>= <strong>73,000</strong>　<span style="font-size:11px">← 12月初旬</span></p>
+      </div>
+      <div>
+        <h3>その先 — 61.8%戻し</h3>
+        <p>36,000 + 45,700<br>= <strong>81,700</strong>　<span style="font-size:11px">3ヶ月の射程外</span></p>
       </div>
     </div>
   </section>
 
   <section class="col">
-    <h2><span class="no">NOTE</span>「値幅調整は済んでいる」という見立てについて</h2>
+    <h2><span class="no">NOTE</span>ファンダメンタルズの扱いについて</h2>
     <div class="note">
-      <p>ご指摘のとおり、高値から <b>−65%</b> の下落は値幅調整としては十分に深く、ここからさらに時間をかけて横ばうことに必然性は薄い、という読みは筋が通ります。</p>
-      <p>その前提に立つと、<b>Aの「レンジ」は独立した結末ではなく、Bの前段になります</b>。出来高が枯れながら値幅が縮む持ち合いは、上放れの準備にも下放れの準備にもなる中立の形で、方向を決めるのは持ち合いを抜けたときの出来高だけです。Aのチャートの右端（12月初旬・50,000円前後）は、答えが出る直前の状態を描いたものだと捉えてください。</p>
-      <p>したがって実務上は、AとBを二者択一で扱うより、<b>「46,500円が割れるまではA、割れたらB」</b>という一本の道筋として運用するほうが素直です。Aが長引くほど、抜けたときの初動は速くなります。</p>
+      <p>「まだバブルは弾けていない、ファンダに傷はない」という判断はチャートからは検証できないので、<b>前提としてそのまま採用</b>しています。その前提が正しければ、−65%の下げは需給の投げであって業績の織り込みではなく、投げが終われば値は戻るはずで、これは筋の通った読み方です。</p>
+      <p>チャート側から言えるのは一点だけです。<b>その判断が正しいかどうかは、上のGATES 3と5——押し目で出来高が枯れるか、上昇日の出来高が下落日を上回るか——に必ず現れます</b>。ファンダが良いのに値が戻らない場合、市場がまだ同意していないということなので、同意するまで待てば十分間に合います。</p>
+      <p>一点だけ数字として申し添えると、この経路で最も強気なのは底値の位置ではなく<b>2ヶ月半で +103% という戻りの速さ</b>です。下げが2ヶ月で −65% だったことを考えれば対称ではありますが、上値目標は第1目標 59,700円から順に確認していくのが安全です。</p>
     </div>
-  </section>
-
-  <section class="col">
-    <h2><span class="no">WATCH</span>どちらの経路でも見るべき3点</h2>
-    <ul class="watch">
-      <li><b>46,500</b><span>唯一の分岐点。ここを終値で割り、かつ出来高が直近平均を上回ればBへ移行したと判断できます。ヒゲだけの割り込みは含めません。</span></li>
-      <li><b>57,500 – 58,000</b><span>戻りの上限。ここを出来高増を伴って上抜けた場合はA・Bどちらの想定からも外れ、62,000円・65,000円が視野に入ります。</span></li>
-      <li><b>出来高の非対称性</b><span>上昇日と下落日、どちらの出来高が大きいか。値位置が動かなくてもこの偏りが先に傾きます。下落日側に偏り続けるなら、レンジのまま時間を過ごしてもBの確度は上がっていきます。</span></li>
-    </ul>
   </section>
 
   <footer class="col">
     <b>チャートについて</b>：左半分（6月〜9月2日）はご提示のスクリーンショットから読み取って再構成した近似データで、実際の四本値とは細部が異なります。9月3日以降のローソク足と出来高は<b>すべて想定シナリオを可視化するために生成したもの</b>であり、予測値でも実データでもありません。日付は土日を除いた営業日で数えており、祝日は考慮していません。出来高は絶対量ではなく相対値で表示しています。
-    <br><br>値動きと出来高のみに基づく形状分析であり、業績・需給・市場環境は考慮していません。投資判断そのものではなく、その材料としてご利用ください。
+    <br><br>値動きと出来高の形状分析に、ご提示のファンダメンタルズ判断を前提として重ねたものです。投資判断そのものではなく、その材料としてご利用ください。
   </footer>
 </div>
 
@@ -332,7 +314,6 @@ footer b{color:var(--ink-2);font-weight:500}
 (function(){
   "use strict";
 
-  /* ---------- deterministic noise ---------- */
   function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
 
   function pathFrom(wps,n){
@@ -355,22 +336,21 @@ footer b{color:var(--ink-2);font-weight:500}
       var rg=Math.max(hi-lo,path[i]*0.009);
       var high=hi+rg*(0.12+rnd()*0.85),low=lo-rg*(0.12+rnd()*0.85);
       var ret=Math.abs(close-pc)/pc;
-      var vol=vmul[i]*(0.74+rnd()*0.52)*(1+ret*8);
-      bars.push({o:open,h:high,l:low,c:close,v:vol});
+      bars.push({o:open,h:high,l:low,c:close,v:vmul[i]*(0.74+rnd()*0.52)*(1+ret*8)});
       pc=close;
     }
     return bars;
   }
 
-  /* ---------- trading days ---------- */
-  var HN=68, PN=65, TOT=HN+PN;
+  var HN=68, PN=65, TOT=HN+PN, FORK=13;   /* FORK = washout bar, shared by both paths */
+
   var dates=(function(){
     var out=[],d=new Date(Date.UTC(2026,5,1));
     while(out.length<TOT){var w=d.getUTCDay();if(w!==0&&w!==6)out.push(new Date(d.getTime()));d.setUTCDate(d.getUTCDate()+1);}
     return out;
   })();
 
-  /* ---------- history: reconstructed from the screenshot ---------- */
+  /* ---- history: reconstructed from the screenshot ---- */
   var histWp=[[0,77000],[3,72500],[6,80000],[9,75500],[12,88000],[14,97000],[16,110000],
     [18,99000],[20,91000],[22,96500],[25,87000],[27,80000],[29,84500],[31,75000],[33,69000],
     [35,61000],[37,55500],[39,60000],[41,52000],[44,49500],[45,46000],[46,42000],[47,41000],
@@ -380,63 +360,76 @@ footer b{color:var(--ink-2);font-weight:500}
     [41,1.20],[44,1.35],[46,2.40],[47,3.20],[49,1.80],[52,1.15],[56,1.50],[60,1.00],[64,0.92],[67,0.62]];
 
   var hist=makeBars(pathFrom(histWp,HN),pathFrom(histVw,HN),20260902,0.0135,77000);
-  /* earnings gap + capitulation wick */
   hist[46].o=hist[45].c*0.935; hist[46].h=Math.max(hist[46].o,hist[46].c)*1.008;
   hist[47].l=38300; hist[47].o=hist[46].c*0.995; hist[47].c=41000; hist[47].h=41900;
   hist[56].h=62400; hist[64].l=46300;
   hist[HN-1].c=50960; hist[HN-1].o=50480; hist[HN-1].h=51380; hist[HN-1].l=50210;
 
-  /* ---------- scenario A : range ---------- */
-  var rngWp=[[0,51500],[6,55500],[11,57200],[16,53000],[21,48200],[26,49500],[30,54500],
-    [34,56000],[39,51000],[44,47600],[48,49000],[53,52800],[57,50500],[61,48800],[64,50000]];
-  var rngVw=[[0,0.60],[10,0.70],[20,0.55],[30,0.50],[40,0.45],[50,0.40],[64,0.32]];
-  var rngBars=makeBars(pathFrom(rngWp,PN),pathFrom(rngVw,PN),771003,0.0115,50960);
+  /* ---- shared September washout (indices 0..13), then the fork ---- */
+  var wash=[[0,51200],[2,52800],[4,49500],[6,46800],[8,44000],[10,41000],[12,38200],[13,36200]];
+  var washV=[[0,0.60],[4,0.70],[6,1.10],[8,1.60],[10,2.00],[12,2.60],[13,3.60]];
 
-  /* ---------- scenario B : breakdown ---------- */
-  var brkWp=[[0,51500],[5,54800],[9,56800],[14,51000],[18,47500],[20,46000],[22,43000],
-    [24,41200],[27,44000],[30,41000],[33,38200],[35,36500],[38,34500],[41,36200],[44,33500],
-    [47,31200],[50,30300],[53,33500],[57,35800],[60,33800],[64,34800]];
-  var brkVw=[[0,0.60],[9,0.70],[14,0.80],[20,1.70],[24,1.50],[27,0.90],[30,1.20],[33,1.80],
-    [35,2.20],[38,1.60],[41,1.05],[44,1.50],[47,2.40],[50,3.40],[53,2.00],[57,1.20],[64,0.90]];
-  var brkBars=makeBars(pathFrom(brkWp,PN),pathFrom(brkVw,PN),480219,0.0155,50960);
-  brkBars[20].l=45300; brkBars[33].l=37600; brkBars[50].l=29200; brkBars[50].c=30300; brkBars[50].h=32100;
+  /* A — the base case: undercut, spring, V-shaped advance */
+  var revWp=wash.concat([[14,39800],[16,42000],[18,40500],[21,44500],[23,47500],[25,46200],
+    [28,51000],[31,54500],[33,52500],[36,58000],[39,62800],[41,60500],[44,66000],[47,69500],
+    [49,67000],[52,72000],[55,70000],[58,74500],[61,72000],[64,73500]]);
+  var revVw=washV.concat([[14,3.00],[16,1.60],[18,0.80],[20,1.00],[23,2.00],[25,1.10],[28,1.50],
+    [31,1.70],[33,1.10],[36,1.60],[39,2.40],[41,1.30],[44,1.70],[47,1.90],[49,1.20],[52,1.80],
+    [55,1.30],[58,1.90],[61,1.40],[64,1.60]]);
 
-  /* ---------- geometry ---------- */
-  var W=1240,PADL=64,PADR=88,PADT=18,PH=452,GAP=16,VH=104,XAX=26;
-  var H=PADT+PH+GAP+VH+XAX;
-  var PW=W-PADL-PADR;
+  /* B — the invalidation: no reclaim, the decline simply continues */
+  var bearWp=wash.concat([[15,37600],[17,35400],[19,36600],[22,33200],[25,34500],[28,31000],
+    [30,32500],[33,29800],[36,31200],[39,28500],[42,30000],[45,27800],[48,29600],[51,28200],
+    [54,30500],[57,29000],[60,31000],[64,30200]]);
+  var bearVw=washV.concat([[15,1.80],[17,2.00],[19,1.10],[22,1.90],[25,1.00],[28,2.10],[30,1.10],
+    [33,1.80],[36,1.00],[39,1.90],[42,1.00],[45,2.20],[48,1.10],[51,1.40],[54,0.95],[57,1.20],
+    [60,0.90],[64,0.85]]);
+
+  var revBars =makeBars(pathFrom(revWp,PN), pathFrom(revVw,PN), 360922,0.016,50960);
+  var bearBars=makeBars(pathFrom(bearWp,PN),pathFrom(bearVw,PN),360922,0.016,50960);
+  for(var q=0;q<=FORK;q++) bearBars[q]=revBars[q];   /* guarantee an identical shared segment */
+
+  /* the washout bar: deep wick, close well off the low */
+  revBars[FORK].o=38050; revBars[FORK].h=38260; revBars[FORK].l=35300; revBars[FORK].c=36200;
+  bearBars[FORK]=revBars[FORK];
+  /* the reversal bar, and the second undercut on the bear path */
+  revBars[14].o=36600; revBars[14].l=36180; revBars[14].c=39800; revBars[14].h=40120;
+  bearBars[17].l=34900; bearBars[45].l=27100;
+  revBars[PN-1].o=72900;  revBars[PN-1].c=73500;  revBars[PN-1].h=73980;  revBars[PN-1].l=72610;
+  bearBars[PN-1].o=30480; bearBars[PN-1].c=30200; bearBars[PN-1].h=30720; bearBars[PN-1].l=29980;
+
+  /* ---- geometry ---- */
+  var W=1240,PADL=64,PADR=104,PADT=18,PH=452,GAP=16,VH=104,XAX=26;
+  var H=PADT+PH+GAP+VH+XAX, PW=W-PADL-PADR;
   var step=PW/TOT, bw=Math.max(3,Math.min(7,step*0.66));
   var PTOP=PADT,PBOT=PADT+PH,VTOP=PBOT+GAP,VBOT=VTOP+VH;
 
   var LEVELS=[
+    {p:73000,l:"73,000",n:"半値戻し"},
     {p:62000,l:"62,000",n:"8月戻り高値"},
-    {p:57500,l:"57,500",n:"戻りの上限"},
     {p:50960,l:"50,960",n:"現在値",cur:true},
-    {p:46500,l:"46,500",n:"分岐点"},
+    {p:46500,l:"46,500",n:"奪回ライン"},
     {p:38300,l:"38,300",n:"8月安値"},
+    {p:36000,l:"36,000",n:"想定の底",piv:true},
     {p:31000,l:"31,000",n:"測定値幅"}
   ];
 
-  var svg=document.getElementById("chart");
-  var ro=document.getElementById("ro");
-  var mode="both", scale="lin";
+  var svg=document.getElementById("chart"), ro=document.getElementById("ro");
+  var mode="rev", scale="lin", dom, yScale;
 
   function esc(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;");}
   function fmt(n){return Math.round(n).toLocaleString("en-US");}
-
-  function activeProj(){return mode==="break"?brkBars:mode==="range"?rngBars:null;}
+  function activeProj(){return mode==="bear"?bearBars:revBars;}
 
   function domain(){
-    var lo=1e9,hi=-1e9,i;
-    for(i=0;i<HN;i++){if(hist[i].l<lo)lo=hist[i].l;if(hist[i].h>hi)hi=hist[i].h;}
-    var sets=mode==="both"?[rngBars,brkBars]:[activeProj()];
-    for(var s=0;s<sets.length;s++){var b=sets[s];for(i=0;i<b.length;i++){if(b[i].l<lo)lo=b[i].l;if(b[i].h>hi)hi=b[i].h;}}
+    var lo=1e9,hi=-1e9,i,sets=[hist,revBars,bearBars];
+    for(var s=0;s<sets.length;s++){var b=sets[s];
+      for(i=0;i<b.length;i++){if(b[i].l<lo)lo=b[i].l;if(b[i].h>hi)hi=b[i].h;}}
     for(i=0;i<LEVELS.length;i++){if(LEVELS[i].p<lo)lo=LEVELS[i].p;if(LEVELS[i].p>hi)hi=LEVELS[i].p;}
-    var pad=(hi-lo)*0.05;
+    var pad=(hi-lo)*0.045;
     return [lo-pad,hi+pad];
   }
 
-  var dom, yScale;
   function buildScale(){
     dom=domain();
     if(scale==="log"){
@@ -449,142 +442,147 @@ footer b{color:var(--ink-2);font-weight:500}
   function x(i){return PADL+step*(i+0.5);}
 
   function ticks(){
-    var out=[],v;
+    var out=[],v,i;
     if(scale==="log"){
-      var cand=[30000,35000,40000,50000,60000,70000,80000,90000,100000,110000];
-      for(var i=0;i<cand.length;i++) if(cand[i]>=dom[0]&&cand[i]<=dom[1]) out.push(cand[i]);
+      var cand=[25000,30000,35000,40000,50000,60000,70000,80000,90000,100000,110000];
+      for(i=0;i<cand.length;i++) if(cand[i]>=dom[0]&&cand[i]<=dom[1]) out.push(cand[i]);
     }else{
-      var st=(dom[1]-dom[0])>70000?10000:5000;
-      for(v=Math.ceil(dom[0]/st)*st; v<=dom[1]; v+=st) out.push(v);
+      for(v=Math.ceil(dom[0]/10000)*10000; v<=dom[1]; v+=10000) out.push(v);
     }
     return out;
   }
 
-  function candles(bars,off,op,cls){
+  function candles(bars,off,from,to,op){
     var s="";
-    for(var i=0;i<bars.length;i++){
-      var b=bars[i],cx=x(off+i),up=b.c>=b.o;
-      var col=up?"var(--up)":"var(--down)";
+    for(var i=from;i<to;i++){
+      var b=bars[i],cx=x(off+i),col=b.c>=b.o?"var(--up)":"var(--down)";
       var yo=yScale(b.o),yc=yScale(b.c);
       var top=Math.min(yo,yc),ht=Math.max(1.2,Math.abs(yo-yc));
-      s+='<line x1="'+cx.toFixed(2)+'" y1="'+yScale(b.h).toFixed(2)+'" x2="'+cx.toFixed(2)+'" y2="'+yScale(b.l).toFixed(2)+'" stroke="'+col+'" stroke-width="1" opacity="'+op+'"/>';
-      s+='<rect x="'+(cx-bw/2).toFixed(2)+'" y="'+top.toFixed(2)+'" width="'+bw.toFixed(2)+'" height="'+ht.toFixed(2)+'" fill="'+col+'" opacity="'+op+'"/>';
+      s+='<line x1="'+cx.toFixed(2)+'" y1="'+yScale(b.h).toFixed(2)+'" x2="'+cx.toFixed(2)+'" y2="'+yScale(b.l).toFixed(2)+'" stroke="'+col+'" stroke-width="1" opacity="'+op+'"/>'
+       + '<rect x="'+(cx-bw/2).toFixed(2)+'" y="'+top.toFixed(2)+'" width="'+bw.toFixed(2)+'" height="'+ht.toFixed(2)+'" fill="'+col+'" opacity="'+op+'"/>';
     }
     return s;
   }
 
-  function closeLine(bars,off,col,dash){
-    var d="M "+x(HN-1).toFixed(2)+" "+yScale(hist[HN-1].c).toFixed(2);
-    for(var i=0;i<bars.length;i++) d+=" L "+x(off+i).toFixed(2)+" "+yScale(bars[i].c).toFixed(2);
-    return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"'+(dash?' stroke-dasharray="1 4" stroke-width="1.6" opacity=".55"':'')+'/>';
+  function closeLine(bars,off,from,col,dash){
+    var ax=from===0?x(HN-1):x(off+from-1), ay=from===0?yScale(hist[HN-1].c):yScale(bars[from-1].c);
+    var d="M "+ax.toFixed(2)+" "+ay.toFixed(2);
+    for(var i=from;i<bars.length;i++) d+=" L "+x(off+i).toFixed(2)+" "+yScale(bars[i].c).toFixed(2);
+    return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-linejoin="round" stroke-linecap="round"'
+      +(dash?' stroke-width="1.6" stroke-dasharray="1 4" opacity=".6"':' stroke-width="2"')+'/>';
   }
 
   function volMax(){
-    var m=0,i;
-    for(i=0;i<HN;i++) if(hist[i].v>m) m=hist[i].v;
-    var sets=mode==="both"?[rngBars,brkBars]:[activeProj()];
+    var m=0,i,sets=[hist,revBars,bearBars];
     for(var s=0;s<sets.length;s++){var b=sets[s];for(i=0;i<b.length;i++) if(b[i].v>m) m=b[i].v;}
     return m;
   }
 
-  function volBars(bars,off,vm,op){
+  function volBars(bars,off,from,to,vm,op){
     var s="";
-    for(var i=0;i<bars.length;i++){
+    for(var i=from;i<to;i++){
       var b=bars[i],h=Math.max(1,b.v/vm*VH),cx=x(off+i);
       s+='<rect x="'+(cx-bw/2).toFixed(2)+'" y="'+(VBOT-h).toFixed(2)+'" width="'+bw.toFixed(2)+'" height="'+h.toFixed(2)+'" fill="'+(b.c>=b.o?"var(--up)":"var(--down)")+'" opacity="'+op+'"/>';
     }
     return s;
   }
 
-  function volLine(bars,off,vm,col){
+  function volLine(bars,off,from,vm,col){
     var d="",n=5;
-    for(var i=0;i<bars.length;i++){
+    for(var i=from;i<bars.length;i++){
       var a=0,k=0;
       for(var j=Math.max(0,i-n+1);j<=i;j++){a+=bars[j].v;k++;}
-      var y=VBOT-(a/k)/vm*VH;
-      d+=(i?" L ":"M ")+x(off+i).toFixed(2)+" "+y.toFixed(2);
+      d+=(d?" L ":"M ")+x(off+i).toFixed(2)+" "+(VBOT-(a/k)/vm*VH).toFixed(2);
     }
     return '<path d="'+d+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linejoin="round"/>';
   }
 
+  /* right rail with greedy vertical declutter */
+  function rail(){
+    var items=[],i;
+    for(i=0;i<LEVELS.length;i++){
+      var y=yScale(LEVELS[i].p);
+      if(y<PTOP-2||y>PBOT+2) continue;
+      items.push({L:LEVELS[i],y:y,ly:y});
+    }
+    items.sort(function(a,b){return a.y-b.y;});
+    for(i=1;i<items.length;i++) if(items[i].ly<items[i-1].ly+14) items[i].ly=items[i-1].ly+14;
+    var over=items.length?items[items.length-1].ly-PBOT:0;
+    if(over>0) for(i=0;i<items.length;i++) items[i].ly-=over;
+
+    var s="";
+    for(i=0;i<items.length;i++){
+      var it=items[i],L=it.L;
+      var stroke=L.piv?"var(--rev)":L.cur?"var(--ink-2)":"var(--ink-3)";
+      var fill=L.piv?"var(--rev)":L.cur?"var(--ink)":"var(--ink-2)";
+      s+='<line x1="'+PADL+'" y1="'+it.y.toFixed(2)+'" x2="'+(W-PADR+3)+'" y2="'+it.y.toFixed(2)+'" stroke="'+stroke+'" stroke-width="'+(L.piv?1.3:1)+'" stroke-dasharray="'+(L.cur||L.piv?"5 3":"2 4")+'" opacity="'+(L.piv?".9":L.cur?".8":".6")+'"/>'
+       + '<text x="'+(W-PADR+8)+'" y="'+(it.ly+3.5).toFixed(2)+'" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="'+(L.piv||L.cur?600:500)+'" fill="'+fill+'">'+L.l
+       + '<tspan font-family="Zen Kaku Gothic New, sans-serif" font-size="9.5" font-weight="400" fill="var(--ink-3)" dx="5">'+esc(L.n)+'</tspan></text>';
+    }
+    return s;
+  }
+
   function render(){
     buildScale();
-    var vm=volMax(),s="",i;
-    var divX=PADL+step*HN;
+    var vm=volMax(),s="",i, divX=PADL+step*HN;
 
-    s+='<defs><pattern id="hz" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">'+
-       '<line x1="0" y1="0" x2="0" y2="7" stroke="var(--hatch)" stroke-width="2.4"/></pattern></defs>';
+    s+='<defs><pattern id="hz" width="7" height="7" patternTransform="rotate(45)" patternUnits="userSpaceOnUse">'
+      +'<line x1="0" y1="0" x2="0" y2="7" stroke="var(--hatch)" stroke-width="2.4"/></pattern></defs>'
+      +'<rect x="'+divX.toFixed(2)+'" y="'+PTOP+'" width="'+(W-PADR-divX).toFixed(2)+'" height="'+(VBOT-PTOP)+'" fill="url(#hz)"/>';
 
-    /* projection background */
-    s+='<rect x="'+divX.toFixed(2)+'" y="'+PTOP+'" width="'+(W-PADR-divX).toFixed(2)+'" height="'+(VBOT-PTOP)+'" fill="url(#hz)"/>';
-
-    /* price gridlines + left axis */
     var tk=ticks();
     for(i=0;i<tk.length;i++){
       var y=yScale(tk[i]);
-      s+='<line x1="'+PADL+'" y1="'+y.toFixed(2)+'" x2="'+(W-PADR)+'" y2="'+y.toFixed(2)+'" stroke="var(--grid)" stroke-width="1"/>';
-      s+='<text x="'+(PADL-9)+'" y="'+(y+3.5).toFixed(2)+'" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">'+fmt(tk[i])+'</text>';
+      s+='<line x1="'+PADL+'" y1="'+y.toFixed(2)+'" x2="'+(W-PADR)+'" y2="'+y.toFixed(2)+'" stroke="var(--grid)" stroke-width="1"/>'
+       + '<text x="'+(PADL-9)+'" y="'+(y+3.5).toFixed(2)+'" text-anchor="end" font-family="IBM Plex Mono, monospace" font-size="10.5" fill="var(--ink-3)">'+fmt(tk[i])+'</text>';
     }
-
-    /* key levels + right rail */
-    for(i=0;i<LEVELS.length;i++){
-      var L=LEVELS[i],ly=yScale(L.p);
-      if(ly<PTOP-2||ly>PBOT+2) continue;
-      var c=L.cur?"var(--ink-2)":"var(--ink-3)";
-      s+='<line x1="'+PADL+'" y1="'+ly.toFixed(2)+'" x2="'+(W-PADR+4)+'" y2="'+ly.toFixed(2)+'" stroke="'+c+'" stroke-width="1" stroke-dasharray="'+(L.cur?"5 3":"2 4")+'" opacity="'+(L.cur?".8":".65")+'"/>';
-      s+='<text x="'+(W-PADR+9)+'" y="'+(ly-1).toFixed(2)+'" font-family="IBM Plex Mono, monospace" font-size="10.5" font-weight="500" fill="'+(L.cur?"var(--ink)":"var(--ink-2)")+'">'+L.l+'</text>';
-      s+='<text x="'+(W-PADR+9)+'" y="'+(ly+10).toFixed(2)+'" font-family="Zen Kaku Gothic New, sans-serif" font-size="9.5" fill="var(--ink-3)">'+esc(L.n)+'</text>';
-    }
+    s+=rail();
 
     /* history */
-    s+=candles(hist,0,"1");
-    s+=volBars(hist,0,vm,"0.85");
+    s+=candles(hist,0,0,HN,"1")+volBars(hist,0,0,HN,vm,"0.85");
 
-    /* projections */
+    /* shared washout, then the fork */
     if(mode==="both"){
-      s+=closeLine(rngBars,HN,"var(--rng)",false);
-      s+=closeLine(brkBars,HN,"var(--brk)",false);
-      s+=volLine(rngBars,HN,vm,"var(--rng)");
-      s+=volLine(brkBars,HN,vm,"var(--brk)");
-      var er=[x(TOT-1),yScale(rngBars[PN-1].c)],eb=[x(TOT-1),yScale(brkBars[PN-1].c)];
-      s+='<circle cx="'+er[0].toFixed(2)+'" cy="'+er[1].toFixed(2)+'" r="3.5" fill="var(--rng)"/>';
-      s+='<circle cx="'+eb[0].toFixed(2)+'" cy="'+eb[1].toFixed(2)+'" r="3.5" fill="var(--brk)"/>';
-      s+='<text x="'+(er[0]-8).toFixed(2)+'" y="'+(er[1]-9).toFixed(2)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="11" font-weight="700" fill="var(--rng)">A レンジ '+fmt(rngBars[PN-1].c)+'</text>';
-      s+='<text x="'+(eb[0]-8).toFixed(2)+'" y="'+(eb[1]+16).toFixed(2)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="11" font-weight="700" fill="var(--brk)">B 崩れ '+fmt(brkBars[PN-1].c)+'</text>';
+      s+=candles(revBars,HN,0,FORK+1,"1")+volBars(revBars,HN,0,FORK+1,vm,"0.85");
+      s+=closeLine(revBars,HN,FORK+1,"var(--rev)",false)+closeLine(bearBars,HN,FORK+1,"var(--bear)",false);
+      s+=volLine(revBars,HN,FORK+1,vm,"var(--rev)")+volLine(bearBars,HN,FORK+1,vm,"var(--bear)");
+      var ea=yScale(revBars[PN-1].c), eb=yScale(bearBars[PN-1].c), ex=x(TOT-1);
+      s+='<circle cx="'+ex.toFixed(2)+'" cy="'+ea.toFixed(2)+'" r="3.5" fill="var(--rev)"/>'
+       + '<circle cx="'+ex.toFixed(2)+'" cy="'+eb.toFixed(2)+'" r="3.5" fill="var(--bear)"/>'
+       + '<text x="'+(ex-8).toFixed(2)+'" y="'+(ea-9).toFixed(2)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="11" font-weight="700" fill="var(--rev)">本命 '+fmt(revBars[PN-1].c)+'</text>'
+       + '<text x="'+(ex-8).toFixed(2)+'" y="'+(eb+16).toFixed(2)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="11" font-weight="700" fill="var(--bear)">否定 '+fmt(bearBars[PN-1].c)+'</text>';
     }else{
-      var other=mode==="break"?rngBars:brkBars;
-      var oc=mode==="break"?"var(--rng)":"var(--brk)";
-      s+=closeLine(other,HN,oc,true);
-      s+=candles(activeProj(),HN,"0.92");
-      s+=volBars(activeProj(),HN,vm,"0.8");
-      var ac=mode==="break"?"var(--brk)":"var(--rng)";
-      var lab=mode==="break"?"シナリオB｜崩れ":"シナリオA｜レンジ";
-      s+='<rect x="'+(divX+8).toFixed(2)+'" y="'+(PTOP+8)+'" width="112" height="20" rx="3" fill="'+ac+'"/>';
-      s+='<text x="'+(divX+64).toFixed(2)+'" y="'+(PTOP+22)+'" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" font-weight="700" fill="var(--panel)">'+lab+'</text>';
+      var other=mode==="bear"?revBars:bearBars;
+      s+=closeLine(other,HN,FORK+1,mode==="bear"?"var(--rev)":"var(--bear)",true);
+      s+=candles(activeProj(),HN,0,PN,"0.94")+volBars(activeProj(),HN,0,PN,vm,"0.8");
+      var ac=mode==="bear"?"var(--bear)":"var(--rev)", lab=mode==="bear"?"否定｜続落":"本命｜V字反転";
+      s+='<rect x="'+(divX+8).toFixed(2)+'" y="'+(PTOP+8)+'" width="104" height="20" rx="3" fill="'+ac+'"/>'
+       + '<text x="'+(divX+60).toFixed(2)+'" y="'+(PTOP+22)+'" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="11.5" font-weight="700" fill="var(--panel)">'+lab+'</text>';
     }
 
-    /* volume pane frame */
-    s+='<line x1="'+PADL+'" y1="'+VBOT+'" x2="'+(W-PADR)+'" y2="'+VBOT+'" stroke="var(--line)" stroke-width="1"/>';
-    s+='<text x="'+(PADL-9)+'" y="'+(VTOP+10)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="9.5" fill="var(--ink-3)">出来高</text>';
-    s+='<text x="'+(PADL-9)+'" y="'+(VTOP+22)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="9.5" fill="var(--ink-3)">（相対）</text>';
+    /* the washout annotation — the one bar both paths share */
+    var wx=x(HN+FORK), wy=yScale(revBars[FORK].l);
+    s+='<circle cx="'+wx.toFixed(2)+'" cy="'+wy.toFixed(2)+'" r="3" fill="none" stroke="var(--rev)" stroke-width="1.4"/>'
+     + '<line x1="'+wx.toFixed(2)+'" y1="'+(wy+5).toFixed(2)+'" x2="'+wx.toFixed(2)+'" y2="'+(wy+24).toFixed(2)+'" stroke="var(--rev)" stroke-width="1"/>'
+     + '<text x="'+(wx-6).toFixed(2)+'" y="'+(wy+30).toFixed(2)+'" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="10.5" font-weight="700" fill="var(--rev)">9/22 ウォッシュアウト</text>'
+     + '<text x="'+(wx-6).toFixed(2)+'" y="'+(wy+42).toFixed(2)+'" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--ink-2)">安値 35,300 ／ ここで分岐</text>';
 
-    /* divider */
-    s+='<line x1="'+divX.toFixed(2)+'" y1="'+PTOP+'" x2="'+divX.toFixed(2)+'" y2="'+VBOT+'" stroke="var(--ink-2)" stroke-width="1.2" stroke-dasharray="4 3"/>';
-    s+='<text x="'+(divX-7).toFixed(2)+'" y="'+(PTOP+12)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="10.5" font-weight="500" fill="var(--ink-2)">9/2 現在</text>';
+    s+='<line x1="'+PADL+'" y1="'+VBOT+'" x2="'+(W-PADR)+'" y2="'+VBOT+'" stroke="var(--line)" stroke-width="1"/>'
+     + '<text x="'+(PADL-9)+'" y="'+(VTOP+10)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="9.5" fill="var(--ink-3)">出来高</text>'
+     + '<text x="'+(PADL-9)+'" y="'+(VTOP+22)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="9.5" fill="var(--ink-3)">（相対）</text>'
+     + '<line x1="'+divX.toFixed(2)+'" y1="'+PTOP+'" x2="'+divX.toFixed(2)+'" y2="'+VBOT+'" stroke="var(--ink-2)" stroke-width="1.2" stroke-dasharray="4 3"/>'
+     + '<text x="'+(divX-7).toFixed(2)+'" y="'+(PTOP+12)+'" text-anchor="end" font-family="Zen Kaku Gothic New, sans-serif" font-size="10.5" font-weight="500" fill="var(--ink-2)">9/2 現在</text>';
 
-    /* month labels */
     var prevM=-1;
     for(i=0;i<TOT;i++){
       var m=dates[i].getUTCMonth();
-      if(m!==prevM){
-        prevM=m;
+      if(m!==prevM){ prevM=m;
         if(i>0) s+='<text x="'+x(i).toFixed(2)+'" y="'+(VBOT+16)+'" text-anchor="middle" font-family="Zen Kaku Gothic New, sans-serif" font-size="10.5" fill="var(--ink-3)">'+(m+1)+'月</text>';
       }
     }
 
-    /* crosshair + hit layer */
-    s+='<g id="ch" style="display:none"><line id="chx" y1="'+PTOP+'" y2="'+VBOT+'" stroke="var(--ink-2)" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/></g>';
-    s+='<rect id="hit" x="'+PADL+'" y="'+PTOP+'" width="'+PW+'" height="'+(VBOT-PTOP)+'" fill="transparent" style="cursor:crosshair"/>';
+    s+='<g id="ch" style="display:none"><line id="chx" y1="'+PTOP+'" y2="'+VBOT+'" stroke="var(--ink-2)" stroke-width="1" stroke-dasharray="3 3" opacity=".7"/></g>'
+     + '<rect id="hit" x="'+PADL+'" y="'+PTOP+'" width="'+PW+'" height="'+(VBOT-PTOP)+'" fill="transparent" style="cursor:crosshair"/>';
 
     svg.setAttribute("viewBox","0 0 "+W+" "+H);
     svg.innerHTML=s;
@@ -592,28 +590,26 @@ footer b{color:var(--ink-2);font-weight:500}
     showRO(TOT-1);
   }
 
-  function barAt(i){
-    if(i<HN) return {b:hist[i],src:"実データ（再構成）",col:"var(--ink-3)"};
-    var p=i-HN;
-    if(mode==="range") return {b:rngBars[p],src:"A レンジ（想定）",col:"var(--rng)"};
-    if(mode==="break") return {b:brkBars[p],src:"B 崩れ（想定）",col:"var(--brk)"};
-    return {two:[rngBars[p],brkBars[p]]};
-  }
-
   function showRO(i){
-    var d=dates[i],ds=(d.getUTCMonth()+1)+"/"+d.getUTCDate();
-    var r=barAt(i),h="";
-    if(r.two){
-      h='<span class="d">'+ds+'</span>'+
-        '<span class="tag" style="background:var(--rng-soft);color:var(--rng)">A</span><span class="v">'+fmt(r.two[0].c)+'</span>'+
-        '<span class="tag" style="background:var(--brk-soft);color:var(--brk)">B</span><span class="v">'+fmt(r.two[1].c)+'</span>'+
-        '<span class="d">差 '+fmt(r.two[0].c-r.two[1].c)+'</span>';
-      if(i<HN) h='<span class="d">'+ds+'</span>O <span class="v">'+fmt(hist[i].o)+'</span> H <span class="v">'+fmt(hist[i].h)+'</span> L <span class="v">'+fmt(hist[i].l)+'</span> C <span class="v">'+fmt(hist[i].c)+'</span>';
+    var d=dates[i],ds=(d.getUTCMonth()+1)+"/"+d.getUTCDate(),h="";
+    if(i<HN){
+      var b=hist[i];
+      h='<span class="d">'+ds+'</span>O <span class="v">'+fmt(b.o)+'</span> H <span class="v">'+fmt(b.h)+'</span> L <span class="v">'+fmt(b.l)+'</span> C <span class="v">'+fmt(b.c)+'</span><span class="tag">実データ（再構成）</span>';
     }else{
-      var b=r.b,ch=(b.c/b.o-1)*100;
-      h='<span class="d">'+ds+'</span>O <span class="v">'+fmt(b.o)+'</span> H <span class="v">'+fmt(b.h)+'</span> L <span class="v">'+fmt(b.l)+'</span> C <span class="v">'+fmt(b.c)+'</span>'+
-        '<span style="color:'+(ch>=0?"var(--up)":"var(--down)")+'">'+(ch>=0?"+":"")+ch.toFixed(2)+'%</span>'+
-        '<span class="tag" style="color:'+r.col+'">'+r.src+'</span>';
+      var p=i-HN;
+      if(mode==="both"&&p>FORK){
+        h='<span class="d">'+ds+'</span>'
+         +'<span class="tag" style="background:var(--rev-soft);color:var(--rev)">本命</span><span class="v">'+fmt(revBars[p].c)+'</span>'
+         +'<span class="tag" style="background:var(--bear-soft);color:var(--bear)">否定</span><span class="v">'+fmt(bearBars[p].c)+'</span>'
+         +'<span class="d">差 '+fmt(revBars[p].c-bearBars[p].c)+'</span>';
+      }else{
+        var q=(mode==="bear"?bearBars:revBars)[p], ch=(q.c/q.o-1)*100;
+        var tag=p<=FORK?"共通の下げ（想定）":mode==="bear"?"否定：続落（想定）":"本命：V字反転（想定）";
+        var tc=p<=FORK?"var(--ink-2)":mode==="bear"?"var(--bear)":"var(--rev)";
+        h='<span class="d">'+ds+'</span>O <span class="v">'+fmt(q.o)+'</span> H <span class="v">'+fmt(q.h)+'</span> L <span class="v">'+fmt(q.l)+'</span> C <span class="v">'+fmt(q.c)+'</span>'
+         +'<span style="color:'+(ch>=0?"var(--up)":"var(--down)")+'">'+(ch>=0?"+":"")+ch.toFixed(2)+'%</span>'
+         +'<span class="tag" style="color:'+tc+'">'+tag+'</span>';
+      }
     }
     ro.innerHTML=h;
   }
@@ -621,10 +617,8 @@ footer b{color:var(--ink-2);font-weight:500}
   function bindHover(){
     var hit=svg.querySelector("#hit"),g=svg.querySelector("#ch"),ln=svg.querySelector("#chx");
     function move(e){
-      var pt=e.touches?e.touches[0]:e;
-      var r=svg.getBoundingClientRect();
-      var sx=(pt.clientX-r.left)/r.width*W;
-      var i=Math.round((sx-PADL)/step-0.5);
+      var pt=e.touches?e.touches[0]:e, r=svg.getBoundingClientRect();
+      var i=Math.round(((pt.clientX-r.left)/r.width*W-PADL)/step-0.5);
       if(i<0)i=0; if(i>TOT-1)i=TOT-1;
       g.style.display="";
       ln.setAttribute("x1",x(i).toFixed(2)); ln.setAttribute("x2",x(i).toFixed(2));
