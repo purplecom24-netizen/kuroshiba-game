@@ -1,0 +1,110 @@
+import { expect, test, type Page } from '@playwright/test';
+
+async function setup(page: Page) {
+  await page.clock.setFixedTime(new Date('2026-11-12T12:00:00+09:00'));
+  await page.goto('./');
+  await page.getByLabel('名前（ニックネーム可）').fill('はな');
+  await page.getByLabel('生年月日').fill('2026-04-02');
+  await page.getByRole('button', { name: '女の子' }).click();
+  await page.getByRole('button', { name: '混合' }).click();
+  await page.getByRole('button', { name: '登録してはじめる' }).click();
+  await expect(page.locator('.header')).toContainText('7か月10日');
+}
+
+async function addFormula(page: Page) {
+  await page.getByRole('tab', { name: '食材' }).or(page.getByRole('button', { name: '食材', exact: true })).click();
+  await page.getByRole('button', { name: 'ミルク銘柄' }).click();
+  await page.getByRole('button', { name: '＋ 銘柄を登録' }).click();
+  await page.getByLabel('商品名').fill('テストミルク');
+  await page.getByLabel('鉄 100mlあたり').fill('0.8');
+  await page.getByLabel('エネルギー 100mlあたり').fill('67');
+  await page.getByRole('button', { name: '保存' }).click();
+  await page.getByRole('button', { name: '記録', exact: true }).click();
+  await page.getByRole('button', { name: '＋ ミルク' }).click();
+  await page.getByLabel('作った量').fill('250');
+  await page.getByRole('button', { name: '保存' }).click();
+}
+
+async function addFood(page: Page, query: string, pick: RegExp, grams: string) {
+  await page.getByLabel('食材を検索').fill(query);
+  await page.getByRole('listitem').filter({ hasText: pick }).first().click();
+  await page.getByLabel('提供量').fill(grams);
+  await page.getByRole('button', { name: '保存' }).click();
+}
+
+test('記録 → 栄養分析 → 一覧（T-11, T-16）', async ({ page }) => {
+  await setup(page);
+  await addFormula(page);
+  await page.getByRole('button', { name: '＋ 食事' }).click();
+  await addFood(page, 'さつまいも 蒸し', /皮なし　蒸し/, '20');
+  await page.getByRole('button', { name: '＋ 食材を追加' }).click();
+  await addFood(page, '鯖 焼き', /^まさば　焼き/, '10');
+  await expect(page.locator('.card').filter({ hasText: '1回目' })).toContainText('30 g');
+  await expect(page.locator('.kv')).toContainText('250 ml');
+
+  await page.getByRole('button', { name: '栄養分析' }).click();
+  await page.getByRole('button', { name: '今日' }).click();
+  await expect(page.getByTestId('focus-iron')).toContainText('推奨量比');
+  // T-11: ミルク由来2.00mg＋母乳＋離乳食 → 2mg台
+  await expect(page.getByTestId('focus-iron').locator('.big')).toHaveText(/^≥?2\.\d+ mg$/);
+  await expect(page.getByTestId('focus-iron')).toContainText('あと');
+  // T-16: 一覧に全栄養素
+  const table = page.getByTestId('nutrient-table');
+  await expect(table.locator('tbody tr')).toHaveCount(32);
+  await expect(table).toContainText('目安量');
+  await expect(table).toContainText('推奨量');
+  await expect(page.getByText('医療的な判断の代わりにはなりません').first()).toBeVisible();
+  await page.screenshot({ path: 'e2e-results/analysis.png', fullPage: true });
+});
+
+test('成長曲線と相談の目安（T-13）', async ({ page }) => {
+  await setup(page);
+  await page.getByRole('button', { name: '成長', exact: true }).click();
+  await page.getByLabel('計測日').fill('2026-11-10');
+  await page.getByLabel('体重', { exact: true }).fill('5.6');
+  await page.getByLabel('身長', { exact: true }).fill('66.0');
+  await page.getByRole('button', { name: '記録する' }).click();
+  await expect(page.getByTestId('consult')).toContainText('健診や小児科で相談する目安');
+  await expect(page.locator('body')).not.toContainText(/異常|病気|欠乏症/);
+  await page.screenshot({ path: 'e2e-results/growth.png', fullPage: true });
+});
+
+test('オフラインで動く（T-14）', async ({ page, context }) => {
+  await setup(page);
+  await page.waitForFunction(async () => !!(await navigator.serviceWorker.getRegistration())?.active);
+  await page.reload();
+  await context.setOffline(true);
+  await page.reload();
+  await page.getByRole('button', { name: '＋ 授乳' }).click();
+  await expect(page.locator('.kv')).toContainText('授乳1回');
+  await page.getByRole('button', { name: '＋ 食事' }).click();
+  await addFood(page, 'にんじん ゆで', /にんじん　根　皮なし　ゆで/, '15');
+  await page.getByRole('button', { name: '栄養分析' }).click();
+  await expect(page.getByTestId('nutrient-table')).toBeVisible();
+  await page.getByRole('button', { name: '成長', exact: true }).click();
+  await expect(page.getByText('体重の発育曲線')).toBeVisible();
+});
+
+test('JSONバックアップ → 全削除 → 復元（T-15）', async ({ page }) => {
+  await setup(page);
+  await page.getByRole('button', { name: '＋ 授乳' }).click();
+  await page.getByRole('button', { name: '設定' }).click();
+  await page.getByLabel('母乳の既定値').fill('500');
+  const [dl] = await Promise.all([page.waitForEvent('download'), page.getByRole('button', { name: 'JSONで書き出す' }).click()]);
+  const path = await dl.path();
+  page.once('dialog', (d) => d.accept());
+  await page.getByRole('button', { name: '全データを削除' }).click();
+  await expect(page.getByRole('button', { name: '登録してはじめる' })).toBeVisible();
+  // 復元はプロフィール登録前の画面からはできないので、仮登録してから読み込む
+  await page.getByLabel('名前（ニックネーム可）').fill('tmp');
+  await page.getByLabel('生年月日').fill('2025-01-01');
+  await page.getByRole('button', { name: '登録してはじめる' }).click();
+  await page.getByRole('button', { name: '設定' }).click();
+  page.once('dialog', (d) => d.accept());
+  await page.getByTestId('import-file').setInputFiles(path!);
+  await expect(page.getByRole('status')).toContainText('読み込みました');
+  await expect(page.locator('.header')).toContainText('はな');
+  await expect(page.getByLabel('母乳の既定値')).toHaveValue('500');
+  await page.getByRole('button', { name: '記録', exact: true }).click();
+  await expect(page.locator('.kv')).toContainText('授乳1回');
+});

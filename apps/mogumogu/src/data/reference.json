@@ -1,0 +1,4031 @@
+{
+ "nutrients": [
+  {
+   "id": "energy",
+   "nameJa": "エネルギー",
+   "shortJa": "エネルギー",
+   "unit": "kcal",
+   "group": "macro",
+   "mextColumn": "ENERC_KCAL",
+   "sortOrder": 10
+  },
+  {
+   "id": "protein",
+   "nameJa": "たんぱく質",
+   "shortJa": "たんぱく質",
+   "unit": "g",
+   "group": "macro",
+   "mextColumn": "PROT-",
+   "sortOrder": 20,
+   "note": "成分表の「たんぱく質」列（アミノ酸組成によるたんぱく質ではない）"
+  },
+  {
+   "id": "fat",
+   "nameJa": "脂質",
+   "shortJa": "脂質",
+   "unit": "g",
+   "group": "macro",
+   "mextColumn": "FAT-",
+   "sortOrder": 30,
+   "note": "基準は%エネルギー（脂質g×9÷エネルギー）で比較"
+  },
+  {
+   "id": "carbohydrate",
+   "nameJa": "炭水化物",
+   "shortJa": "炭水化物",
+   "unit": "g",
+   "group": "macro",
+   "mextColumn": "CHOCDF-",
+   "sortOrder": 40
+  },
+  {
+   "id": "fiber",
+   "nameJa": "食物繊維総量",
+   "shortJa": "食物繊維",
+   "unit": "g",
+   "group": "macro",
+   "mextColumn": "FIB-",
+   "sortOrder": 50
+  },
+  {
+   "id": "sodium",
+   "nameJa": "ナトリウム",
+   "shortJa": "ナトリウム",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "NA",
+   "sortOrder": 110
+  },
+  {
+   "id": "salt",
+   "nameJa": "食塩相当量",
+   "shortJa": "食塩相当量",
+   "unit": "g",
+   "group": "mineral",
+   "mextColumn": "NACL_EQ",
+   "sortOrder": 115
+  },
+  {
+   "id": "potassium",
+   "nameJa": "カリウム",
+   "shortJa": "カリウム",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "K",
+   "sortOrder": 120
+  },
+  {
+   "id": "calcium",
+   "nameJa": "カルシウム",
+   "shortJa": "カルシウム",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "CA",
+   "sortOrder": 130
+  },
+  {
+   "id": "magnesium",
+   "nameJa": "マグネシウム",
+   "shortJa": "マグネシウム",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "MG",
+   "sortOrder": 140
+  },
+  {
+   "id": "phosphorus",
+   "nameJa": "リン",
+   "shortJa": "リン",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "P",
+   "sortOrder": 150
+  },
+  {
+   "id": "iron",
+   "nameJa": "鉄",
+   "shortJa": "鉄",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "FE",
+   "sortOrder": 160
+  },
+  {
+   "id": "zinc",
+   "nameJa": "亜鉛",
+   "shortJa": "亜鉛",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "ZN",
+   "sortOrder": 170
+  },
+  {
+   "id": "copper",
+   "nameJa": "銅",
+   "shortJa": "銅",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "CU",
+   "sortOrder": 180
+  },
+  {
+   "id": "manganese",
+   "nameJa": "マンガン",
+   "shortJa": "マンガン",
+   "unit": "mg",
+   "group": "mineral",
+   "mextColumn": "MN",
+   "sortOrder": 190
+  },
+  {
+   "id": "iodine",
+   "nameJa": "ヨウ素",
+   "shortJa": "ヨウ素",
+   "unit": "μg",
+   "group": "mineral",
+   "mextColumn": "ID",
+   "sortOrder": 200
+  },
+  {
+   "id": "selenium",
+   "nameJa": "セレン",
+   "shortJa": "セレン",
+   "unit": "μg",
+   "group": "mineral",
+   "mextColumn": "SE",
+   "sortOrder": 210
+  },
+  {
+   "id": "chromium",
+   "nameJa": "クロム",
+   "shortJa": "クロム",
+   "unit": "μg",
+   "group": "mineral",
+   "mextColumn": "CR",
+   "sortOrder": 220
+  },
+  {
+   "id": "molybdenum",
+   "nameJa": "モリブデン",
+   "shortJa": "モリブデン",
+   "unit": "μg",
+   "group": "mineral",
+   "mextColumn": "MO",
+   "sortOrder": 230
+  },
+  {
+   "id": "vitA",
+   "nameJa": "ビタミンA（レチノール）",
+   "shortJa": "ビタミンA",
+   "unit": "μg",
+   "group": "vitamin",
+   "mextColumn": "RETOL",
+   "sortOrder": 310,
+   "note": "乳児の目安量・耐容上限量はプロビタミンAカロテノイドを含まない（食事摂取基準2025 乳児 表3 脚注1）ため、成分表のレチノール列で比較する"
+  },
+  {
+   "id": "vitD",
+   "nameJa": "ビタミンD",
+   "shortJa": "ビタミンD",
+   "unit": "μg",
+   "group": "vitamin",
+   "mextColumn": "VITD",
+   "sortOrder": 320
+  },
+  {
+   "id": "vitE",
+   "nameJa": "ビタミンE（α-トコフェロール）",
+   "shortJa": "ビタミンE",
+   "unit": "mg",
+   "group": "vitamin",
+   "mextColumn": "TOCPHA",
+   "sortOrder": 330
+  },
+  {
+   "id": "vitK",
+   "nameJa": "ビタミンK",
+   "shortJa": "ビタミンK",
+   "unit": "μg",
+   "group": "vitamin",
+   "mextColumn": "VITK",
+   "sortOrder": 340
+  },
+  {
+   "id": "vitB1",
+   "nameJa": "ビタミンB1",
+   "shortJa": "ビタミンB1",
+   "unit": "mg",
+   "group": "vitamin",
+   "mextColumn": "THIA",
+   "sortOrder": 350
+  },
+  {
+   "id": "vitB2",
+   "nameJa": "ビタミンB2",
+   "shortJa": "ビタミンB2",
+   "unit": "mg",
+   "group": "vitamin",
+   "mextColumn": "RIBF",
+   "sortOrder": 360
+  },
+  {
+   "id": "niacin",
+   "nameJa": "ナイアシン当量",
+   "shortJa": "ナイアシン",
+   "unit": "mgNE",
+   "group": "vitamin",
+   "mextColumn": "NE",
+   "sortOrder": 370
+  },
+  {
+   "id": "vitB6",
+   "nameJa": "ビタミンB6",
+   "shortJa": "ビタミンB6",
+   "unit": "mg",
+   "group": "vitamin",
+   "mextColumn": "VITB6A",
+   "sortOrder": 380
+  },
+  {
+   "id": "vitB12",
+   "nameJa": "ビタミンB12",
+   "shortJa": "ビタミンB12",
+   "unit": "μg",
+   "group": "vitamin",
+   "mextColumn": "VITB12",
+   "sortOrder": 390
+  },
+  {
+   "id": "folate",
+   "nameJa": "葉酸",
+   "shortJa": "葉酸",
+   "unit": "μg",
+   "group": "vitamin",
+   "mextColumn": "FOL",
+   "sortOrder": 400
+  },
+  {
+   "id": "pantothenic",
+   "nameJa": "パントテン酸",
+   "shortJa": "パントテン酸",
+   "unit": "mg",
+   "group": "vitamin",
+   "mextColumn": "PANTAC",
+   "sortOrder": 410
+  },
+  {
+   "id": "biotin",
+   "nameJa": "ビオチン",
+   "shortJa": "ビオチン",
+   "unit": "μg",
+   "group": "vitamin",
+   "mextColumn": "BIOT",
+   "sortOrder": 420
+  },
+  {
+   "id": "vitC",
+   "nameJa": "ビタミンC",
+   "shortJa": "ビタミンC",
+   "unit": "mg",
+   "group": "vitamin",
+   "mextColumn": "VITC",
+   "sortOrder": 430
+  }
+ ],
+ "intake": [
+  {
+   "nutrientId": "energy",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "M",
+   "kind": "EER",
+   "value": 550,
+   "unit": "kcal/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "energy",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "F",
+   "kind": "EER",
+   "value": 500,
+   "unit": "kcal/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "energy",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 8,
+   "sex": "M",
+   "kind": "EER",
+   "value": 650,
+   "unit": "kcal/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "energy",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 8,
+   "sex": "F",
+   "kind": "EER",
+   "value": 600,
+   "unit": "kcal/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "energy",
+   "ageMinMonths": 9,
+   "ageMaxMonths": 11,
+   "sex": "M",
+   "kind": "EER",
+   "value": 700,
+   "unit": "kcal/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "energy",
+   "ageMinMonths": 9,
+   "ageMaxMonths": 11,
+   "sex": "F",
+   "kind": "EER",
+   "value": 650,
+   "unit": "kcal/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "protein",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 10,
+   "unit": "g/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "protein",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 8,
+   "sex": "B",
+   "kind": "AI",
+   "value": 15,
+   "unit": "g/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "protein",
+   "ageMinMonths": 9,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 25,
+   "unit": "g/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "fat",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 50,
+   "unit": "%E",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "fat",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 40,
+   "unit": "%E",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitA",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 300,
+   "unit": "μgRAE/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitA",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "UL",
+   "value": 600,
+   "unit": "μgRAE/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitA",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 400,
+   "unit": "μgRAE/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitA",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "UL",
+   "value": 600,
+   "unit": "μgRAE/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitD",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 5,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitD",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "UL",
+   "value": 25,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitD",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 5,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitD",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "UL",
+   "value": 25,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitE",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 3,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitE",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 4,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitK",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 4,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitK",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 7,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB1",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.1,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB1",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.2,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB2",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.3,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB2",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.4,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "niacin",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 2,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "niacin",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 3,
+   "unit": "mgNE/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB6",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.2,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB6",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.3,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB12",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.4,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitB12",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.9,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "folate",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 40,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "folate",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 70,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "pantothenic",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 4,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "pantothenic",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 3,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "biotin",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 4,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "biotin",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 10,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitC",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 40,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "vitC",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 40,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "sodium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 100,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "sodium",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 600,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "salt",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.3,
+   "unit": "g/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "salt",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 1.5,
+   "unit": "g/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "potassium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 400,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "potassium",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 700,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "calcium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 200,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "calcium",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 250,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "magnesium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 20,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "magnesium",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 60,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "phosphorus",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 120,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "phosphorus",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 260,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iron",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.5,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iron",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "M",
+   "kind": "EAR",
+   "value": 3.5,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iron",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "F",
+   "kind": "EAR",
+   "value": 3,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iron",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "M",
+   "kind": "RDA",
+   "value": 4.5,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iron",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "F",
+   "kind": "RDA",
+   "value": 4.5,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "zinc",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 1.5,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "zinc",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 2,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "copper",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.3,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "copper",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.4,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "manganese",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.01,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "manganese",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.5,
+   "unit": "mg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iodine",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 100,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iodine",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "UL",
+   "value": 250,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iodine",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 130,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "iodine",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "UL",
+   "value": 350,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "selenium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 15,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "selenium",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 15,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "chromium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 0.8,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "chromium",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 1,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "molybdenum",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "sex": "B",
+   "kind": "AI",
+   "value": 2.5,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  },
+  {
+   "nutrientId": "molybdenum",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 11,
+   "sex": "B",
+   "kind": "AI",
+   "value": 3,
+   "unit": "μg/日",
+   "source": "DRI2025",
+   "page": 375
+  }
+ ],
+ "breastmilk": [
+  {
+   "nutrientId": "protein",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "per100g": null,
+   "perL": 12.6,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "protein",
+   "ageMinMonths": 6,
+   "ageMaxMonths": 8,
+   "per100g": null,
+   "perL": 10.6,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "protein",
+   "ageMinMonths": 9,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 9.2,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "fat",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 35.6,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "vitA",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 411,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "vitE",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 3.5,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "range"
+  },
+  {
+   "nutrientId": "vitK",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 5.17,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "vitB1",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 0.13,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "vitB2",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 0.4,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "niacin",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 2,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "mg"
+  },
+  {
+   "nutrientId": "vitB6",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 0.25,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "vitB12",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 0.45,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "folate",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 54,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "pantothenic",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 5,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "biotin",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 5,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "vitC",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 50,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "sodium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 135,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "potassium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 470,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "calcium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 250,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "magnesium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 27,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "phosphorus",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 150,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": ""
+  },
+  {
+   "nutrientId": "iron",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 0.35,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "zinc",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 1.61,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "copper",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 0.35,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "manganese",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 0.011,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "iodine",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 189,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "est"
+  },
+  {
+   "nutrientId": "selenium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 17,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "chromium",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 1,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "molybdenum",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": null,
+   "perL": 3,
+   "specificGravity": 1.017,
+   "source": "日本人の食事摂取基準（2025年版） p.368",
+   "flag": "age05"
+  },
+  {
+   "nutrientId": "energy",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": "61",
+   "perL": null,
+   "specificGravity": 1.017,
+   "source": "日本食品標準成分表（八訂）増補2023年 13051 人乳",
+   "flag": "mext"
+  },
+  {
+   "nutrientId": "carbohydrate",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": "7.2",
+   "perL": null,
+   "specificGravity": 1.017,
+   "source": "日本食品標準成分表（八訂）増補2023年 13051 人乳",
+   "flag": "mext"
+  },
+  {
+   "nutrientId": "fiber",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": "(0)",
+   "perL": null,
+   "specificGravity": 1.017,
+   "source": "日本食品標準成分表（八訂）増補2023年 13051 人乳",
+   "flag": "mext"
+  },
+  {
+   "nutrientId": "vitD",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": "0.3",
+   "perL": null,
+   "specificGravity": 1.017,
+   "source": "日本食品標準成分表（八訂）増補2023年 13051 人乳",
+   "flag": "mext"
+  },
+  {
+   "nutrientId": "salt",
+   "ageMinMonths": 0,
+   "ageMaxMonths": 11,
+   "per100g": "0",
+   "perL": null,
+   "specificGravity": 1.017,
+   "source": "日本食品標準成分表（八訂）増補2023年 13051 人乳",
+   "flag": "mext"
+  }
+ ],
+ "growth": {
+  "percentiles": [
+   3,
+   10,
+   25,
+   50,
+   75,
+   90,
+   97
+  ],
+  "rows": [
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "出生時（０日）",
+    "ageMonths": 0,
+    "p": [
+     2.316,
+     2.581,
+     2.804,
+     3.057,
+     3.315,
+     3.556,
+     3.815
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "出生時（０日）",
+    "ageMonths": 0,
+    "p": [
+     2.222,
+     2.46,
+     2.702,
+     2.95,
+     3.21,
+     3.436,
+     3.662
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "１日",
+    "ageMonths": 0.033,
+    "p": [
+     2.262,
+     2.494,
+     2.714,
+     2.958,
+     3.206,
+     3.45,
+     3.708
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "１日",
+    "ageMonths": 0.033,
+    "p": [
+     2.169,
+     2.372,
+     2.608,
+     2.854,
+     3.09,
+     3.322,
+     3.562
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "２日",
+    "ageMonths": 0.066,
+    "p": [
+     2.214,
+     2.452,
+     2.666,
+     2.91,
+     3.158,
+     3.402,
+     3.652
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "２日",
+    "ageMonths": 0.066,
+    "p": [
+     2.12,
+     2.334,
+     2.564,
+     2.798,
+     3.045,
+     3.27,
+     3.492
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "３日",
+    "ageMonths": 0.099,
+    "p": [
+     2.224,
+     2.458,
+     2.684,
+     2.928,
+     3.185,
+     3.426,
+     3.676
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "３日",
+    "ageMonths": 0.099,
+    "p": [
+     2.126,
+     2.344,
+     2.566,
+     2.81,
+     3.06,
+     3.282,
+     3.506
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "４日",
+    "ageMonths": 0.131,
+    "p": [
+     2.224,
+     2.478,
+     2.702,
+     2.953,
+     3.208,
+     3.464,
+     3.7
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "４日",
+    "ageMonths": 0.131,
+    "p": [
+     2.13,
+     2.35,
+     2.572,
+     2.824,
+     3.07,
+     3.295,
+     3.512
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "３０日",
+    "ageMonths": 0.986,
+    "p": [
+     3.226,
+     3.525,
+     3.824,
+     4.151,
+     4.475,
+     4.763,
+     5.044
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "３０日",
+    "ageMonths": 0.986,
+    "p": [
+     3.047,
+     3.324,
+     3.602,
+     3.907,
+     4.209,
+     4.477,
+     4.74
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "０年１～２月未満",
+    "ageMonths": 1.5,
+    "p": [
+     3.756,
+     4.093,
+     4.43,
+     4.798,
+     5.162,
+     5.485,
+     5.801
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "０年１～２月未満",
+    "ageMonths": 1.5,
+    "p": [
+     3.505,
+     3.806,
+     4.107,
+     4.44,
+     4.77,
+     5.066,
+     5.356
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "２～３月未満",
+    "ageMonths": 2.5,
+    "p": [
+     4.591,
+     4.982,
+     5.373,
+     5.802,
+     6.227,
+     6.604,
+     6.974
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "２～３月未満",
+    "ageMonths": 2.5,
+    "p": [
+     4.275,
+     4.612,
+     4.955,
+     5.334,
+     5.714,
+     6.056,
+     6.392
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "３～４月未満",
+    "ageMonths": 3.5,
+    "p": [
+     5.223,
+     5.65,
+     6.079,
+     6.55,
+     7.017,
+     7.434,
+     7.842
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "３～４月未満",
+    "ageMonths": 3.5,
+    "p": [
+     4.899,
+     5.267,
+     5.642,
+     6.061,
+     6.482,
+     6.862,
+     7.239
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "４～５月未満",
+    "ageMonths": 4.5,
+    "p": [
+     5.711,
+     6.163,
+     6.617,
+     7.118,
+     7.617,
+     8.063,
+     8.5
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "４～５月未満",
+    "ageMonths": 4.5,
+    "p": [
+     5.397,
+     5.79,
+     6.192,
+     6.642,
+     7.097,
+     7.51,
+     7.92
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "５～６月未満",
+    "ageMonths": 5.5,
+    "p": [
+     6.094,
+     6.563,
+     7.036,
+     7.56,
+     8.082,
+     8.55,
+     9.01
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "５～６月未満",
+    "ageMonths": 5.5,
+    "p": [
+     5.791,
+     6.203,
+     6.626,
+     7.103,
+     7.586,
+     8.026,
+     8.465
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "６～７月未満",
+    "ageMonths": 6.5,
+    "p": [
+     6.399,
+     6.881,
+     7.368,
+     7.909,
+     8.448,
+     8.933,
+     9.411
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "６～７月未満",
+    "ageMonths": 6.5,
+    "p": [
+     6.1,
+     6.527,
+     6.968,
+     7.466,
+     7.973,
+     8.436,
+     8.899
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "７～８月未満",
+    "ageMonths": 7.5,
+    "p": [
+     6.645,
+     7.137,
+     7.635,
+     8.188,
+     8.742,
+     9.24,
+     9.732
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "７～８月未満",
+    "ageMonths": 7.5,
+    "p": [
+     6.344,
+     6.784,
+     7.239,
+     7.755,
+     8.281,
+     8.765,
+     9.25
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "８～９月未満",
+    "ageMonths": 8.5,
+    "p": [
+     6.852,
+     7.351,
+     7.858,
+     8.421,
+     8.986,
+     9.495,
+     9.997
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "８～９月未満",
+    "ageMonths": 8.5,
+    "p": [
+     6.54,
+     6.99,
+     7.457,
+     7.989,
+     8.533,
+     9.034,
+     9.539
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "９～１０月未満",
+    "ageMonths": 9.5,
+    "p": [
+     7.034,
+     7.54,
+     8.054,
+     8.627,
+     9.201,
+     9.719,
+     10.231
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "９～１０月未満",
+    "ageMonths": 9.5,
+    "p": [
+     6.704,
+     7.163,
+     7.64,
+     8.186,
+     8.746,
+     9.264,
+     9.786
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "１０～１１月未満",
+    "ageMonths": 10.5,
+    "p": [
+     7.203,
+     7.715,
+     8.236,
+     8.817,
+     9.4,
+     9.926,
+     10.448
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "１０～１１月未満",
+    "ageMonths": 10.5,
+    "p": [
+     6.848,
+     7.315,
+     7.802,
+     8.361,
+     8.936,
+     9.469,
+     10.008
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "１１～１２月未満",
+    "ageMonths": 11.5,
+    "p": [
+     7.365,
+     7.884,
+     8.412,
+     9.001,
+     9.593,
+     10.128,
+     10.659
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "１１～１２月未満",
+    "ageMonths": 11.5,
+    "p": [
+     6.985,
+     7.459,
+     7.956,
+     8.526,
+     9.115,
+     9.663,
+     10.219
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "１年０～６月未満",
+    "ageMonths": 15,
+    "p": [
+     7.938,
+     8.482,
+     9.038,
+     9.661,
+     10.29,
+     10.86,
+     11.427
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "１年０～６月未満",
+    "ageMonths": 15,
+    "p": [
+     7.486,
+     7.985,
+     8.511,
+     9.121,
+     9.759,
+     10.357,
+     10.97
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "１年６～12月未満",
+    "ageMonths": 21,
+    "p": [
+     8.933,
+     9.531,
+     10.146,
+     10.84,
+     11.547,
+     12.192,
+     12.838
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "１年６～12月未満",
+    "ageMonths": 21,
+    "p": [
+     8.501,
+     9.043,
+     9.623,
+     10.304,
+     11.027,
+     11.714,
+     12.429
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "２年０～６月未満",
+    "ageMonths": 27,
+    "p": [
+     9.853,
+     10.504,
+     11.181,
+     11.954,
+     12.748,
+     13.48,
+     14.22
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "２年０～６月未満",
+    "ageMonths": 27,
+    "p": [
+     9.52,
+     10.109,
+     10.744,
+     11.501,
+     12.314,
+     13.097,
+     13.923
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "２年６～12月未満",
+    "ageMonths": 33,
+    "p": [
+     10.659,
+     11.358,
+     12.093,
+     12.943,
+     13.828,
+     14.654,
+     15.499
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "２年６～12月未満",
+    "ageMonths": 33,
+    "p": [
+     10.455,
+     11.086,
+     11.775,
+     12.603,
+     13.505,
+     14.386,
+     15.327
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "３年０～６月未満",
+    "ageMonths": 39,
+    "p": [
+     11.382,
+     12.121,
+     12.91,
+     13.835,
+     14.813,
+     15.74,
+     16.702
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "３年０～６月未満",
+    "ageMonths": 39,
+    "p": [
+     11.188,
+     11.854,
+     12.587,
+     13.478,
+     14.461,
+     15.434,
+     16.487
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "３年６～12月未満",
+    "ageMonths": 45,
+    "p": [
+     12.096,
+     12.874,
+     13.715,
+     14.718,
+     15.797,
+     16.84,
+     17.939
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "３年６～12月未満",
+    "ageMonths": 45,
+    "p": [
+     11.818,
+     12.526,
+     13.313,
+     14.282,
+     15.366,
+     16.455,
+     17.654
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "４年０～６月未満",
+    "ageMonths": 51,
+    "p": [
+     12.845,
+     13.661,
+     14.556,
+     15.642,
+     16.834,
+     18.009,
+     19.274
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "４年０～６月未満",
+    "ageMonths": 51,
+    "p": [
+     12.511,
+     13.277,
+     14.139,
+     15.215,
+     16.438,
+     17.692,
+     19.098
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "４年６～12月未満",
+    "ageMonths": 57,
+    "p": [
+     13.642,
+     14.496,
+     15.447,
+     16.622,
+     17.941,
+     19.27,
+     20.737
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "４年６～12月未満",
+    "ageMonths": 57,
+    "p": [
+     13.238,
+     14.068,
+     15.013,
+     16.211,
+     17.598,
+     19.048,
+     20.712
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "５年０～６月未満",
+    "ageMonths": 63,
+    "p": [
+     14.487,
+     15.379,
+     16.388,
+     17.658,
+     19.118,
+     20.631,
+     22.349
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "５年０～６月未満",
+    "ageMonths": 63,
+    "p": [
+     13.981,
+     14.877,
+     15.909,
+     17.237,
+     18.804,
+     20.478,
+     22.449
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "５年６～12月未満",
+    "ageMonths": 69,
+    "p": [
+     15.371,
+     16.3,
+     17.368,
+     18.74,
+     20.357,
+     22.084,
+     24.116
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "５年６～12月未満",
+    "ageMonths": 69,
+    "p": [
+     14.746,
+     15.719,
+     16.855,
+     18.341,
+     20.134,
+     22.101,
+     24.491
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "weight",
+    "label": "６年０～６月未満",
+    "ageMonths": 75,
+    "p": [
+     16.282,
+     17.248,
+     18.375,
+     19.852,
+     21.642,
+     23.617,
+     26.04
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "weight",
+    "label": "６年０～６月未満",
+    "ageMonths": 75,
+    "p": [
+     15.516,
+     16.582,
+     17.846,
+     19.534,
+     21.627,
+     24.001,
+     27.008
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "出生時（０日）",
+    "ageMonths": 0,
+    "p": [
+     45.235,
+     46.702,
+     48.052,
+     49.424,
+     50.685,
+     51.74,
+     52.719
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "出生時（０日）",
+    "ageMonths": 0,
+    "p": [
+     44.466,
+     46.007,
+     47.393,
+     48.773,
+     50.021,
+     51.053,
+     52
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "３０日",
+    "ageMonths": 0.986,
+    "p": [
+     49.211,
+     50.678,
+     52.043,
+     53.441,
+     54.736,
+     55.826,
+     56.842
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "３０日",
+    "ageMonths": 0.986,
+    "p": [
+     48.537,
+     49.857,
+     51.116,
+     52.434,
+     53.678,
+     54.743,
+     55.748
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "０年１～２月未満",
+    "ageMonths": 1.5,
+    "p": [
+     51.258,
+     52.701,
+     54.056,
+     55.456,
+     56.762,
+     57.868,
+     58.904
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "０年１～２月未満",
+    "ageMonths": 1.5,
+    "p": [
+     50.542,
+     51.872,
+     53.148,
+     54.49,
+     55.764,
+     56.859,
+     57.896
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "２～３月未満",
+    "ageMonths": 2.5,
+    "p": [
+     54.942,
+     56.376,
+     57.74,
+     59.164,
+     60.505,
+     61.651,
+     62.73
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "２～３月未満",
+    "ageMonths": 2.5,
+    "p": [
+     53.867,
+     55.223,
+     56.533,
+     57.922,
+     59.249,
+     60.395,
+     61.486
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "３～４月未満",
+    "ageMonths": 3.5,
+    "p": [
+     57.988,
+     59.43,
+     60.811,
+     62.265,
+     63.644,
+     64.827,
+     65.948
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "３～４月未満",
+    "ageMonths": 3.5,
+    "p": [
+     56.472,
+     57.853,
+     59.195,
+     60.623,
+     61.994,
+     63.184,
+     64.319
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "４～５月未満",
+    "ageMonths": 4.5,
+    "p": [
+     60.229,
+     61.678,
+     63.075,
+     64.554,
+     65.963,
+     67.178,
+     68.333
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "４～５月未満",
+    "ageMonths": 4.5,
+    "p": [
+     58.596,
+     60.001,
+     61.371,
+     62.836,
+     64.247,
+     65.474,
+     66.649
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "５～６月未満",
+    "ageMonths": 5.5,
+    "p": [
+     61.883,
+     63.339,
+     64.749,
+     66.248,
+     67.682,
+     68.923,
+     70.106
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "５～６月未満",
+    "ageMonths": 5.5,
+    "p": [
+     60.371,
+     61.8,
+     63.197,
+     64.695,
+     66.142,
+     67.404,
+     68.614
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "６～７月未満",
+    "ageMonths": 6.5,
+    "p": [
+     63.221,
+     64.685,
+     66.109,
+     67.627,
+     69.085,
+     70.35,
+     71.559
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "６～７月未満",
+    "ageMonths": 6.5,
+    "p": [
+     61.868,
+     63.318,
+     64.741,
+     66.27,
+     67.75,
+     69.044,
+     70.287
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "７～８月未満",
+    "ageMonths": 7.5,
+    "p": [
+     64.387,
+     65.861,
+     67.3,
+     68.838,
+     70.32,
+     71.609,
+     72.844
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "７～８月未満",
+    "ageMonths": 7.5,
+    "p": [
+     63.151,
+     64.622,
+     66.068,
+     67.626,
+     69.137,
+     70.459,
+     71.733
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "８～９月未満",
+    "ageMonths": 8.5,
+    "p": [
+     65.458,
+     66.945,
+     68.4,
+     69.96,
+     71.467,
+     72.78,
+     74.041
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "８～９月未満",
+    "ageMonths": 8.5,
+    "p": [
+     64.272,
+     65.763,
+     67.231,
+     68.815,
+     70.355,
+     71.705,
+     73.007
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "９～１０月未満",
+    "ageMonths": 9.5,
+    "p": [
+     66.473,
+     67.975,
+     69.448,
+     71.031,
+     72.564,
+     73.902,
+     75.189
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "９～１０月未満",
+    "ageMonths": 9.5,
+    "p": [
+     65.276,
+     66.785,
+     68.274,
+     69.883,
+     71.45,
+     72.826,
+     74.154
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "１０～１１月未満",
+    "ageMonths": 10.5,
+    "p": [
+     67.449,
+     68.968,
+     70.46,
+     72.068,
+     73.627,
+     74.991,
+     76.305
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "１０～１１月未満",
+    "ageMonths": 10.5,
+    "p": [
+     66.215,
+     67.742,
+     69.251,
+     70.885,
+     72.478,
+     73.879,
+     75.233
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "１１～１２月未満",
+    "ageMonths": 11.5,
+    "p": [
+     68.397,
+     69.934,
+     71.446,
+     73.079,
+     74.665,
+     76.056,
+     77.397
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "１１～１２月未満",
+    "ageMonths": 11.5,
+    "p": [
+     67.129,
+     68.674,
+     70.204,
+     71.862,
+     73.482,
+     74.907,
+     76.287
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "１年０～６月未満",
+    "ageMonths": 15,
+    "p": [
+     71.585,
+     73.191,
+     74.781,
+     76.507,
+     78.194,
+     79.679,
+     81.118
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "１年０～６月未満",
+    "ageMonths": 15,
+    "p": [
+     70.339,
+     71.953,
+     73.557,
+     75.304,
+     77.017,
+     78.531,
+     80.001
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "１年６～12月未満",
+    "ageMonths": 21,
+    "p": [
+     76.742,
+     78.478,
+     80.211,
+     82.105,
+     83.97,
+     85.623,
+     87.234
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "１年６～12月未満",
+    "ageMonths": 21,
+    "p": [
+     75.649,
+     77.383,
+     79.117,
+     81.018,
+     82.893,
+     84.56,
+     86.186
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "２年０～６月未満",
+    "ageMonths": 27,
+    "p": [
+     80.475,
+     82.335,
+     84.203,
+     86.257,
+     88.291,
+     90.104,
+     91.88
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "２年０～６月未満",
+    "ageMonths": 27,
+    "p": [
+     79.461,
+     81.31,
+     83.169,
+     85.216,
+     87.245,
+     89.057,
+     90.832
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "２年６～12月未満",
+    "ageMonths": 33,
+    "p": [
+     84.34,
+     86.311,
+     88.299,
+     90.497,
+     92.684,
+     94.644,
+     96.57
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "２年６～12月未満",
+    "ageMonths": 33,
+    "p": [
+     83.441,
+     85.4,
+     87.375,
+     89.561,
+     91.738,
+     93.688,
+     95.607
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "３年０～６月未満",
+    "ageMonths": 39,
+    "p": [
+     87.785,
+     89.855,
+     91.952,
+     94.281,
+     96.609,
+     98.704,
+     100.771
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "３年０～６月未満",
+    "ageMonths": 39,
+    "p": [
+     86.785,
+     88.845,
+     90.931,
+     93.247,
+     95.563,
+     97.646,
+     99.701
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "３年６～12月未満",
+    "ageMonths": 45,
+    "p": [
+     91.023,
+     93.186,
+     95.385,
+     97.837,
+     100.298,
+     102.521,
+     104.722
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "３年６～12月未満",
+    "ageMonths": 45,
+    "p": [
+     89.934,
+     92.098,
+     94.296,
+     96.745,
+     99.202,
+     101.421,
+     103.616
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "４年０～６月未満",
+    "ageMonths": 51,
+    "p": [
+     94.173,
+     96.423,
+     98.719,
+     101.289,
+     103.878,
+     106.225,
+     108.557
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "４年０～６月未満",
+    "ageMonths": 51,
+    "p": [
+     93.208,
+     95.483,
+     97.801,
+     100.393,
+     103.002,
+     105.365,
+     107.711
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "４年６～12月未満",
+    "ageMonths": 57,
+    "p": [
+     97.285,
+     99.62,
+     102.01,
+     104.693,
+     107.407,
+     109.874,
+     112.334
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "４年６～12月未満",
+    "ageMonths": 57,
+    "p": [
+     96.451,
+     98.837,
+     101.277,
+     104.015,
+     106.779,
+     109.291,
+     111.792
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "５年０～６月未満",
+    "ageMonths": 63,
+    "p": [
+     100.346,
+     102.763,
+     105.243,
+     108.038,
+     110.872,
+     113.458,
+     116.042
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "５年０～６月未満",
+    "ageMonths": 63,
+    "p": [
+     99.566,
+     102.063,
+     104.624,
+     107.505,
+     110.424,
+     113.084,
+     115.74
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "５年６～12月未満",
+    "ageMonths": 69,
+    "p": [
+     103.343,
+     105.839,
+     108.408,
+     111.31,
+     114.263,
+     116.964,
+     119.671
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "５年６～12月未満",
+    "ageMonths": 69,
+    "p": [
+     102.542,
+     105.147,
+     107.825,
+     110.847,
+     113.919,
+     116.726,
+     119.537
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "height",
+    "label": "６年０～６月未満",
+    "ageMonths": 75,
+    "p": [
+     106.269,
+     108.842,
+     111.496,
+     114.503,
+     117.57,
+     120.384,
+     123.212
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "height",
+    "label": "６年０～６月未満",
+    "ageMonths": 75,
+    "p": [
+     105.391,
+     108.1,
+     110.893,
+     114.054,
+     117.276,
+     120.229,
+     123.195
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "出生時（０日）",
+    "ageMonths": 0,
+    "p": [
+     31.094,
+     31.968,
+     32.816,
+     33.719,
+     34.585,
+     35.335,
+     36.051
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "出生時（０日）",
+    "ageMonths": 0,
+    "p": [
+     30.84,
+     31.658,
+     32.455,
+     33.307,
+     34.127,
+     34.84,
+     35.524
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "３０日",
+    "ageMonths": 0.986,
+    "p": [
+     34.415,
+     35.215,
+     35.991,
+     36.817,
+     37.608,
+     38.294,
+     38.948
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "３０日",
+    "ageMonths": 0.986,
+    "p": [
+     33.84,
+     34.587,
+     35.318,
+     36.104,
+     36.863,
+     37.526,
+     38.162
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "０年１～２月未満",
+    "ageMonths": 1.5,
+    "p": [
+     35.601,
+     36.392,
+     37.168,
+     38.001,
+     38.808,
+     39.512,
+     40.189
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "０年１～２月未満",
+    "ageMonths": 1.5,
+    "p": [
+     34.908,
+     35.669,
+     36.413,
+     37.213,
+     37.986,
+     38.661,
+     39.31
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "２～３月未満",
+    "ageMonths": 2.5,
+    "p": [
+     37.276,
+     38.059,
+     38.836,
+     39.682,
+     40.51,
+     41.241,
+     41.951
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "２～３月未満",
+    "ageMonths": 2.5,
+    "p": [
+     36.463,
+     37.244,
+     38.008,
+     38.83,
+     39.625,
+     40.319,
+     40.985
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "３～４月未満",
+    "ageMonths": 3.5,
+    "p": [
+     38.527,
+     39.306,
+     40.086,
+     40.942,
+     41.787,
+     42.539,
+     43.273
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "３～４月未満",
+    "ageMonths": 3.5,
+    "p": [
+     37.557,
+     38.352,
+     39.131,
+     39.968,
+     40.777,
+     41.484,
+     42.163
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "４～５月未満",
+    "ageMonths": 4.5,
+    "p": [
+     39.536,
+     40.313,
+     41.096,
+     41.96,
+     42.819,
+     43.587,
+     44.341
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "４～５月未満",
+    "ageMonths": 4.5,
+    "p": [
+     38.457,
+     39.264,
+     40.055,
+     40.905,
+     41.727,
+     42.445,
+     43.135
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "５～６月未満",
+    "ageMonths": 5.5,
+    "p": [
+     40.381,
+     41.158,
+     41.943,
+     42.815,
+     43.685,
+     44.467,
+     45.238
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "５～６月未満",
+    "ageMonths": 5.5,
+    "p": [
+     39.266,
+     40.084,
+     40.886,
+     41.748,
+     42.582,
+     43.31,
+     44.01
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "６～７月未満",
+    "ageMonths": 6.5,
+    "p": [
+     41.097,
+     41.873,
+     42.662,
+     43.54,
+     44.42,
+     45.214,
+     45.999
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "６～７月未満",
+    "ageMonths": 6.5,
+    "p": [
+     39.999,
+     40.828,
+     41.64,
+     42.513,
+     43.358,
+     44.096,
+     44.805
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "７～８月未満",
+    "ageMonths": 7.5,
+    "p": [
+     41.708,
+     42.484,
+     43.275,
+     44.158,
+     45.046,
+     45.85,
+     46.648
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "７～８月未満",
+    "ageMonths": 7.5,
+    "p": [
+     40.63,
+     41.468,
+     42.289,
+     43.172,
+     44.026,
+     44.772,
+     45.489
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "８～９月未満",
+    "ageMonths": 8.5,
+    "p": [
+     42.232,
+     43.008,
+     43.8,
+     44.688,
+     45.583,
+     46.396,
+     47.204
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "８～９月未満",
+    "ageMonths": 8.5,
+    "p": [
+     41.154,
+     41.999,
+     42.827,
+     43.718,
+     44.579,
+     45.332,
+     46.055
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "９～１０月未満",
+    "ageMonths": 9.5,
+    "p": [
+     42.683,
+     43.458,
+     44.252,
+     45.143,
+     46.044,
+     46.864,
+     47.682
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "９～１０月未満",
+    "ageMonths": 9.5,
+    "p": [
+     41.583,
+     42.434,
+     43.268,
+     44.164,
+     45.031,
+     45.789,
+     46.518
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "１０～１１月未満",
+    "ageMonths": 10.5,
+    "p": [
+     43.073,
+     43.847,
+     44.641,
+     45.535,
+     46.442,
+     47.268,
+     48.094
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "１０～１１月未満",
+    "ageMonths": 10.5,
+    "p": [
+     41.931,
+     42.785,
+     43.623,
+     44.524,
+     45.396,
+     46.158,
+     46.89
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "１１～１２月未満",
+    "ageMonths": 11.5,
+    "p": [
+     43.414,
+     44.187,
+     44.982,
+     45.878,
+     46.789,
+     47.621,
+     48.454
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "１１～１２月未満",
+    "ageMonths": 11.5,
+    "p": [
+     42.217,
+     43.075,
+     43.915,
+     44.82,
+     45.695,
+     46.459,
+     47.194
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "１年０～６月未満",
+    "ageMonths": 15,
+    "p": [
+     44.351,
+     45.12,
+     45.915,
+     46.817,
+     47.739,
+     48.587,
+     49.441
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "１年０～６月未満",
+    "ageMonths": 15,
+    "p": [
+     43.036,
+     43.902,
+     44.752,
+     45.665,
+     46.549,
+     47.321,
+     48.063
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "１年６～12月未満",
+    "ageMonths": 21,
+    "p": [
+     45.478,
+     46.241,
+     47.036,
+     47.944,
+     48.879,
+     49.746,
+     50.625
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "１年６～12月未満",
+    "ageMonths": 21,
+    "p": [
+     44.276,
+     45.156,
+     46.018,
+     46.946,
+     47.844,
+     48.629,
+     49.384
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "２年０～６月未満",
+    "ageMonths": 27,
+    "p": [
+     46.332,
+     47.092,
+     47.886,
+     48.798,
+     49.744,
+     50.625,
+     51.525
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "２年０～６月未満",
+    "ageMonths": 27,
+    "p": [
+     45.226,
+     46.115,
+     46.988,
+     47.926,
+     48.834,
+     49.628,
+     50.392
+    ]
+   },
+   {
+    "sex": "M",
+    "metric": "head",
+    "label": "２年６～12月未満",
+    "ageMonths": 33,
+    "p": [
+     47.034,
+     47.791,
+     48.585,
+     49.501,
+     50.456,
+     51.349,
+     52.265
+    ]
+   },
+   {
+    "sex": "F",
+    "metric": "head",
+    "label": "２年６～12月未満",
+    "ageMonths": 33,
+    "p": [
+     45.977,
+     46.873,
+     47.753,
+     48.698,
+     49.614,
+     50.415,
+     51.184
+    ]
+   }
+  ]
+ },
+ "breastMilkVolume": [
+  {
+   "ageMinMonths": 0,
+   "ageMaxMonths": 5,
+   "ml": 780,
+   "source": "DRI2025 p.369"
+  },
+  {
+   "ageMinMonths": 6,
+   "ageMaxMonths": 8,
+   "ml": 600,
+   "source": "DRI2025 p.369"
+  },
+  {
+   "ageMinMonths": 9,
+   "ageMaxMonths": 11,
+   "ml": 450,
+   "source": "DRI2025 p.369"
+  }
+ ],
+ "aliases": [
+  {
+   "key": "さば",
+   "aliases": [
+    "鯖",
+    "サバ"
+   ]
+  },
+  {
+   "key": "しらす",
+   "aliases": [
+    "シラス",
+    "白子干し"
+   ]
+  },
+  {
+   "key": "さけ",
+   "aliases": [
+    "鮭",
+    "サケ",
+    "シャケ"
+   ]
+  },
+  {
+   "key": "たら",
+   "aliases": [
+    "鱈",
+    "タラ"
+   ]
+  },
+  {
+   "key": "たい",
+   "aliases": [
+    "鯛",
+    "タイ"
+   ]
+  },
+  {
+   "key": "まぐろ",
+   "aliases": [
+    "鮪",
+    "マグロ",
+    "ツナ"
+   ]
+  },
+  {
+   "key": "かつお",
+   "aliases": [
+    "鰹",
+    "カツオ"
+   ]
+  },
+  {
+   "key": "いわし",
+   "aliases": [
+    "鰯",
+    "イワシ"
+   ]
+  },
+  {
+   "key": "あじ",
+   "aliases": [
+    "鯵",
+    "アジ"
+   ]
+  },
+  {
+   "key": "ぶり",
+   "aliases": [
+    "鰤",
+    "ブリ"
+   ]
+  },
+  {
+   "key": "かれい",
+   "aliases": [
+    "鰈",
+    "カレイ"
+   ]
+  },
+  {
+   "key": "ひらめ",
+   "aliases": [
+    "鮃",
+    "ヒラメ"
+   ]
+  },
+  {
+   "key": "こめ",
+   "aliases": [
+    "米",
+    "ごはん",
+    "ご飯",
+    "お粥",
+    "おかゆ",
+    "粥"
+   ]
+  },
+  {
+   "key": "全かゆ",
+   "aliases": [
+    "おかゆ",
+    "お粥",
+    "五倍粥",
+    "5倍がゆ"
+   ]
+  },
+  {
+   "key": "五分かゆ",
+   "aliases": [
+    "十倍粥",
+    "10倍がゆ"
+   ]
+  },
+  {
+   "key": "うどん",
+   "aliases": [
+    "饂飩"
+   ]
+  },
+  {
+   "key": "そうめん",
+   "aliases": [
+    "素麺"
+   ]
+  },
+  {
+   "key": "さつまいも",
+   "aliases": [
+    "薩摩芋",
+    "サツマイモ",
+    "さつま芋"
+   ]
+  },
+  {
+   "key": "じゃがいも",
+   "aliases": [
+    "じゃが芋",
+    "ジャガイモ",
+    "馬鈴薯"
+   ]
+  },
+  {
+   "key": "さといも",
+   "aliases": [
+    "里芋",
+    "サトイモ"
+   ]
+  },
+  {
+   "key": "にんじん",
+   "aliases": [
+    "人参",
+    "ニンジン"
+   ]
+  },
+  {
+   "key": "だいこん",
+   "aliases": [
+    "大根",
+    "ダイコン"
+   ]
+  },
+  {
+   "key": "かぼちゃ",
+   "aliases": [
+    "南瓜",
+    "カボチャ"
+   ]
+  },
+  {
+   "key": "ほうれんそう",
+   "aliases": [
+    "ほうれん草",
+    "ホウレンソウ"
+   ]
+  },
+  {
+   "key": "こまつな",
+   "aliases": [
+    "小松菜",
+    "コマツナ"
+   ]
+  },
+  {
+   "key": "はくさい",
+   "aliases": [
+    "白菜",
+    "ハクサイ"
+   ]
+  },
+  {
+   "key": "キャベツ",
+   "aliases": [
+    "きゃべつ"
+   ]
+  },
+  {
+   "key": "たまねぎ",
+   "aliases": [
+    "玉ねぎ",
+    "玉葱",
+    "タマネギ"
+   ]
+  },
+  {
+   "key": "トマト",
+   "aliases": [
+    "とまと"
+   ]
+  },
+  {
+   "key": "ブロッコリー",
+   "aliases": [
+    "ぶろっこりー"
+   ]
+  },
+  {
+   "key": "なす",
+   "aliases": [
+    "茄子",
+    "ナス"
+   ]
+  },
+  {
+   "key": "きゅうり",
+   "aliases": [
+    "胡瓜",
+    "キュウリ"
+   ]
+  },
+  {
+   "key": "とうもろこし",
+   "aliases": [
+    "コーン",
+    "玉蜀黍"
+   ]
+  },
+  {
+   "key": "えだまめ",
+   "aliases": [
+    "枝豆"
+   ]
+  },
+  {
+   "key": "だいず",
+   "aliases": [
+    "大豆",
+    "ダイズ"
+   ]
+  },
+  {
+   "key": "なっとう",
+   "aliases": [
+    "納豆",
+    "ナットウ"
+   ]
+  },
+  {
+   "key": "豆腐",
+   "aliases": [
+    "とうふ",
+    "トウフ"
+   ]
+  },
+  {
+   "key": "きな粉",
+   "aliases": [
+    "きなこ",
+    "黄な粉"
+   ]
+  },
+  {
+   "key": "鶏卵",
+   "aliases": [
+    "たまご",
+    "卵",
+    "玉子",
+    "タマゴ"
+   ]
+  },
+  {
+   "key": "卵黄",
+   "aliases": [
+    "黄身",
+    "きみ"
+   ]
+  },
+  {
+   "key": "卵白",
+   "aliases": [
+    "白身",
+    "しろみ"
+   ]
+  },
+  {
+   "key": "にわとり",
+   "aliases": [
+    "鶏",
+    "とり",
+    "チキン",
+    "鶏肉"
+   ]
+  },
+  {
+   "key": "ささみ",
+   "aliases": [
+    "ササミ"
+   ]
+  },
+  {
+   "key": "ぶた",
+   "aliases": [
+    "豚",
+    "ブタ",
+    "豚肉"
+   ]
+  },
+  {
+   "key": "うし",
+   "aliases": [
+    "牛",
+    "ギュウ",
+    "牛肉"
+   ]
+  },
+  {
+   "key": "レバー",
+   "aliases": [
+    "肝臓",
+    "れば",
+    "きも"
+   ]
+  },
+  {
+   "key": "普通牛乳",
+   "aliases": [
+    "牛乳",
+    "ぎゅうにゅう",
+    "ミルク"
+   ]
+  },
+  {
+   "key": "ヨーグルト",
+   "aliases": [
+    "よーぐると"
+   ]
+  },
+  {
+   "key": "バナナ",
+   "aliases": [
+    "ばなな"
+   ]
+  },
+  {
+   "key": "りんご",
+   "aliases": [
+    "林檎",
+    "リンゴ"
+   ]
+  },
+  {
+   "key": "いちご",
+   "aliases": [
+    "苺",
+    "イチゴ"
+   ]
+  },
+  {
+   "key": "みかん",
+   "aliases": [
+    "蜜柑",
+    "ミカン"
+   ]
+  },
+  {
+   "key": "もも",
+   "aliases": [
+    "桃",
+    "モモ"
+   ]
+  },
+  {
+   "key": "なし",
+   "aliases": [
+    "梨",
+    "ナシ"
+   ]
+  },
+  {
+   "key": "ぶどう",
+   "aliases": [
+    "葡萄",
+    "ブドウ"
+   ]
+  },
+  {
+   "key": "すいか",
+   "aliases": [
+    "西瓜",
+    "スイカ"
+   ]
+  },
+  {
+   "key": "しいたけ",
+   "aliases": [
+    "椎茸",
+    "シイタケ"
+   ]
+  },
+  {
+   "key": "のり",
+   "aliases": [
+    "海苔",
+    "ノリ"
+   ]
+  },
+  {
+   "key": "わかめ",
+   "aliases": [
+    "若布",
+    "ワカメ"
+   ]
+  },
+  {
+   "key": "こんぶ",
+   "aliases": [
+    "昆布",
+    "コンブ"
+   ]
+  },
+  {
+   "key": "かつお節",
+   "aliases": [
+    "鰹節",
+    "おかか"
+   ]
+  },
+  {
+   "key": "人乳",
+   "aliases": [
+    "母乳"
+   ]
+  }
+ ],
+ "versions": [
+  {
+   "dataset": "食品成分",
+   "version": "日本食品標準成分表（八訂）増補2023年（正誤表 2026年3月27日反映版）",
+   "publisher": "文部科学省",
+   "sourceUrl": "https://www.mext.go.jp/a_menu/syokuhinseibun/mext_00001.html",
+   "note": "第2章データ（Excel）更新日：2026年3月27日"
+  },
+  {
+   "dataset": "食事摂取基準",
+   "version": "日本人の食事摂取基準（2025年版）策定検討会報告書（2024年10月11日公表）",
+   "publisher": "厚生労働省",
+   "sourceUrl": "https://www.mhlw.go.jp/stf/newpage_44138.html",
+   "note": "2-2 乳児・小児 表3（p.375）を転記。正誤表（令和7年3月25日）で乳児表の訂正なしを確認"
+  },
+  {
+   "dataset": "母乳中濃度",
+   "version": "日本人の食事摂取基準（2025年版）2-2 乳児・小児 表1（p.368）／未掲載の栄養素は成分表 13051 人乳",
+   "publisher": "厚生労働省・文部科学省",
+   "sourceUrl": "https://www.mhlw.go.jp/stf/newpage_44138.html",
+   "note": "ビタミンDは2025年版の表1に母乳中濃度の記載がないため、成分表の人乳の値を使用"
+  },
+  {
+   "dataset": "発育曲線",
+   "version": "こども家庭庁「令和5年乳幼児身体発育調査」（2024年12月25日公表）",
+   "publisher": "こども家庭庁",
+   "sourceUrl": "https://www.e-stat.go.jp/stat-search/files?page=1&toukei=00450272&tstat=000001024533",
+   "note": "表１ 一般調査及び病院調査による体重の身体発育値（３、10、25、50、75、90及び97パーセンタイル値）　年・月・日齢別、性別 / 表２　一般調査及び病院調査による身長の身体発育値（３、10、25、50、75、90及び97パーセンタイル値）　年・月・日齢別、性別 / 表３ 一般調査及び病院調査による頭囲の身体発育値（３、10、25、50、75、90及び97パーセンタイル値）　年・月・日齢別、性別"
+  }
+ ]
+}

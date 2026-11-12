@@ -16,3 +16,11 @@ AIメモリ相場の主役キオクシアHD(285A)の戦略メモ。年表・業�
 - GitHub Pages: `https://purplecom24-netizen.github.io/kuroshiba-game/kioxia.html`
 - 数値は2026/08/31時点の報道・公表情報に基づく引用。売買推奨ではありません
 - チャートは報道で確認できた終値のみをつないだアンカー線(値動きの捏造なし)
+
+## もぐもぐ栄養ノート (mogumogu/)
+
+離乳食・育児用ミルク・母乳（推定）を合算した1日の栄養摂取量を、日本人の食事摂取基準（2025年版）と比べて見える化する個人用PWA。成長曲線（令和5年乳幼児身体発育調査）つき。
+
+- GitHub Pages: `https://purplecom24-netizen.github.io/kuroshiba-game/mogumogu/`（iPhoneのSafariで開いて「ホーム画面に追加」）
+- ソース: `apps/mogumogu/`（要件定義は `apps/mogumogu/docs/requirements.md`）
+- データは端末内（IndexedDB）だけに保存。表示はすべて目安で、医療的な判断の代わりにはなりません
