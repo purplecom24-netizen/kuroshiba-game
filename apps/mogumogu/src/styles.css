@@ -234,3 +234,14 @@ table.nut thead th { color: var(--text-2); font-weight: 600; position: sticky; t
 .nutrient-form { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
 @media (min-width: 560px) { .nutrient-form { grid-template-columns: repeat(3, 1fr); } }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* 記録タブの日付ナビ：4枠固定（「今日」は非表示でも枠を残す） */
+.date-nav { display: grid; grid-template-columns: 44px 1fr 44px 56px; gap: 8px; align-items: center; margin-bottom: 8px; }
+.date-nav input[type='date'] { text-align: center; min-width: 0; }
+.date-nav .btn { padding: 4px 0; }
+.swipe-area { touch-action: pan-y; min-height: 60dvh; }
+.day-slide.next { animation: slideFromRight 0.18s ease-out; }
+.day-slide.prev { animation: slideFromLeft 0.18s ease-out; }
+@keyframes slideFromRight { from { transform: translateX(24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+@keyframes slideFromLeft { from { transform: translateX(-24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .day-slide.next, .day-slide.prev { animation: none; } }

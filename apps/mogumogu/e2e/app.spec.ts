@@ -144,3 +144,34 @@ test('数字を1文字ずつ打てる（大さじの重さ15g・体重6.25kg）'
   await page.getByRole('button', { name: '記録する' }).click();
   await expect(page.getByText('最新の体重：6.25 kg')).toBeVisible();
 });
+
+test('記録タブ：横スワイプで日付切替、日付を変えてもボタン位置が変わらない', async ({ page }) => {
+  await setup(page);
+  const next = page.getByRole('button', { name: '次の日' });
+  const date = page.getByLabel('日付', { exact: true });
+  const before = await next.boundingBox();
+  const dateBefore = await date.boundingBox();
+
+  const swipe = async (fromX: number, toX: number) => {
+    await page.evaluate(([a, b]) => {
+      const el = document.querySelector('.swipe-area')!;
+      const mk = (x: number) => new Touch({ identifier: 1, target: el, clientX: x, clientY: 400 });
+      el.dispatchEvent(new TouchEvent('touchstart', { bubbles: true, touches: [mk(a)], changedTouches: [mk(a)] }));
+      el.dispatchEvent(new TouchEvent('touchend', { bubbles: true, touches: [], changedTouches: [mk(b)] }));
+    }, [fromX, toX]);
+  };
+  await swipe(300, 100); // 左へ → 翌日
+  await expect(date).toHaveValue('2026-11-13');
+  await expect(page.getByRole('button', { name: '今日' })).toBeVisible();
+  expect(await next.boundingBox()).toEqual(before);
+  expect(await date.boundingBox()).toEqual(dateBefore);
+  await swipe(100, 300); // 右へ → 前日
+  await swipe(100, 300);
+  await expect(date).toHaveValue('2026-11-11');
+  await swipe(10, 300); // 画面端からは無視（iOSの戻る操作）
+  await expect(date).toHaveValue('2026-11-11');
+  await page.getByRole('button', { name: '今日' }).click();
+  await expect(date).toHaveValue('2026-11-12');
+  expect(await next.boundingBox()).toEqual(before);
+  await page.screenshot({ path: 'e2e-results/record-nav.png' });
+});
