@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Child, type MealItem, type UnitDef } from '../db';
 import type { FoodLike } from '../lib/day';
@@ -76,6 +76,15 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
   const conv = amount !== null && food ? toGrams(amount, unit, density, unit === 'custom' ? customUnit ?? undefined : undefined) : null;
   const served = conv && conv.ok ? conv.grams : null;
   const eaten = served !== null ? eatenGrams(served, mode === 'leftover' ? { leftoverGrams: leftover ?? 0 } : { ratio }) : null;
+  // 係数の入力欄は一度出したら、食材を選び直すまで出し続ける（1文字目で消えないように）
+  const [askDensity, setAskDensity] = useState(false);
+  useEffect(() => {
+    if (conv && !conv.ok && conv.reason === 'needDensity') setAskDensity(true);
+  }, [conv]);
+  useEffect(() => {
+    setAskDensity(false);
+    setDensityG(null);
+  }, [food?.id]);
   const lowConf = food && Object.values(food.per100g).every((v) => v.value === null);
 
   async function save() {
@@ -265,10 +274,11 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
             </div>
           </div>
         )}
-        {conv && !conv.ok && conv.reason === 'needDensity' && (
+        {askDensity && !food.density && unit !== 'g' && (
           <div className="notice warn">
             <p style={{ margin: '0 0 6px' }}>この食材は容量（ml）から重さに直す係数がありません。大さじ1杯（15ml）の重さを一度量って入力してください。以後はその値を使います。</p>
             <label className="field"><span>大さじ1杯の重さ（g）</span><NumberInput value={densityG} onChange={setDensityG} ariaLabel="大さじ1杯の重さ" /></label>
+            {densityG ? <p className="muted small" style={{ margin: '4px 0 0' }}>→ 1mlあたり {fmt(densityG / 15, 3)} g として計算（保存時に登録）</p> : null}
           </div>
         )}
 

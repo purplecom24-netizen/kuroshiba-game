@@ -1,4 +1,4 @@
-import { useEffect, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { STATUS_ICON, STATUS_TEXT, type Status } from '../engine/judge';
 
 export function Modal({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
@@ -44,17 +44,32 @@ export function Seg<T extends string>({ value, options, onChange, label }: { val
   );
 }
 
-export function NumberInput({ value, onChange, step = 'any', placeholder, ariaLabel, min = 0 }: { value: number | null | undefined; onChange: (v: number | null) => void; step?: string; placeholder?: string; ariaLabel?: string; min?: number }) {
+/**
+ * 数値入力。入力途中の文字列（「1」「0.」「1.2」など）を手元に保ち、
+ * 確定値だけを親に渡す（1文字目で確定・欄が消える・小数が打てない問題を防ぐ）。
+ */
+export function NumberInput({ value, onChange, placeholder, ariaLabel }: { value: number | null | undefined; onChange: (v: number | null) => void; step?: string; placeholder?: string; ariaLabel?: string; min?: number }) {
+  const [text, setText] = useState(value === null || value === undefined || Number.isNaN(value) ? '' : String(value));
+  // 親から別の値が入ったとき（ワンタップ加算など）だけ表示を合わせる
+  useEffect(() => {
+    const parsed = text === '' ? null : Number(text);
+    const v = value === null || value === undefined || Number.isNaN(value) ? null : value;
+    if (parsed !== v && !(parsed !== null && v !== null && Math.abs(parsed - v) < 1e-9)) setText(v === null ? '' : String(v));
+  }, [value]); // eslint-disable-line react-hooks/exhaustive-deps
   return (
     <input
-      type="number"
+      type="text"
       inputMode="decimal"
-      step={step}
-      min={min}
+      autoComplete="off"
       aria-label={ariaLabel}
       placeholder={placeholder}
-      value={value === null || value === undefined || Number.isNaN(value) ? '' : value}
-      onChange={(e) => onChange(e.target.value === '' ? null : Number(e.target.value))}
+      value={text}
+      onChange={(e) => {
+        const t = e.target.value.replace(/[０-９．]/g, (c) => String.fromCharCode(c.charCodeAt(0) - 0xfee0)).replace(/[^0-9.]/g, '');
+        setText(t);
+        if (t === '') onChange(null);
+        else if (/^\d*\.?\d*$/.test(t) && t !== '.') onChange(Number(t));
+      }}
     />
   );
 }

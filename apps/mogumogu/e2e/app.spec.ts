@@ -120,3 +120,27 @@ test('JSONバックアップ → 全削除 → 復元（T-15）', async ({ page 
   await page.getByRole('button', { name: '記録', exact: true }).click();
   await expect(page.locator('.kv')).toContainText('授乳1回');
 });
+
+test('数字を1文字ずつ打てる（大さじの重さ15g・体重6.25kg）', async ({ page }) => {
+  await setup(page);
+  await page.getByRole('button', { name: '＋ 食事' }).click();
+  await page.getByRole('dialog').getByRole('listitem').filter({ hasText: /^7倍がゆ/ }).click();
+  await page.getByLabel('提供量').pressSequentially('5');
+  await page.getByLabel('単位').selectOption('tsp');
+  const d = page.getByLabel('大さじ1杯の重さ');
+  await d.click();
+  await d.pressSequentially('15', { delay: 50 });
+  await expect(d).toHaveValue('15');
+  await expect(d).toBeVisible();
+  // 小さじ5杯 = 25ml × (15g/15ml) = 25g
+  await expect(page.getByRole('dialog')).toContainText('提供 25 g');
+  await page.getByRole('button', { name: '保存' }).click();
+  await expect(page.locator('.card').filter({ hasText: '1回目' })).toContainText('25 g');
+
+  await page.getByRole('button', { name: '成長', exact: true }).click();
+  const w = page.getByLabel('体重', { exact: true });
+  await w.pressSequentially('6.25', { delay: 50 });
+  await expect(w).toHaveValue('6.25');
+  await page.getByRole('button', { name: '記録する' }).click();
+  await expect(page.getByText('最新の体重：6.25 kg')).toBeVisible();
+});
