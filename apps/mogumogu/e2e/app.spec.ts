@@ -39,7 +39,17 @@ test('記録 → 栄養分析 → 一覧（T-11, T-16）', async ({ page }) => {
   await addFood(page, 'さつまいも 蒸し', /皮なし　蒸し/, '20');
   await page.getByRole('button', { name: '＋ 食材を追加' }).click();
   await addFood(page, '鯖 焼き', /^まさば　焼き/, '10');
-  await expect(page.locator('.card').filter({ hasText: '1回目' })).toContainText('30 g');
+  // よく使う食材から7倍がゆ（成分表にないため推定値）
+  await page.getByRole('button', { name: '＋ 食材を追加' }).click();
+  await page.getByLabel('食材を検索').fill('おかゆ');
+  await expect(page.getByRole('dialog').getByRole('listitem').first()).toContainText('倍がゆ');
+  await page.screenshot({ path: 'e2e-results/picker-okayu.png' });
+  await page.getByRole('dialog').getByRole('listitem').filter({ hasText: /^7倍がゆ/ }).click();
+  await expect(page.getByText('全かゆ（5倍）を米の量で比例換算')).toBeVisible();
+  await page.getByLabel('提供量').fill('30');
+  await page.getByRole('button', { name: '保存' }).click();
+  await expect(page.locator('.card').filter({ hasText: '1回目' })).toContainText('7倍がゆ');
+  await expect(page.locator('.card').filter({ hasText: '1回目' })).toContainText('60 g');
   await expect(page.locator('.kv')).toContainText('250 ml');
 
   await page.getByRole('button', { name: '栄養分析' }).click();
@@ -78,6 +88,8 @@ test('オフラインで動く（T-14）', async ({ page, context }) => {
   await page.getByRole('button', { name: '＋ 授乳' }).click();
   await expect(page.locator('.kv')).toContainText('授乳1回');
   await page.getByRole('button', { name: '＋ 食事' }).click();
+  await expect(page.getByText('よく使う食材')).toBeVisible();
+  await page.screenshot({ path: 'e2e-results/picker-empty.png' });
   await addFood(page, 'にんじん ゆで', /にんじん　根　皮なし　ゆで/, '15');
   await page.getByRole('button', { name: '栄養分析' }).click();
   await expect(page.getByTestId('nutrient-table')).toBeVisible();

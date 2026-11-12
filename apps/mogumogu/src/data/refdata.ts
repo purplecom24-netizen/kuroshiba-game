@@ -15,3 +15,7 @@ export function referenceBreastMilkMl(months: number): number {
   const m = Math.min(months, 11);
   return BREAST_MILK_VOLUME.find((r) => m >= r.ageMinMonths && m <= r.ageMaxMonths)?.ml ?? 0;
 }
+
+export interface Preset { id: string; label: string; category: string; aliases: string[]; code: string; scale: number; note: string }
+export const PRESETS = ref.presets as Preset[];
+export const PRESET_CATEGORIES = [...new Set(PRESETS.map((p) => p.category))];

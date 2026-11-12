@@ -36,7 +36,7 @@ export function expandFoods(json: { columns: string[]; foods: string[][] }): Mex
       raw[id] = r[4 + i];
       per100g[id] = parseToken(r[4 + i]);
     });
-    const displayName = name.replace(/^＜[^＞]+＞　/, '').replace(/（[^）]+）　/, '');
+    const displayName = name.replace(/^＜[^＞]+＞　/, '').replace(/（[^）]+）　/, '').replace(/[［］]/g, '');
     const { base, state } = splitCookState(name);
     const nk = normalizeKana(name + alias);
     const extra = aliasNorm.filter((a) => nk.includes(a.key)).map((a) => a.aliases).join(' ');

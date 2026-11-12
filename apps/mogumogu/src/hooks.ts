@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, DEFAULT_SETTINGS, type Settings } from './db';
 import { loadMextFoods, type MextFood } from './data/foods';
-import { customToFood, mextToFood, type FoodLike } from './lib/day';
+import { customToFood, mextToFood, presetToFood, type FoodLike } from './lib/day';
+import { PRESETS } from './data/refdata';
 import { normalizeKana } from './engine/search';
 
 export function useSettings(): Settings {
@@ -37,6 +38,11 @@ export function useFoodMap() {
   return useMemo(() => {
     if (!mext || !custom || !prefs) return null;
     const map = new Map<string, FoodLike>();
+    const byCode = new Map(mext.map((f) => [f.code, f]));
+    for (const p of PRESETS) {
+      const m = byCode.get(p.code);
+      if (m) map.set(`preset:${p.id}`, presetToFood(p, m, normalizeKana));
+    }
     for (const f of mext) map.set(f.id, mextToFood(f));
     for (const c of custom) map.set(`custom:${c.id}`, customToFood(c, normalizeKana));
     const pmap = new Map(prefs.map((p) => [p.foodId, p]));
@@ -52,7 +58,7 @@ export function useFoodMap() {
 
 /** 液体の既定係数 1.0（要件 6.1）。成分表のし好飲料類・液状乳類・人乳・だし等 */
 export function isLiquid(f: FoodLike): boolean {
-  if (f.source !== 'mext') return false;
+  if (f.source !== 'mext' && f.source !== 'preset') return false;
   if (f.code?.startsWith('16')) return true;
   return /液状乳類|人乳|普通牛乳|豆乳|ジュース|だし|スープ|ストレート|液体ミルク/.test(f.name);
 }

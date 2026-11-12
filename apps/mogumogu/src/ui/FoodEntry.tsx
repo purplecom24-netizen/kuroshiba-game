@@ -3,11 +3,14 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Child, type MealItem, type UnitDef } from '../db';
 import type { FoodLike } from '../lib/day';
 import { searchFoods } from '../engine/search';
-import { COOK_STATES } from '../engine/cookstate';
+
 import { EATEN_RATIOS, UNIT_LABEL, eatenGrams, toGrams, type EatenRatioKey, type UnitKind } from '../engine/units';
 import { fmt } from '../lib/format';
 import { Modal, NumberInput, Seg } from './common';
 import { FOOD_GROUPS } from '../data/foods';
+import { PRESET_CATEGORIES } from '../data/refdata';
+
+const COMMON_STATES = ['生', 'ゆで', '水煮', '蒸し', '焼き', '電子レンジ調理'];
 
 const REACTIONS = ['好き', '普通', '嫌い', '吐き出し'];
 
@@ -35,7 +38,17 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
   const [densityG, setDensityG] = useState<number | null>(null); // 大さじ1の実測g
   const [newUnit, setNewUnit] = useState<{ name: string; grams: number | null } | null>(null);
 
-  const results = useMemo(() => searchFoods(foods.list, query, foods.recent, 40), [foods, query]);
+  const [cat, setCat] = useState(PRESET_CATEGORIES[0]);
+  const presets = useMemo(() => foods.list.filter((f) => f.source === 'preset'), [foods.list]);
+  const others = useMemo(() => foods.list.filter((f) => f.source !== 'preset'), [foods.list]);
+  const presetHits = useMemo(() => {
+    if (!query) return [];
+    const hit = new Set(searchFoods(presets, query, [], 50).map((f) => f.id));
+    return presets.filter((f) => hit.has(f.id)); // リストの並び（10倍→7倍→5倍…）を保つ
+  }, [presets, query]);
+  const otherHits = useMemo(() => (query ? searchFoods(others, query, foods.recent, 30) : []), [others, query, foods.recent]);
+  const recentFoods = useMemo(() => foods.recent.map((id) => foods.map.get(id)).filter((f): f is FoodLike => !!f).slice(0, 8), [foods]);
+  const [labelBase, setLabelBase] = useState<string | null>(null); // よく使う食材の名前（調理状態を切り替えても残す）
   const units = useLiveQuery(
     (): Promise<UnitDef[]> => (food ? db.units.filter((u) => u.foodId === food.id || u.foodId === null).toArray() : Promise.resolve([])),
     [food?.id],
@@ -43,10 +56,21 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
   const customUnit = units?.find((u) => u.id === unitId);
 
   const siblings = useMemo(() => {
-    if (!food || food.source !== 'mext' || !food.base) return [];
+    if (!food || (food.source !== 'mext' && food.source !== 'preset') || !food.cookState || !food.base) return [];
     return foods.list.filter((f) => f.source === 'mext' && f.base === food.base && f.cookState).sort((a, b) => (a.code! < b.code! ? -1 : 1));
   }, [food, foods.list]);
-  const missingStates = COOK_STATES.filter((s) => !siblings.some((f) => f.cookState === s));
+  const missingStates = COMMON_STATES.filter((s) => !siblings.some((f) => f.cookState === s));
+  const currentMextId = food ? (food.source === 'preset' ? `mext:${food.code}` : food.id) : '';
+
+  function pick(f: FoodLike) {
+    setFood(f);
+    setCookNote(null);
+    setLabelBase(f.source === 'preset' ? f.displayName.replace(/（[^）]*）$/, '') : null);
+    if (f.packGrams) {
+      setAmount(f.packGrams);
+      setUnit('g');
+    }
+  }
 
   const density = food?.density ?? (densityG ? densityG / 15 : null);
   const conv = amount !== null && food ? toGrams(amount, unit, density, unit === 'custom' ? customUnit ?? undefined : undefined) : null;
@@ -82,40 +106,57 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
   }
 
   if (!food) {
+    const row = (f: FoodLike, sub?: string) => (
+      <button key={f.id} role="listitem" className="result-item" onClick={() => pick(f)}>
+        <span>
+          {f.displayName}
+          {f.source === 'recipe' && <span className="badge">レシピ</span>}
+          {f.source === 'babyfood' && <span className="badge">ベビーフード</span>}
+          {f.source === 'custom' && <span className="badge">カスタム</span>}
+        </span>
+        <span className="muted small">{sub ?? ''}</span>
+      </button>
+    );
     return (
       <Modal title="食材を選ぶ" onClose={onClose}>
         <input
           type="search"
           autoFocus
-          placeholder="例：さば、しらす、にんじん、おかゆ"
+          placeholder="例：おかゆ、にんじん、しらす、豆腐"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           aria-label="食材を検索"
         />
-        <p className="muted" style={{ margin: '6px 0' }}>{query ? `${results.length}件${results.length >= 40 ? '以上' : ''}` : '最近使った食材'}</p>
-        <div role="list">
-          {results.map((f) => (
-            <button
-              key={f.id}
-              role="listitem"
-              className="result-item"
-              onClick={() => {
-                setFood(f);
-                setCookNote(null);
-                if (f.packGrams) {
-                  setAmount(f.packGrams);
-                  setUnit('g');
-                }
-              }}
-            >
-              <span>
-                {f.displayName}
-                {f.source !== 'mext' && <span className="badge">{f.source === 'recipe' ? 'レシピ' : f.source === 'babyfood' ? 'ベビーフード' : 'カスタム'}</span>}
-              </span>
-              <span className="muted small">{f.code ? `${FOOD_GROUPS[f.code.slice(0, 2)] ?? ''} ${f.code}` : ''}</span>
-            </button>
-          ))}
-        </div>
+        {!query ? (
+          <>
+            {recentFoods.length > 0 && (
+              <>
+                <div className="section-title">最近使った食材</div>
+                <div role="list">{recentFoods.map((f) => row(f))}</div>
+              </>
+            )}
+            <div className="section-title">よく使う食材</div>
+            <div className="chips" style={{ marginBottom: 6 }}>
+              {PRESET_CATEGORIES.map((c) => (
+                <button key={c} type="button" className="chip" aria-pressed={cat === c} onClick={() => setCat(c)}>{c}</button>
+              ))}
+            </div>
+            <div role="list">{presets.filter((f) => f.category === cat).map((f) => row(f))}</div>
+            <p className="muted small">見つからない食材は上の検索欄に入力すると、日本食品標準成分表の全食品から探せます。</p>
+          </>
+        ) : (
+          <>
+            {presetHits.length > 0 && (
+              <>
+                <div className="section-title">よく使う食材</div>
+                <div role="list">{presetHits.map((f) => row(f, f.category))}</div>
+              </>
+            )}
+            {otherHits.length > 0 && <div className="section-title">{presetHits.length > 0 ? 'ほかの候補（成分表・登録食材）' : '成分表・登録食材から'}</div>}
+            {otherHits.length === 0 && presetHits.length === 0 && <p className="muted">見つかりませんでした。別の言い方（ひらがな・カタカナ・漢字）も試してください。</p>}
+            <div role="list">{otherHits.map((f) => row(f, f.code ? `${FOOD_GROUPS[f.code.slice(0, 2)] ?? ''}` : ''))}</div>
+          </>
+        )}
       </Modal>
     );
   }
@@ -129,32 +170,35 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
         </div>
         {lowConf && <div className="notice warn">この食材は成分が登録されていません（すべて欠測として扱います）。</div>}
 
-        {food.source === 'mext' && (siblings.length > 0 || food.cookState === null) && (
+        {food.note && <div className="notice small">{food.note}</div>}
+        {siblings.length > 0 && (
           <label className="field">
-            <span>調理状態（重量は与える時点＝調理後の重さで入力）</span>
+            <span>調理のしかた（重さは与えるとき＝調理後の重さで入力）</span>
             <select
-              value={cookNote ? `other:${cookNote}` : food.id}
+              aria-label="調理のしかた"
+              value={cookNote ? `other:${cookNote}` : currentMextId}
               onChange={(e) => {
                 const v = e.target.value;
                 if (v.startsWith('other:')) setCookNote(v.slice(6));
                 else {
                   setCookNote(null);
                   const f = foods.map.get(v);
-                  if (f) setFood(f);
+                  if (!f) return;
+                  setFood(labelBase ? { ...f, displayName: `${labelBase}（${f.cookState}）` } : f);
                 }
               }}
             >
-              {siblings.length === 0 && <option value={food.id}>（成分表の値のまま）</option>}
               {siblings.map((s) => (
-                <option key={s.id} value={s.id}>{s.cookState}（成分表 {s.code}）</option>
+                <option key={s.id} value={s.id}>{s.cookState}</option>
               ))}
-              {missingStates.map((s) => (
-                <option key={s} value={`other:${s}（調理による変化は未考慮）`}>{s}（成分表になし → 選んだ食品の値で計算）</option>
+              {missingStates.map((st) => (
+                <option key={st} value={`other:${st}（調理による変化は未考慮）`}>{st}（データなし・{food.cookState}の値で計算）</option>
               ))}
             </select>
           </label>
         )}
-        {cookNote && <div className="notice warn small">成分表に対応する食品がないため、{food.cookState ?? '選んだ食品'}の値で計算します。調理による変化は未考慮です。</div>}
+        {cookNote && <div className="notice warn small">成分表に「{cookNote.replace(/（.*/, '')}」のデータがないため、{food.cookState}の値で計算します。調理による変化は未考慮です。</div>}
+        {food.source !== 'preset' && food.code && <p className="muted small" style={{ margin: 0 }}>成分表 {food.code}：{food.name}</p>}
 
         <div className="row" style={{ alignItems: 'flex-end' }}>
           <label className="field grow"><span>提供量</span><NumberInput value={amount} onChange={setAmount} ariaLabel="提供量" /></label>

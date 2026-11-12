@@ -180,6 +180,10 @@ fs.writeFileSync(
         rows: [...gw.rows, ...gh.rows, ...gc.rows],
       },
       breastMilkVolume: readCsv('breastmilk_volume.csv').map((r) => ({ ageMinMonths: Number(r.ageMinMonths), ageMaxMonths: Number(r.ageMaxMonths), ml: Number(r.ml), source: r.source })),
+      presets: readCsv('babyfood_presets.csv').map((r) => {
+        if (!foods.some((f) => f[0] === r.code)) throw new Error(`プリセットの食品番号が見つかりません: ${r.code}`);
+        return { id: r.id, label: r.label, category: r.category, aliases: r.aliases.split('|'), code: r.code, scale: Number(r.scale), note: r.note || '' };
+      }),
       aliases: readCsv('aliases.csv').map((r) => ({ key: r.key, aliases: r.aliases.split('|') })),
       versions: [
         {
