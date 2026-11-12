@@ -51,6 +51,25 @@ export interface FormulaProduct {
   per100ml: Record<string, number | null>;
   per100g: Record<string, number | null>;
   gramsPer100ml?: number | null; // 標準調乳濃度
+  presetId?: string | null; // 公式成分表示から登録した場合の元データ
+  ranges?: string[]; // 範囲表示（下限値で計算）の栄養素
+  sourceUrl?: string | null;
+}
+
+/** 公式の成分表示から銘柄を登録（登録済みならそれを返す） */
+export async function addFormulaFromPreset(p: { id: string; maker: string; name: string; gramsPer100ml: number | null; per100g: Record<string, number>; per100ml: Record<string, number>; ranges: string[]; sourceUrl: string }): Promise<number> {
+  const exist = await db.formulas.filter((f) => f.presetId === p.id).first();
+  if (exist?.id) return exist.id;
+  return db.formulas.add({
+    maker: p.maker,
+    name: p.name,
+    per100g: { ...p.per100g },
+    per100ml: { ...p.per100ml },
+    gramsPer100ml: p.gramsPer100ml,
+    presetId: p.id,
+    ranges: [...p.ranges],
+    sourceUrl: p.sourceUrl,
+  });
 }
 export type MealSlot = '1' | '2' | '3' | 'snack';
 export interface Meal {

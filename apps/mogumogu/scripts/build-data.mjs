@@ -180,6 +180,35 @@ fs.writeFileSync(
         rows: [...gw.rows, ...gh.rows, ...gc.rows],
       },
       breastMilkVolume: readCsv('breastmilk_volume.csv').map((r) => ({ ageMinMonths: Number(r.ageMinMonths), ageMaxMonths: Number(r.ageMaxMonths), ml: Number(r.ml), source: r.source })),
+      formulas: (() => {
+        // 育児用ミルクの公式成分表示。範囲表示は下限値、食塩相当量からナトリウムを換算（Na mg = 食塩相当量 g × 1000 / 2.54）
+        const by = new Map();
+        for (const r of readCsv('formula_products.csv')) {
+          const p = by.get(r.id) ?? {
+            id: r.id, maker: r.maker, name: r.name, type: r.type, targetAge: r.targetAge,
+            gramsPer100ml: r.gramsPer100ml ? Number(r.gramsPer100ml) : null,
+            concSource: r.concSource || '', sourceUrl: r.sourceUrl, checkedAt: '2026-11-12',
+            per100g: {}, per100ml: {}, ranges: [],
+          };
+          const target = r.basis === '100g' ? p.per100g : p.per100ml;
+          for (const n of nutrients) {
+            const raw = r[n.id];
+            if (raw === undefined || raw === '') continue;
+            const m = raw.match(/^([\d.]+)~([\d.]+)$/);
+            if (m) {
+              target[n.id] = Number(m[1]);
+              if (!p.ranges.includes(n.id)) p.ranges.push(n.id);
+            } else {
+              const v = Number(raw);
+              if (!Number.isFinite(v)) throw new Error(`ミルクの値が不正: ${r.id} ${n.id}=${raw}`);
+              target[n.id] = v;
+            }
+          }
+          if (target.salt !== undefined && target.sodium === undefined) target.sodium = Math.round((target.salt * 1000 / 2.54) * 1000) / 1000;
+          by.set(r.id, p);
+        }
+        return [...by.values()];
+      })(),
       presets: readCsv('babyfood_presets.csv').map((r) => {
         if (!foods.some((f) => f[0] === r.code)) throw new Error(`プリセットの食品番号が見つかりません: ${r.code}`);
         return { id: r.id, label: r.label, category: r.category, aliases: r.aliases.split('|'), code: r.code, scale: Number(r.scale), note: r.note || '' };
@@ -206,6 +235,13 @@ fs.writeFileSync(
           publisher: '厚生労働省・文部科学省',
           sourceUrl: 'https://www.mhlw.go.jp/stf/newpage_44138.html',
           note: 'ビタミンDは2025年版の表1に母乳中濃度の記載がないため、成分表の人乳の値を使用',
+        },
+        {
+          dataset: '育児用ミルク',
+          version: '明治・森永乳業・雪印ビーンスターク・和光堂・江崎グリコの公式サイトの栄養成分表示（2026年11月12日確認）',
+          publisher: '各社',
+          sourceUrl: 'https://www.meiji.co.jp/products/milkpowder/',
+          note: '範囲表示の成分は下限値で計算。ナトリウムは食塩相当量から換算。商品のリニューアルで変わることがあるため、缶の表示と違う場合は銘柄を編集してください',
         },
         {
           dataset: '発育曲線',

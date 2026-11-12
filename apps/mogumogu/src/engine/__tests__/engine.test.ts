@@ -300,3 +300,34 @@ describe('成分表の食品名の表示', () => {
     expect(friendlyName('こめ　［水稲五分かゆ］　精白米')).toBe('こめ　水稲五分かゆ　精白米');
   });
 });
+
+describe('育児用ミルクの公式成分表示', () => {
+  it('主要5社の乳児用ミルクがあり、鉄の値を持つ', async () => {
+    const { FORMULA_PRESETS } = await import('../../data/refdata');
+    const makers = new Set(FORMULA_PRESETS.map((p) => p.maker));
+    for (const m of ['明治', '森永乳業', '雪印ビーンスターク', '和光堂（アサヒグループ食品）', '江崎グリコ']) expect(makers).toContain(m);
+    for (const p of FORMULA_PRESETS) expect(p.per100ml.iron ?? p.per100g.iron).toBeGreaterThan(0);
+  });
+  it('ほほえみ250ml → 鉄2.025mg（100mlあたり表示をそのまま使う）', async () => {
+    const { FORMULA_PRESETS } = await import('../../data/refdata');
+    const { formulaPer100ml } = await import('../../lib/day');
+    const p = FORMULA_PRESETS.find((x) => x.id === 'meiji_hohoemi')!;
+    const per = formulaPer100ml({ maker: p.maker, name: p.name, per100g: p.per100g, per100ml: p.per100ml, gramsPer100ml: p.gramsPer100ml });
+    const d = computeDayIntake({ foods: [], formula: [{ ml: 250, per100ml: per }], breastMilkMl: 0 }, NUTRIENTS, BREAST_MILK, 7);
+    expect(d.iron.total).toBeCloseTo(2.025, 10);
+  });
+  it('100gあたりのみの表示は標準調乳濃度で換算（アイクレオ 鉄7.1mg/100g × 12.7%）', async () => {
+    const { FORMULA_PRESETS } = await import('../../data/refdata');
+    const { formulaPer100ml } = await import('../../lib/day');
+    const p = FORMULA_PRESETS.find((x) => x.id === 'glico_balance')!;
+    const per = formulaPer100ml({ maker: p.maker, name: p.name, per100g: p.per100g, per100ml: p.per100ml, gramsPer100ml: p.gramsPer100ml });
+    expect(per.iron).toBeCloseTo((7.1 * 12.7) / 100, 10);
+    expect(per.sodium).toBeCloseTo((((0.3 * 1000) / 2.54) * 12.7) / 100, 2);
+  });
+  it('範囲表示は下限値（らくらくミルクのビタミンC 7.7〜47.6mg → 7.7）', async () => {
+    const { FORMULA_PRESETS } = await import('../../data/refdata');
+    const p = FORMULA_PRESETS.find((x) => x.id === 'meiji_rakuraku')!;
+    expect(p.per100ml.vitC).toBe(7.7);
+    expect(p.ranges).toContain('vitC');
+  });
+});

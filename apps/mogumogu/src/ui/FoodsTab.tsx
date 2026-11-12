@@ -1,14 +1,14 @@
 import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type CustomFood, type FormulaProduct } from '../db';
-import { NUTRIENTS } from '../data/refdata';
+import { db, addFormulaFromPreset, type CustomFood, type FormulaProduct } from '../db';
+import { FORMULA_PRESETS, NUTRIENTS } from '../data/refdata';
 import { useFoodMap } from '../hooks';
 import { recipePer100g } from '../engine/recipe';
 import { searchFoods } from '../engine/search';
 import type { NutrientValue } from '../engine/types';
 import { fmt } from '../lib/format';
 import { Modal, NumberInput, Seg } from './common';
-import type { FoodLike } from '../lib/day';
+import { formulaPer100ml, type FoodLike } from '../lib/day';
 
 const WATER_ID = 'water';
 const WATER: Record<string, NutrientValue> = Object.fromEntries(NUTRIENTS.map((n) => [n.id, { value: 0, flag: 'measured' as const }]));
@@ -121,16 +121,51 @@ function CustomFoodEditor({ food, onClose }: { food: CustomFood | null; onClose:
 function Formulas() {
   const list = useLiveQuery(() => db.formulas.toArray(), []);
   const [edit, setEdit] = useState<FormulaProduct | 'new' | null>(null);
+  const [picking, setPicking] = useState(false);
+  const makers = [...new Set(FORMULA_PRESETS.map((p) => p.maker))];
   return (
     <div>
-      <p className="muted">缶の栄養成分表示を入力します。100mlあたり（調乳後）と100gあたり（粉）のどちらか片方だけでも、標準調乳濃度があれば換算します。</p>
-      <button className="btn primary block" onClick={() => setEdit('new')}>＋ 銘柄を登録</button>
+      <p className="muted">使っているミルクを選んでください。主要メーカーの商品は公式サイトの栄養成分表示を登録済みです。ない場合は缶の表示から手入力できます。</p>
+      <button className="btn primary block" onClick={() => setPicking(!picking)}>＋ 銘柄を追加</button>
+      {picking && (
+        <div className="card" style={{ marginTop: 12 }}>
+          <h3>メーカーの成分表示から選ぶ</h3>
+          {makers.map((m) => (
+            <div key={m}>
+              <div className="section-title">{m}</div>
+              <div role="list">
+                {FORMULA_PRESETS.filter((p) => p.maker === m).map((p) => {
+                  const added = list?.some((f) => f.presetId === p.id);
+                  return (
+                    <button
+                      key={p.id}
+                      role="listitem"
+                      className="result-item"
+                      disabled={added}
+                      onClick={async () => {
+                        await addFormulaFromPreset(p);
+                        setPicking(false);
+                      }}
+                    >
+                      <span>{p.name}</span>
+                      <span className="muted small" style={{ whiteSpace: 'nowrap' }}>{added ? '登録済み' : p.targetAge}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
+          <button className="btn block" style={{ marginTop: 12 }} onClick={() => { setPicking(false); setEdit('new'); }}>その他の銘柄（缶の表示を手入力）</button>
+        </div>
+      )}
       <ul className="list card" style={{ marginTop: 12 }}>
         {list?.length === 0 && <li className="muted">まだ登録がありません</li>}
         {list?.map((f) => (
           <li key={f.id}>
             <button className="linkish" onClick={() => setEdit(f)}>
-              {f.maker} {f.name} <span className="muted small">鉄 {fmt(f.per100ml.iron ?? null)} mg/100ml</span>
+              {f.name}
+              {f.presetId ? <span className="badge">公式表示</span> : <span className="badge">手入力</span>}
+              <span className="muted small"> 鉄 {fmt(formulaPer100ml(f).iron ?? null)} mg/100ml</span>
             </button>
           </li>
         ))}
@@ -150,7 +185,7 @@ function FormulaEditor({ product, onClose }: { product: FormulaProduct | null; o
   const cur = basis === 'ml' ? per100ml : per100g;
   const setCur = basis === 'ml' ? setPer100ml : setPer100g;
   async function save() {
-    const rec: FormulaProduct = { maker, name, per100ml, per100g, gramsPer100ml: conc };
+    const rec: FormulaProduct = { ...(product ?? {}), maker, name, per100ml, per100g, gramsPer100ml: conc };
     if (product?.id) await db.formulas.put({ ...rec, id: product.id });
     else await db.formulas.add(rec);
     onClose();
@@ -162,7 +197,15 @@ function FormulaEditor({ product, onClose }: { product: FormulaProduct | null; o
           <label className="field grow"><span>メーカー</span><input type="text" value={maker} onChange={(e) => setMaker(e.target.value)} /></label>
           <label className="field grow"><span>商品名</span><input type="text" value={name} onChange={(e) => setName(e.target.value)} /></label>
         </div>
-        <label className="field"><span>標準調乳濃度（g / 100ml）</span><NumberInput value={conc} onChange={setConc} ariaLabel="標準調乳濃度" /></label>
+        {product?.presetId && (
+          <div className="notice small">
+            メーカー公式サイトの栄養成分表示から登録しました（{FORMULA_PRESETS.find((p) => p.id === product.presetId)?.checkedAt} 確認）。
+            {product.ranges && product.ranges.length > 0 && <> 範囲で表示されている成分（{product.ranges.map((r) => NUTRIENTS.find((n) => n.id === r)?.shortJa).join('・')}）は下限値で計算します。</>}
+            リニューアル等でお手元の缶の表示と違う場合は、ここで直してください。
+            {product.sourceUrl && <><br /><a href={product.sourceUrl} target="_blank" rel="noreferrer">公式ページ</a></>}
+          </div>
+        )}
+        <label className="field"><span>標準調乳濃度（g / 100ml・液体ミルクは空欄）</span><NumberInput value={conc} onChange={setConc} ariaLabel="標準調乳濃度" /></label>
         <Seg label="表示の基準" value={basis} onChange={setBasis} options={[{ v: 'ml', l: '100mlあたり（調乳後）' }, { v: 'g', l: '100gあたり（粉）' }]} />
         <p className="muted">缶に表示のない栄養素は空欄のまま（欠測）。</p>
         <div className="nutrient-form">
