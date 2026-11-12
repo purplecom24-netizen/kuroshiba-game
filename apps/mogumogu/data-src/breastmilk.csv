@@ -1,0 +1,39 @@
+# 母乳中濃度（1Lあたり）
+# DRI2025 = 食事摂取基準（2025年版）2-2 乳児・小児 表1「各栄養素の母乳中濃度」p.368
+# MEXT_13051 = 日本食品標準成分表（八訂）増補2023年 13051 人乳（可食部100gあたり）を比重1.017（DRI2025 表1脚注1）で1Lあたりに換算（変換スクリプトで計算）
+# flag: (空)=表の値 / age05=0〜5か月の濃度のみ掲載のため全月齢に適用 / range=範囲の下限 / est=括弧付き（目安量算定に未使用）の値 / mg=ナイアシン（mg、ナイアシン当量ではない）
+nutrientId,ageMinMonths,ageMaxMonths,perL,source,flag
+protein,0,5,12.6,DRI2025 p.368,
+protein,6,8,10.6,DRI2025 p.368,
+protein,9,11,9.2,DRI2025 p.368,
+fat,0,11,35.6,DRI2025 p.368,age05
+vitA,0,11,411,DRI2025 p.368,age05
+vitE,0,11,3.5,DRI2025 p.368,range
+vitK,0,11,5.17,DRI2025 p.368,age05
+vitB1,0,11,0.13,DRI2025 p.368,age05
+vitB2,0,11,0.40,DRI2025 p.368,age05
+niacin,0,11,2.0,DRI2025 p.368,mg
+vitB6,0,11,0.25,DRI2025 p.368,age05
+vitB12,0,11,0.45,DRI2025 p.368,age05
+folate,0,11,54,DRI2025 p.368,age05
+pantothenic,0,11,5.0,DRI2025 p.368,age05
+biotin,0,11,5,DRI2025 p.368,age05
+vitC,0,11,50,DRI2025 p.368,age05
+sodium,0,11,135,DRI2025 p.368,
+potassium,0,11,470,DRI2025 p.368,
+calcium,0,11,250,DRI2025 p.368,
+magnesium,0,11,27,DRI2025 p.368,
+phosphorus,0,11,150,DRI2025 p.368,
+iron,0,11,0.35,DRI2025 p.368,age05
+zinc,0,11,1.61,DRI2025 p.368,age05
+copper,0,11,0.35,DRI2025 p.368,age05
+manganese,0,11,0.011,DRI2025 p.368,age05
+iodine,0,11,189,DRI2025 p.368,est
+selenium,0,11,17,DRI2025 p.368,age05
+chromium,0,11,1.00,DRI2025 p.368,age05
+molybdenum,0,11,3.0,DRI2025 p.368,age05
+energy,0,11,MEXT,MEXT_13051,
+carbohydrate,0,11,MEXT,MEXT_13051,
+fiber,0,11,MEXT,MEXT_13051,
+vitD,0,11,MEXT,MEXT_13051,
+salt,0,11,MEXT,MEXT_13051,
