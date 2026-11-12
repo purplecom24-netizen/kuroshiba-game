@@ -19,3 +19,10 @@ export function referenceBreastMilkMl(months: number): number {
 export interface Preset { id: string; label: string; category: string; aliases: string[]; code: string; scale: number; note: string }
 export const PRESETS = ref.presets as Preset[];
 export const PRESET_CATEGORIES = [...new Set(PRESETS.map((p) => p.category))];
+
+export interface FormulaPreset {
+  id: string; maker: string; name: string; type: 'powder' | 'liquid'; targetAge: string;
+  gramsPer100ml: number | null; concSource: string; sourceUrl: string; checkedAt: string;
+  per100g: Record<string, number>; per100ml: Record<string, number>; ranges: string[];
+}
+export const FORMULA_PRESETS = ref.formulas as FormulaPreset[];

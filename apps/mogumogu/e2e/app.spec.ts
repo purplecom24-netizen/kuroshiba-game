@@ -14,13 +14,15 @@ async function setup(page: Page) {
 async function addFormula(page: Page) {
   await page.getByRole('tab', { name: '食材' }).or(page.getByRole('button', { name: '食材', exact: true })).click();
   await page.getByRole('button', { name: 'ミルク銘柄' }).click();
-  await page.getByRole('button', { name: '＋ 銘柄を登録' }).click();
+  await page.getByRole('button', { name: '＋ 銘柄を追加' }).click();
+  await page.getByRole('button', { name: 'その他の銘柄（缶の表示を手入力）' }).click();
   await page.getByLabel('商品名').fill('テストミルク');
   await page.getByLabel('鉄 100mlあたり').fill('0.8');
   await page.getByLabel('エネルギー 100mlあたり').fill('67');
   await page.getByRole('button', { name: '保存' }).click();
   await page.getByRole('button', { name: '記録', exact: true }).click();
   await page.getByRole('button', { name: '＋ ミルク' }).click();
+  await page.getByLabel('銘柄').selectOption({ label: 'テストミルク' });
   await page.getByLabel('作った量').fill('250');
   await page.getByRole('button', { name: '保存' }).click();
 }
@@ -181,5 +183,27 @@ test('記録タブ：横スワイプで日付切替、日付を変えてもボ�
   expect(cell!.x + cell!.width).toBeLessThanOrEqual(nb.x);
   expect(cell!.x).toBeGreaterThanOrEqual(pb.x + pb.width);
   expect(Math.round(cell!.height)).toBe(Math.round(nb.height));
+  // 日付の文字は枠の上下中央
+  const lb = (await page.locator('.date-label').boundingBox())!;
+  expect(Math.abs(lb.y + lb.height / 2 - (cell!.y + cell!.height / 2))).toBeLessThan(2);
+  await expect(page.locator('.date-label')).toHaveText('2026/11/12（木）');
   await page.screenshot({ path: 'e2e-results/record-nav.png' });
+});
+
+test('ミルクはメーカーの商品から選べる（ほほえみ250ml → 鉄2mg台）', async ({ page }) => {
+  await setup(page);
+  await page.getByRole('button', { name: '＋ ミルク' }).click();
+  await page.getByLabel('銘柄').selectOption({ label: '明治ほほえみ（粉・らくらくキューブ）（明治）' });
+  await expect(page.getByLabel('銘柄')).toHaveValue(/^\d+$/);
+  await page.getByLabel('作った量').pressSequentially('250');
+  await page.getByRole('button', { name: '保存' }).click();
+  await expect(page.locator('.card').filter({ hasText: 'ミルク・授乳' })).toContainText('明治ほほえみ');
+  await page.getByRole('button', { name: '栄養分析' }).click();
+  await page.getByRole('button', { name: '今日' }).click();
+  await expect(page.getByTestId('focus-iron').locator('.big')).toHaveText(/^≥?2\.\d+ mg$/);
+  await page.getByRole('button', { name: '食材', exact: true }).click();
+  await page.getByRole('button', { name: 'ミルク銘柄' }).click();
+  await expect(page.getByText('公式表示')).toBeVisible();
+  await page.getByRole('button', { name: '＋ 銘柄を追加' }).click();
+  await page.screenshot({ path: 'e2e-results/formula-presets.png', fullPage: true });
 });

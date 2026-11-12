@@ -1,6 +1,6 @@
 import { useMemo, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { db, type Child, type Meal, type MealItem, type MealSlot, type MilkFeed, type Settings } from '../db';
+import { db, addFormulaFromPreset, type Child, type Meal, type MealItem, type MealSlot, type MilkFeed, type Settings } from '../db';
 import { useFoodMap } from '../hooks';
 import { useUI } from '../store';
 import { addDays } from '../engine/age';
@@ -8,6 +8,7 @@ import { fmt, jpDate, nowTime, todayStr } from '../lib/format';
 import { Modal, NumberInput, Seg } from './common';
 import { FoodEntry } from './FoodEntry';
 import { drunkMl } from '../engine/units';
+import { FORMULA_PRESETS } from '../data/refdata';
 
 export const SLOT_LABEL: Record<MealSlot, string> = { '1': '1回目', '2': '2回目', '3': '3回目', snack: '補食' };
 
@@ -93,6 +94,8 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
       <div className="date-nav">
         <button className="btn small" onClick={() => go(-1)} aria-label="前の日">◀</button>
         <div className="date-cell">
+          {/* 表示は自前で中央ぞろえ。タップは上に重ねた透明な日付欄が受けてカレンダーを開く */}
+          <span className="date-label" aria-hidden="true">{date.replace(/-/g, '/')}{jpDate(date).replace(/^[^（]*/, '')}</span>
           <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} aria-label="日付" />
         </div>
         <button className="btn small" onClick={() => go(1)} aria-label="次の日">▶</button>
@@ -268,19 +271,35 @@ function MilkEditor({ child, date, feed, onClose }: { child: Child; date: string
           <>
             <label className="field">
               <span>銘柄</span>
-              {formulas && formulas.length > 0 ? (
-                <select aria-label="銘柄" value={fid ?? ''} onChange={(e) => setFormulaId(e.target.value ? Number(e.target.value) : null)}>
-                  <option value="">（未選択：成分は欠測）</option>
-                  {formulas.map((f) => (
-                    <option key={f.id} value={f.id}>{f.maker} {f.name}</option>
+              <select
+                aria-label="銘柄"
+                value={fid ?? ''}
+                onChange={async (e) => {
+                  const v = e.target.value;
+                  if (v.startsWith('preset:')) {
+                    const p = FORMULA_PRESETS.find((x) => x.id === v.slice(7));
+                    if (p) setFormulaId(await addFormulaFromPreset(p));
+                  } else if (v === 'manual') {
+                    onClose();
+                    setTab('foods');
+                  } else setFormulaId(v ? Number(v) : null);
+                }}
+              >
+                <option value="">（未選択：成分は欠測）</option>
+                {formulas && formulas.length > 0 && (
+                  <optgroup label="登録済みの銘柄">
+                    {formulas.map((f) => (
+                      <option key={f.id} value={f.id}>{f.name}</option>
+                    ))}
+                  </optgroup>
+                )}
+                <optgroup label="メーカーの成分表示から選ぶ">
+                  {FORMULA_PRESETS.filter((p) => !formulas?.some((f) => f.presetId === p.id)).map((p) => (
+                    <option key={p.id} value={`preset:${p.id}`}>{p.name}（{p.maker}）</option>
                   ))}
-                </select>
-              ) : (
-                <div className="notice">
-                  銘柄が未登録です。缶の表示から成分を登録してください。{' '}
-                  <button className="btn small" onClick={() => { onClose(); setTab('foods'); }}>食材タブへ</button>
-                </div>
-              )}
+                </optgroup>
+                <option value="manual">その他の銘柄（缶の表示を手入力）…</option>
+              </select>
             </label>
             <div className="row">
               <label className="field grow"><span>作った量（ml）</span><NumberInput value={ml} onChange={setMl} ariaLabel="作った量" /></label>
