@@ -93,6 +93,8 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
       <div className="date-nav">
         <button className="btn small" onClick={() => go(-1)} aria-label="前の日">◀</button>
         <div className="date-cell">
+          {/* 表示は自前で中央ぞろえ。タップは上に重ねた透明な日付欄が受けてカレンダーを開く */}
+          <span className="date-label" aria-hidden="true">{date.replace(/-/g, '/')}{jpDate(date).replace(/^[^（]*/, '')}</span>
           <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} aria-label="日付" />
         </div>
         <button className="btn small" onClick={() => go(1)} aria-label="次の日">▶</button>

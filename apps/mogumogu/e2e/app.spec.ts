@@ -181,5 +181,9 @@ test('記録タブ：横スワイプで日付切替、日付を変えてもボ�
   expect(cell!.x + cell!.width).toBeLessThanOrEqual(nb.x);
   expect(cell!.x).toBeGreaterThanOrEqual(pb.x + pb.width);
   expect(Math.round(cell!.height)).toBe(Math.round(nb.height));
+  // 日付の文字は枠の上下中央
+  const lb = (await page.locator('.date-label').boundingBox())!;
+  expect(Math.abs(lb.y + lb.height / 2 - (cell!.y + cell!.height / 2))).toBeLessThan(2);
+  await expect(page.locator('.date-label')).toHaveText('2026/11/12（木）');
   await page.screenshot({ path: 'e2e-results/record-nav.png' });
 });
