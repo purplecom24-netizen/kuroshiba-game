@@ -173,5 +173,13 @@ test('記録タブ：横スワイプで日付切替、日付を変えてもボ�
   await page.getByRole('button', { name: '今日' }).click();
   await expect(date).toHaveValue('2026-11-12');
   expect(await next.boundingBox()).toEqual(before);
+  // iOS Safari の日付欄は独自の最小幅を持つ → 強制しても「▶」と重ならない
+  await page.addStyleTag({ content: "input[type='date'] { min-width: 300px !important; }" });
+  const cell = await page.locator('.date-cell').boundingBox();
+  const nb = (await next.boundingBox())!;
+  const pb = (await page.getByRole('button', { name: '前の日' }).boundingBox())!;
+  expect(cell!.x + cell!.width).toBeLessThanOrEqual(nb.x);
+  expect(cell!.x).toBeGreaterThanOrEqual(pb.x + pb.width);
+  expect(Math.round(cell!.height)).toBe(Math.round(nb.height));
   await page.screenshot({ path: 'e2e-results/record-nav.png' });
 });

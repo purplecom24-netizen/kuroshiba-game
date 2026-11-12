@@ -92,7 +92,9 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
       )}
       <div className="date-nav">
         <button className="btn small" onClick={() => go(-1)} aria-label="前の日">◀</button>
-        <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} aria-label="日付" />
+        <div className="date-cell">
+          <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} aria-label="日付" />
+        </div>
         <button className="btn small" onClick={() => go(1)} aria-label="次の日">▶</button>
         <button
           className="btn small"
