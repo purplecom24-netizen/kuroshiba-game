@@ -266,3 +266,27 @@ describe('食材検索（MEAL-02）', () => {
     expect((performance.now() - t) / 4).toBeLessThan(200);
   });
 });
+
+describe('よく使う食材（おかゆ）', () => {
+  it('「おかゆ」で10倍・7倍・5倍がゆが出て、成分表の玄米などは混ざらない', async () => {
+    const { PRESETS } = await import('../../data/refdata');
+    const { presetToFood } = await import('../../lib/day');
+    const { searchFoods, normalizeKana } = await import('../search');
+    const presets = PRESETS.map((p) => presetToFood(p, food(p.code), normalizeKana));
+    const hits = searchFoods(presets, 'おかゆ').map((f) => f.displayName);
+    expect(hits).toEqual(expect.arrayContaining(['10倍がゆ', '7倍がゆ', '5倍がゆ（全がゆ）']));
+    expect(hits).not.toContain('ごはん（普通炊き）');
+    const mextHits = searchFoods(FOODS, 'おかゆ').map((f) => f.name);
+    expect(mextHits.some((n) => n.includes('玄米') && n.includes('穀粒'))).toBe(false);
+  });
+  it('7倍がゆ＝全かゆ（5倍）×5/7 の推定値、10倍がゆは成分表の五分かゆそのまま', async () => {
+    const { PRESETS } = await import('../../data/refdata');
+    const { presetToFood } = await import('../../lib/day');
+    const { normalizeKana } = await import('../search');
+    const p7 = presetToFood(PRESETS.find((p) => p.id === 'okayu7')!, food('01093'), normalizeKana);
+    expect(p7.per100g.energy.value).toBeCloseTo((65 * 5) / 7, 6);
+    expect(p7.per100g.energy.flag).toBe('estimated');
+    const p10 = presetToFood(PRESETS.find((p) => p.id === 'okayu10')!, food('01097'), normalizeKana);
+    expect(p10.per100g.energy).toEqual(food('01097').per100g.energy);
+  });
+});

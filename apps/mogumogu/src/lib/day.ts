@@ -5,13 +5,16 @@ import { per100gToPer100ml, drunkMl } from '../engine/units';
 import type { DayIntake, FoodPortion, FormulaPortion, NutrientValue } from '../engine/types';
 import { BREAST_MILK, NUTRIENTS } from '../data/refdata';
 import type { MextFood } from '../data/foods';
+import type { Preset } from '../data/refdata';
 import { db, type Child, type CustomFood, type FormulaProduct, type Settings } from '../db';
 
 export interface FoodLike {
   id: string;
   name: string;
   displayName: string;
-  source: 'mext' | 'custom' | 'recipe' | 'babyfood';
+  source: 'mext' | 'custom' | 'recipe' | 'babyfood' | 'preset';
+  category?: string;
+  note?: string;
   per100g: Record<string, NutrientValue>;
   base?: string;
   cookState?: string | null;
@@ -31,6 +34,30 @@ export function customToFood(c: CustomFood, normalize: (s: string) => string): F
     keys: normalize([c.name, ...c.aliases].join(' ')),
     density: c.densityGPerMl ?? null,
     packGrams: c.packGrams ?? null,
+  };
+}
+
+/** よく使う食材（成分表の食品に分かりやすい名前を付けたもの。scale≠1 は推定値） */
+export function presetToFood(p: Preset, m: MextFood, normalize: (s: string) => string): FoodLike {
+  const per100g: Record<string, NutrientValue> = {};
+  for (const [id, v] of Object.entries(m.per100g)) {
+    per100g[id] =
+      p.scale === 1 || v.value === null
+        ? v
+        : { value: v.value * p.scale, flag: v.value === 0 ? v.flag : 'estimated' };
+  }
+  return {
+    id: `preset:${p.id}`,
+    name: p.label,
+    displayName: p.label,
+    source: 'preset',
+    per100g,
+    base: m.base,
+    cookState: m.cookState,
+    code: m.code,
+    category: p.category,
+    note: p.note,
+    keys: normalize([p.label, ...p.aliases].join(' ')),
   };
 }
 
