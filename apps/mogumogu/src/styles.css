@@ -237,8 +237,16 @@ table.nut thead th { color: var(--text-2); font-weight: 600; position: sticky; t
 
 /* 記録タブの日付ナビ：4枠固定（「今日」は非表示でも枠を残す） */
 .date-nav { display: grid; grid-template-columns: 44px 1fr 44px 56px; gap: 8px; align-items: center; margin-bottom: 8px; }
-.date-nav input[type='date'] { text-align: center; min-width: 0; }
-.date-nav .btn { padding: 4px 0; }
+.date-nav > * { min-width: 0; }
+.date-nav .btn { padding: 0; height: 44px; min-height: 44px; width: 100%; }
+/* iOS Safari の日付欄は独自の最小幅を持つため、枠で包んで幅を固定する */
+.date-cell { min-width: 0; overflow: hidden; border-radius: 8px; }
+.date-cell input[type='date'] {
+  -webkit-appearance: none; appearance: none; display: block;
+  width: 100%; max-width: 100%; min-width: 0; height: 44px; min-height: 44px;
+  margin: 0; padding: 0 8px; text-align: center; background: var(--surface);
+}
+.date-cell input[type='date']::-webkit-date-and-time-value { text-align: center; margin: 0; }
 .swipe-area { touch-action: pan-y; min-height: 60dvh; }
 .day-slide.next { animation: slideFromRight 0.18s ease-out; }
 .day-slide.prev { animation: slideFromLeft 0.18s ease-out; }
