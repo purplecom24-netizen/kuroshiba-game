@@ -290,3 +290,13 @@ describe('よく使う食材（おかゆ）', () => {
     expect(p10.per100g.energy).toEqual(food('01097').per100g.energy);
   });
 });
+
+describe('成分表の食品名の表示', () => {
+  it('中分類が名前に含まれなければ残す', async () => {
+    const { friendlyName } = await import('../../data/foods');
+    expect(friendlyName('＜魚類＞　（まぐろ類）　缶詰　水煮　フレーク　ライト')).toBe('まぐろ　缶詰　水煮　フレーク　ライト');
+    expect(friendlyName('（にんじん類）　にんじん　根　皮なし　ゆで')).toBe('にんじん　根　皮なし　ゆで');
+    expect(friendlyName('＜魚類＞　（さば類）　まさば　焼き')).toBe('まさば　焼き');
+    expect(friendlyName('こめ　［水稲五分かゆ］　精白米')).toBe('こめ　水稲五分かゆ　精白米');
+  });
+});

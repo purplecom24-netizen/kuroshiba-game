@@ -24,6 +24,20 @@ export const FOOD_GROUPS: Record<string, string> = {
   '14': '油脂類', '15': '菓子類', '16': 'し好飲料類', '17': '調味料及び香辛料類', '18': '調理済み流通食品類',
 };
 
+/**
+ * 成分表の食品名を読みやすくする。＜魚類＞などの大分類と［］は外し、
+ * （まぐろ類）などの中分類は、続く名前に含まれていなければ「まぐろ」として残す。
+ */
+export function friendlyName(name: string): string {
+  let s = name.replace(/^＜[^＞]+＞　/, '');
+  s = s.replace(/^（([^）]+)）　/, (_, cat: string) => {
+    const stem = cat.replace(/類$/, '').split(/[・･]/)[0];
+    const rest = s.replace(/^（[^）]+）　/, '');
+    return rest.includes(stem) ? '' : `${stem}　`;
+  });
+  return s.replace(/[［］]/g, '');
+}
+
 /** 成分表 JSON を食品オブジェクトに展開する（純粋関数。テストでも使う） */
 export function expandFoods(json: { columns: string[]; foods: string[][] }): MextFood[] {
   const nutrientIds = json.columns.slice(4);
@@ -36,7 +50,7 @@ export function expandFoods(json: { columns: string[]; foods: string[][] }): Mex
       raw[id] = r[4 + i];
       per100g[id] = parseToken(r[4 + i]);
     });
-    const displayName = name.replace(/^＜[^＞]+＞　/, '').replace(/（[^）]+）　/, '').replace(/[［］]/g, '');
+    const displayName = friendlyName(name);
     const { base, state } = splitCookState(name);
     const nk = normalizeKana(name + alias);
     const extra = aliasNorm.filter((a) => nk.includes(a.key)).map((a) => a.aliases).join(' ');

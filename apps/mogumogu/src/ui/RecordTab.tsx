@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db, type Child, type Meal, type MealItem, type MealSlot, type MilkFeed, type Settings } from '../db';
 import { useFoodMap } from '../hooks';
@@ -23,6 +23,12 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
   const [entry, setEntry] = useState<{ mealId: number; item?: MealItem } | null>(null);
   const [milk, setMilk] = useState<MilkFeed | 'new' | null>(null);
   const [editEst, setEditEst] = useState(false);
+  const [slide, setSlide] = useState<'next' | 'prev' | null>(null);
+  const touch = useRef<{ x: number; y: number; at: number } | null>(null);
+  const go = (n: number) => {
+    setSlide(n > 0 ? 'next' : 'prev');
+    setDate(addDays(date, n));
+  };
 
   const breastCount = feeds?.filter((f) => f.kind === 'breast').length ?? 0;
   const formulaMl = feeds?.filter((f) => f.kind === 'formula').reduce((s, f) => s + drunkMl(f.ml ?? 0, f.leftoverMl), 0) ?? 0;
@@ -59,19 +65,46 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
   }
 
   return (
-    <div>
+    <div
+      className="swipe-area"
+      onTouchStart={(e) => {
+        const t = e.touches[0];
+        const el = e.target as HTMLElement;
+        // ポップアップ・入力欄上、画面端（iOSの戻る操作）からのスワイプは無視
+        if (el.closest('.modal, input, select, textarea') || t.clientX < 24 || t.clientX > window.innerWidth - 24) touch.current = null;
+        else touch.current = { x: t.clientX, y: t.clientY, at: Date.now() };
+      }}
+      onTouchEnd={(e) => {
+        const s0 = touch.current;
+        touch.current = null;
+        if (!s0) return;
+        const t = e.changedTouches[0];
+        const dx = t.clientX - s0.x;
+        const dy = t.clientY - s0.y;
+        if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5 && Date.now() - s0.at < 800) go(dx < 0 ? 1 : -1);
+      }}
+    >
       {backupDue && (
         <div className="notice warn">
           最後のバックアップから14日以上たっています。端末のデータ消失に備えて、JSONでバックアップしてください。{' '}
           <button className="btn small" onClick={() => setTab('settings')}>設定へ</button>
         </div>
       )}
-      <div className="row between" style={{ marginBottom: 8 }}>
-        <button className="btn small" onClick={() => setDate(addDays(date, -1))} aria-label="前の日">◀</button>
-        <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} style={{ width: 'auto' }} aria-label="日付" />
-        <button className="btn small" onClick={() => setDate(addDays(date, 1))} aria-label="次の日">▶</button>
-        {date !== todayStr() && <button className="btn small" onClick={() => setDate(todayStr())}>今日</button>}
+      <div className="date-nav">
+        <button className="btn small" onClick={() => go(-1)} aria-label="前の日">◀</button>
+        <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} aria-label="日付" />
+        <button className="btn small" onClick={() => go(1)} aria-label="次の日">▶</button>
+        <button
+          className="btn small"
+          onClick={() => { setSlide(date > todayStr() ? 'prev' : 'next'); setDate(todayStr()); }}
+          style={{ visibility: date === todayStr() ? 'hidden' : 'visible' }}
+          aria-hidden={date === todayStr()}
+          tabIndex={date === todayStr() ? -1 : 0}
+        >
+          今日
+        </button>
       </div>
+      <div key={date} className={slide ? `day-slide ${slide}` : undefined}>
 
       <div className="card">
         <h2>{jpDate(date)} のまとめ</h2>
@@ -125,6 +158,8 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
           </ul>
         </div>
       )}
+
+      </div>
 
       {entry && foods && (
         <FoodEntry
