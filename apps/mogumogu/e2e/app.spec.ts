@@ -164,7 +164,7 @@ test('記録タブ：横スワイプで日付切替、日付を変えてもボ�
   };
   await swipe(300, 100); // 左へ → 翌日
   await expect(date).toHaveValue('2026-11-13');
-  await expect(page.getByRole('button', { name: '今日' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '今日に戻る' })).toBeVisible();
   expect(await next.boundingBox()).toEqual(before);
   expect(await date.boundingBox()).toEqual(dateBefore);
   await swipe(100, 300); // 右へ → 前日
@@ -172,8 +172,9 @@ test('記録タブ：横スワイプで日付切替、日付を変えてもボ�
   await expect(date).toHaveValue('2026-11-11');
   await swipe(10, 300); // 画面端からは無視（iOSの戻る操作）
   await expect(date).toHaveValue('2026-11-11');
-  await page.getByRole('button', { name: '今日' }).click();
+  await page.getByRole('button', { name: '今日に戻る' }).click();
   await expect(date).toHaveValue('2026-11-12');
+  await expect(page.getByRole('button', { name: '今日に戻る' })).toHaveCount(0);
   expect(await next.boundingBox()).toEqual(before);
   // iOS Safari の日付欄は独自の最小幅を持つ → 強制しても「▶」と重ならない
   await page.addStyleTag({ content: "input[type='date'] { min-width: 300px !important; }" });
@@ -206,4 +207,32 @@ test('ミルクはメーカーの商品から選べる（ほほえみ250ml → �
   await expect(page.getByText('公式表示')).toBeVisible();
   await page.getByRole('button', { name: '＋ 銘柄を追加' }).click();
   await page.screenshot({ path: 'e2e-results/formula-presets.png', fullPage: true });
+});
+
+test('栄養分析：任意でカレンダーから単日・複数日を選んで平均', async ({ page }) => {
+  await setup(page);
+  // 11/10 と 11/12 にミルクを記録
+  for (const [d, ml] of [['2026-11-10', '200'], ['2026-11-12', '300']]) {
+    await page.getByLabel('日付', { exact: true }).fill(d);
+    await page.getByRole('button', { name: '＋ ミルク' }).click();
+    await page.getByLabel('銘柄').selectOption({ label: '明治ほほえみ（粉・らくらくキューブ）（明治）' });
+    await page.getByLabel('作った量').pressSequentially(ml);
+    await page.getByRole('button', { name: '保存' }).click();
+  }
+  await page.getByRole('button', { name: '栄養分析' }).click();
+  await page.getByRole('button', { name: '任意' }).click();
+  const cal = page.getByTestId('multi-cal');
+  await expect(cal.getByRole('button', { name: '11月10日（記録あり）' })).toBeVisible();
+  // 既定は今日（11/12）だけ → 単日
+  await expect(page.getByText('11/12（木）・記録のある1日')).toBeVisible();
+  await cal.getByRole('button', { name: '11月10日（記録あり）' }).click();
+  await cal.getByRole('button', { name: '11月11日', exact: true }).click(); // 記録なし → 既定で除外
+  await expect(page.getByText(/3日を選択.*記録のある2日の平均/)).toBeVisible();
+  // ミルク鉄 (200+300)/2ml × 0.81/100 + 母乳
+  await expect(page.getByTestId('focus-iron').locator('.big')).toContainText('mg');
+  await cal.getByRole('button', { name: 'クリア' }).click();
+  await expect(page.getByText('日付を選んでください')).toBeVisible();
+  await expect(cal.getByRole('button', { name: '次の月' })).toBeDisabled();
+  await cal.getByRole('button', { name: '11月12日（記録あり）' }).click();
+  await page.screenshot({ path: 'e2e-results/analysis-custom.png', fullPage: true });
 });

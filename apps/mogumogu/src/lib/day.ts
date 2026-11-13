@@ -128,6 +128,11 @@ export async function loadDay(child: Child, date: string, foodMap: Map<string, F
 
 export async function loadPeriod(child: Child, endDate: string, days: number, foodMap: Map<string, FoodLike>, settings: Settings) {
   const dates = Array.from({ length: days }, (_, i) => addDays(endDate, i - days + 1));
+  return loadDates(child, dates, foodMap, settings);
+}
+
+/** 選んだ日（連続でなくてよい）の1日平均 */
+export async function loadDates(child: Child, dates: string[], foodMap: Map<string, FoodLike>, settings: Settings) {
   const data = await Promise.all(dates.map((d) => loadDay(child, d, foodMap, settings)));
   const recs: DayRecord[] = data.map((d) => ({ date: d.date, hasRecord: d.hasRecord, intake: d.intake }));
   const avg = averageIntake(recs, settings.includeEmptyDays);

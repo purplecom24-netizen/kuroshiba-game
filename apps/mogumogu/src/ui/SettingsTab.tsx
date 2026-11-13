@@ -15,7 +15,7 @@ import { db, exportAll, importAll, clearAll, saveSettings, type Child, type Feed
 import { DATA_VERSIONS, NUTRIENTS, referenceBreastMilkMl } from '../data/refdata';
 import { ageMonthsDays } from '../engine/age';
 import { todayStr } from '../lib/format';
-import { MEDICAL_NOTE, NumberInput, Seg } from './common';
+import { DateField, MEDICAL_NOTE, NumberInput, Seg } from './common';
 import type { Sex } from '../engine/types';
 
 export function ChildForm({ child, onSaved }: { child?: Child; onSaved?: (id: number) => void }) {
@@ -41,7 +41,7 @@ export function ChildForm({ child, onSaved }: { child?: Child; onSaved?: (id: nu
   return (
     <div className="stack">
       <label className="field"><span>名前（ニックネーム可）</span><input type="text" value={name} onChange={(e) => setName(e.target.value)} /></label>
-      <label className="field"><span>生年月日</span><input type="date" value={birth} onChange={(e) => setBirth(e.target.value)} /></label>
+      <div className="field"><span>生年月日</span><DateField value={birth} onChange={setBirth} ariaLabel="生年月日" weekday={false} /></div>
       <div><div className="muted small">性別</div><Seg label="性別" value={sex} onChange={setSex} options={[{ v: 'F', l: '女の子' }, { v: 'M', l: '男の子' }]} /></div>
       <div><div className="muted small">栄養方法</div><Seg label="栄養方法" value={feeding} onChange={setFeeding} options={[{ v: 'breast', l: '母乳のみ' }, { v: 'mixed', l: '混合' }, { v: 'formula', l: 'ミルクのみ' }]} /></div>
       <button className="btn primary block" disabled={!name.trim() || !birth} onClick={save}>{child ? '保存' : '登録してはじめる'}</button>

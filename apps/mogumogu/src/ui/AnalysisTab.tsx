@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { Bar, BarChart, CartesianGrid, LabelList, PolarAngleAxis, PolarGrid, PolarRadiusAxis, Radar, RadarChart, ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import type { Child, Settings } from '../db';
+import { todayStr } from '../lib/format';
 import { useFoodMap } from '../hooks';
 import { useUI, type Period } from '../store';
 import { INTAKE_REF, NUTRIENTS, NUTRIENT_BY_ID } from '../data/refdata';
@@ -10,7 +11,8 @@ import { judge, type Judgement } from '../engine/judge';
 import { ageMonthsDays, addDays } from '../engine/age';
 import { SOURCE_LABEL } from '../engine/intake';
 import type { DayIntake, NutrientIntake } from '../engine/types';
-import { loadPeriod, daysBetween } from '../lib/day';
+import { loadDates } from '../lib/day';
+import { db } from '../db';
 import { fmt, jpDate } from '../lib/format';
 import { MEDICAL_NOTE, Seg, StatusBadge } from './common';
 
@@ -27,17 +29,22 @@ interface Row {
 }
 
 export function AnalysisTab({ child, settings }: { child: Child; settings: Settings }) {
-  const { date, period: p, setPeriod, customStart, setCustomStart, setTab } = useUI();
+  const { date, period: p, setPeriod, customDates, setCustomDates, setTab } = useUI();
   const period: Period = p ?? settings.defaultPeriod;
   const foods = useFoodMap();
   const [group, setGroup] = useState<Group>('focus');
-  const nDays = period === 'today' ? 1 : period === '3d' ? 3 : period === '7d' ? 7 : Math.max(1, daysBetween(customStart, date) + 1);
+  const nDays = period === 'today' ? 1 : period === '3d' ? 3 : period === '7d' ? 7 : customDates.length;
+  const dates = useMemo(
+    () => (period === 'custom' ? customDates : Array.from({ length: nDays }, (_, i) => addDays(date, i - nDays + 1))),
+    [period, customDates, nDays, date],
+  );
+  const lastDate = dates[dates.length - 1] ?? date;
 
   const data = useLiveQuery(
-    () => (foods ? loadPeriod(child, date, nDays, foods.map, settings) : Promise.resolve(null)),
-    [child, date, nDays, foods, settings.defaultBreastMilkMl, settings.includeEmptyDays],
+    () => (foods && dates.length ? loadDates(child, dates, foods.map, settings) : Promise.resolve(null)),
+    [child, dates, foods, settings.defaultBreastMilkMl, settings.includeEmptyDays],
   );
-  const months = ageMonthsDays(child.birthDate, date).months;
+  const months = ageMonthsDays(child.birthDate, lastDate).months;
 
   const rows: Row[] = useMemo(() => {
     if (!data) return [];
@@ -62,21 +69,16 @@ export function AnalysisTab({ child, settings }: { child: Child; settings: Setti
           onChange={setPeriod}
           options={[{ v: 'today', l: '今日' }, { v: '3d', l: '3日平均' }, { v: '7d', l: '7日平均' }, { v: 'custom', l: '任意' }]}
         />
-        {period === 'custom' && (
-          <div className="row">
-            <input type="date" value={customStart} max={date} onChange={(e) => setCustomStart(e.target.value)} style={{ width: 'auto' }} aria-label="開始日" />
-            <span>〜 {jpDate(date)}</span>
-          </div>
-        )}
+        {period === 'custom' && <MultiDateCalendar child={child} selected={customDates} onChange={setCustomDates} />}
         <p className="muted" style={{ margin: 0 }}>
-          {period === 'today' ? jpDate(date) : `${jpDate(addDays(date, -nDays + 1))}〜${jpDate(date)}`}
+          {period === 'today' ? jpDate(date) : period === 'custom' ? describeDates(customDates) : `${jpDate(addDays(date, -nDays + 1))}〜${jpDate(date)}`}
           {data ? `・記録のある${data.dayCount}日${period === 'today' ? '' : 'の平均'}` : ''}
           {data && !settings.includeEmptyDays && data.dayCount < nDays && period !== 'today' ? `（記録のない${nDays - data.dayCount}日は除外）` : ''}
         </p>
       </div>
       <p className="disclaimer">{MEDICAL_NOTE}</p>
 
-      {!data && <p className="muted">計算中…</p>}
+      {!data && dates.length > 0 && <p className="muted">計算中…</p>}
       {data && data.dayCount === 0 && <div className="notice">この期間の記録がありません。記録タブで食事・ミルク・授乳を記録してください。</div>}
       {noRef && <div className="notice warn">この月齢（{months}か月）の食事摂取基準はまだ取り込んでいません（1歳以降の基準値は未対応）。</div>}
 
@@ -181,6 +183,7 @@ function RadarView({ rows }: { rows: Row[] }) {
   if (rows.length < 3) return <p className="muted">レーダーチャートには3項目以上が必要です。下の一覧をご覧ください。</p>;
   const d = rows.map((r) => ({ name: r.name, value: Math.min(r.j.ratio ?? 0, 150), raw: r.j.ratio ?? 0, ref: 100, label: r.j.ratioLabel, lb: r.j.lowerBound }));
   return (
+    <>
     <div style={{ width: '100%', height: 300 }} role="img" aria-label="充足率のレーダーチャート（数値は下の一覧）">
       <ResponsiveContainer>
         <RadarChart data={d} outerRadius="72%">
@@ -203,8 +206,9 @@ function RadarView({ rows }: { rows: Row[] }) {
           />
         </RadarChart>
       </ResponsiveContainer>
-      <p className="muted small" style={{ marginTop: -8 }}>実線＝充足率、点線＝基準（100%）。表示は150%まで（超えた分は一覧の数値で確認）。</p>
     </div>
+    <p className="muted small" style={{ margin: '4px 0 0' }}>実線＝充足率、点線＝基準（100%）。表示は150%まで（超えた分は一覧の数値で確認）。</p>
+    </>
   );
 }
 
@@ -313,15 +317,13 @@ function NutrientTable({ rows }: { rows: Row[] }) {
             ].filter(Boolean);
             return (
               <tr key={r.id}>
-                <td>
-                  {r.name}
-                  <div className="muted small">{r.j.intakeUnit === '%E' ? '%E' : r.unit}</div>
-                </td>
+                <td className="nut-name">{r.name}</td>
                 <td>
                   {r.j.lowerBound ? '≥' : ''}
                   {r.j.intakeUnit === '%E' ? `${fmt(r.j.intake, 0)}%E` : fmt(r.it.total)}
                   {' / '}
                   {t ? `${fmt(t.value)}${t.unit.startsWith('%E') ? '%E' : ''}` : '—'}
+                  {r.j.intakeUnit !== '%E' && <span className="muted"> {r.unit}</span>}
                   {r.j.intakeUnit === '%E' && <div className="muted small">脂質 {fmt(r.it.total)} g</div>}
                   {t && <div className="muted small">{KIND_LABEL[t.kind]}{r.ref.ul ? `・上限${fmt(r.ref.ul.value)}` : ''}</div>}
                 </td>
@@ -340,6 +342,78 @@ function NutrientTable({ rows }: { rows: Row[] }) {
         </tbody>
       </table>
       <p className="muted small">「≥」は欠測を含むため下限値であることを示します。ビタミンAは乳児の基準に合わせレチノール（プロビタミンAを含まない）で比較しています。</p>
+    </div>
+  );
+}
+
+const WD = '日月火水木金土';
+
+function describeDates(ds: string[]): string {
+  if (ds.length === 0) return '日付を選んでください';
+  if (ds.length === 1) return jpDate(ds[0]);
+  const shown = ds.slice(0, 3).map((d) => jpDate(d).replace(/（.）/, '')).join('・');
+  return `${shown}${ds.length > 3 ? ` ほか${ds.length - 3}日` : ''}（${ds.length}日を選択）`;
+}
+
+/** 任意期間：日付をタップで選ぶ／外す（単日・複数日）。記録のある日に点を表示 */
+function MultiDateCalendar({ child, selected, onChange }: { child: Child; selected: string[]; onChange: (d: string[]) => void }) {
+  const today = todayStr();
+  const [ym, setYm] = useState(() => (selected[selected.length - 1] ?? today).slice(0, 7));
+  const [y, m] = ym.split('-').map(Number);
+  const first = new Date(Date.UTC(y, m - 1, 1));
+  const daysIn = new Date(Date.UTC(y, m, 0)).getUTCDate();
+  const lead = first.getUTCDay();
+  const pad = (n: number) => String(n).padStart(2, '0');
+  const recorded = useLiveQuery(async () => {
+    const from = `${ym}-01`;
+    const to = `${ym}-${pad(daysIn)}`;
+    const cid = child.id!;
+    const [meals, feeds] = await Promise.all([
+      db.meals.where('date').between(from, to, true, true).filter((x) => x.childId === cid).toArray(),
+      db.milkFeeds.where('date').between(from, to, true, true).filter((x) => x.childId === cid).toArray(),
+    ]);
+    return new Set([...meals.map((x) => x.date), ...feeds.map((x) => x.date)]);
+  }, [ym, child.id]);
+  const shift = (n: number) => {
+    const d = new Date(Date.UTC(y, m - 1 + n, 1));
+    setYm(`${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}`);
+  };
+  const toggle = (d: string) => onChange(selected.includes(d) ? selected.filter((x) => x !== d) : [...selected, d]);
+  const selectWeek = () => onChange(Array.from({ length: 7 }, (_, i) => addDays(today, i - 6)));
+  return (
+    <div className="card cal" data-testid="multi-cal">
+      <div className="cal-head">
+        <button className="btn small" onClick={() => shift(-1)} aria-label="前の月">◀</button>
+        <span>{y}年{m}月</span>
+        <button className="btn small" onClick={() => shift(1)} aria-label="次の月" disabled={ym >= today.slice(0, 7)}>▶</button>
+      </div>
+      <div className="cal-grid">
+        {[...WD].map((w) => <div key={w} className="cal-wd">{w}</div>)}
+        {Array.from({ length: lead }, (_, i) => <div key={`e${i}`} />)}
+        {Array.from({ length: daysIn }, (_, i) => {
+          const d = `${ym}-${pad(i + 1)}`;
+          const future = d > today;
+          return (
+            <button
+              key={d}
+              type="button"
+              className={`cal-day${d === today ? ' today' : ''}`}
+              aria-pressed={selected.includes(d)}
+              aria-label={`${m}月${i + 1}日${recorded?.has(d) ? '（記録あり）' : ''}`}
+              disabled={future}
+              onClick={() => toggle(d)}
+            >
+              {i + 1}
+              {recorded?.has(d) && <span className="dot" aria-hidden="true" />}
+            </button>
+          );
+        })}
+      </div>
+      <div className="row" style={{ marginTop: 8 }}>
+        <span className="muted small grow">日付をタップで選ぶ／外す（{selected.length}日選択中）。点は記録のある日。</span>
+        <button className="btn small" onClick={selectWeek}>直近7日</button>
+        <button className="btn small" onClick={() => onChange([])} disabled={selected.length === 0}>クリア</button>
+      </div>
     </div>
   );
 }

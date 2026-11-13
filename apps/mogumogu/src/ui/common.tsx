@@ -74,4 +74,23 @@ export function NumberInput({ value, onChange, placeholder, ariaLabel }: { value
   );
 }
 
+const WD = '日月火水木金土';
+/**
+ * 日付欄。表示は自前のラベルで中央ぞろえにし、透明な input[type=date] を重ねてタップでカレンダーを開く
+ * （iOS Safari の日付欄は独自の最小幅・縦位置を持ち、枠からはみ出したり文字が上に寄ったりするため）。
+ */
+export function DateField({ value, onChange, ariaLabel, max, min, weekday = true, placeholder = '日付を選ぶ' }: { value: string; onChange: (v: string) => void; ariaLabel: string; max?: string; min?: string; weekday?: boolean; placeholder?: string }) {
+  let label = placeholder;
+  if (value) {
+    const [y, m, d] = value.split('-').map(Number);
+    label = `${y}/${String(m).padStart(2, '0')}/${String(d).padStart(2, '0')}` + (weekday ? `（${WD[new Date(Date.UTC(y, m - 1, d)).getUTCDay()]}）` : '');
+  }
+  return (
+    <div className="date-cell">
+      <span className={`date-label${value ? '' : ' muted'}`} aria-hidden="true">{label}</span>
+      <input type="date" value={value} max={max} min={min} onChange={(e) => e.target.value && onChange(e.target.value)} aria-label={ariaLabel} />
+    </div>
+  );
+}
+
 export const MEDICAL_NOTE = '表示はすべて目安です。医療的な判断の代わりにはなりません。気になることは健診や小児科で相談してください。';

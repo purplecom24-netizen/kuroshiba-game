@@ -5,7 +5,7 @@ import { useFoodMap } from '../hooks';
 import { useUI } from '../store';
 import { addDays } from '../engine/age';
 import { fmt, jpDate, nowTime, todayStr } from '../lib/format';
-import { Modal, NumberInput, Seg } from './common';
+import { DateField, Modal, NumberInput, Seg } from './common';
 import { FoodEntry } from './FoodEntry';
 import { drunkMl } from '../engine/units';
 import { FORMULA_PRESETS } from '../data/refdata';
@@ -93,21 +93,8 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
       )}
       <div className="date-nav">
         <button className="btn small" onClick={() => go(-1)} aria-label="前の日">◀</button>
-        <div className="date-cell">
-          {/* 表示は自前で中央ぞろえ。タップは上に重ねた透明な日付欄が受けてカレンダーを開く */}
-          <span className="date-label" aria-hidden="true">{date.replace(/-/g, '/')}{jpDate(date).replace(/^[^（]*/, '')}</span>
-          <input type="date" value={date} onChange={(e) => e.target.value && setDate(e.target.value)} aria-label="日付" />
-        </div>
+        <DateField value={date} onChange={setDate} ariaLabel="日付" />
         <button className="btn small" onClick={() => go(1)} aria-label="次の日">▶</button>
-        <button
-          className="btn small"
-          onClick={() => { setSlide(date > todayStr() ? 'prev' : 'next'); setDate(todayStr()); }}
-          style={{ visibility: date === todayStr() ? 'hidden' : 'visible' }}
-          aria-hidden={date === todayStr()}
-          tabIndex={date === todayStr() ? -1 : 0}
-        >
-          今日
-        </button>
       </div>
       <div key={date} className={slide ? `day-slide ${slide}` : undefined}>
 
@@ -165,6 +152,16 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
       )}
 
       </div>
+
+      {date !== todayStr() && (
+        <button
+          className="fab-today"
+          onClick={() => { setSlide(date > todayStr() ? 'prev' : 'next'); setDate(todayStr()); }}
+          aria-label="今日に戻る"
+        >
+          <span aria-hidden="true">↩</span>今日
+        </button>
+      )}
 
       {entry && foods && (
         <FoodEntry
