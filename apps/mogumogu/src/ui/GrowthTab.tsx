@@ -6,7 +6,7 @@ import { GROWTH } from '../data/refdata';
 import { ageMonthsDecimal, formatAge } from '../engine/age';
 import { assessGrowth, PERCENTILES } from '../engine/growth';
 import { fmt, jpDate, todayStr } from '../lib/format';
-import { MEDICAL_NOTE, NumberInput, Seg } from './common';
+import { DateField, MEDICAL_NOTE, NumberInput, Seg } from './common';
 
 type Metric = 'weight' | 'height' | 'head';
 const META: Record<Metric, { label: string; unit: string; key: keyof Measurement }> = {
@@ -59,7 +59,7 @@ export function GrowthTab({ child, settings }: { child: Child; settings: Setting
       <div className="card">
         <h2>計測を記録</h2>
         <div className="row">
-          <label className="field grow"><span>計測日</span><input type="date" value={date} onChange={(e) => setDate(e.target.value)} /></label>
+          <div className="field grow"><span>計測日</span><DateField value={date} onChange={setDate} ariaLabel="計測日" /></div>
         </div>
         <div className="row" style={{ marginTop: 8 }}>
           <label className="field grow"><span>体重（kg）</span><NumberInput value={w} onChange={setW} step="0.01" ariaLabel="体重" /></label>

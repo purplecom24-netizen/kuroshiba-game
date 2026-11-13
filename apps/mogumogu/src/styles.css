@@ -157,8 +157,8 @@ html, body { overflow-x: hidden; }
 .seg button + button { border-left: 1px solid var(--border); }
 .seg button[aria-pressed='true'] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
 
-label.field { display: block; font-size: 0.85rem; color: var(--text-2); }
-label.field > span { display: block; margin-bottom: 2px; }
+label.field, div.field { display: block; font-size: 0.85rem; color: var(--text-2); }
+label.field > span, div.field > span:first-child { display: block; margin-bottom: 2px; }
 input[type='text'], input[type='number'], input[type='date'], input[type='time'], input[type='search'], select, textarea {
   width: 100%; border: 1px solid var(--border); background: var(--surface); border-radius: 8px; padding: 8px 10px; min-height: 40px; font-size: 16px;
 }
@@ -236,7 +236,7 @@ table.nut thead th { color: var(--text-2); font-weight: 600; position: sticky; t
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
 /* 記録タブの日付ナビ：4枠固定（「今日」は非表示でも枠を残す） */
-.date-nav { display: grid; grid-template-columns: 44px 1fr 44px 56px; gap: 8px; align-items: center; margin-bottom: 8px; }
+.date-nav { display: grid; grid-template-columns: 44px 1fr 44px; gap: 8px; align-items: center; margin-bottom: 8px; }
 .date-nav > * { min-width: 0; }
 .date-nav .btn { padding: 0; height: 44px; min-height: 44px; width: 100%; }
 /* 日付欄：文字は自前で中央に表示し、透明な input[type=date] を重ねてタップでカレンダーを開く
@@ -259,3 +259,28 @@ table.nut thead th { color: var(--text-2); font-weight: 600; position: sticky; t
 @keyframes slideFromRight { from { transform: translateX(24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
 @keyframes slideFromLeft { from { transform: translateX(-24px); opacity: 0.3; } to { transform: none; opacity: 1; } }
 @media (prefers-reduced-motion: reduce) { .day-slide.next, .day-slide.prev { animation: none; } }
+
+/* 記録タブ：今日に戻るフローティングボタン（タブバーの上） */
+.fab-today {
+  position: fixed; right: 16px; bottom: calc(76px + env(safe-area-inset-bottom)); z-index: 30;
+  display: inline-flex; align-items: center; gap: 6px; height: 48px; padding: 0 18px;
+  border: 0; border-radius: 999px; background: var(--accent); color: var(--accent-ink);
+  font-weight: 700; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25); cursor: pointer;
+}
+.fab-today span { font-size: 1.1rem; }
+
+/* 栄養分析：任意期間のカレンダー */
+.cal { user-select: none; }
+.cal-head { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; margin-bottom: 6px; text-align: center; font-weight: 700; }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-wd { text-align: center; font-size: 0.75rem; color: var(--text-3); padding: 2px 0; }
+.cal-day {
+  position: relative; aspect-ratio: 1 / 1; min-height: 36px; border: 1px solid transparent; border-radius: 10px;
+  background: var(--surface); font-variant-numeric: tabular-nums; cursor: pointer; padding: 0;
+}
+.cal-day[disabled] { color: var(--text-3); opacity: 0.4; cursor: default; }
+.cal-day.today { border-color: var(--accent); }
+.cal-day[aria-pressed='true'] { background: var(--accent); color: var(--accent-ink); font-weight: 700; }
+.cal-day .dot { position: absolute; left: 50%; bottom: 4px; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--series-food); }
+.cal-day[aria-pressed='true'] .dot { background: var(--accent-ink); }
+.nut-name { white-space: nowrap; }
