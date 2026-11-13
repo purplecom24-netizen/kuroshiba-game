@@ -7,7 +7,7 @@ import { searchFoods } from '../engine/search';
 import { EATEN_RATIOS, UNIT_LABEL, eatenGrams, toGrams, type EatenRatioKey, type UnitKind } from '../engine/units';
 import { fmt } from '../lib/format';
 import { Modal, NumberInput, Seg } from './common';
-import { FOOD_GROUPS } from '../data/foods';
+import { FOOD_GROUPS, friendlyName } from '../data/foods';
 import { PRESET_CATEGORIES } from '../data/refdata';
 
 const COMMON_STATES = ['生', 'ゆで', '水煮', '蒸し', '焼き', '電子レンジ調理'];
@@ -65,7 +65,9 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
   function pick(f: FoodLike) {
     setFood(f);
     setCookNote(null);
-    setLabelBase(f.source === 'preset' ? f.displayName.replace(/（[^）]*）$/, '') : null);
+    // 「にんじん（ゆで）」のように末尾のかっこが調理のしかたなら外し、切り替えたときに付け直す
+    const tail = f.displayName.match(/（([^）]*)）$/);
+    setLabelBase(f.source !== 'preset' ? null : tail && f.cookState && tail[1].includes(f.cookState) ? f.displayName.slice(0, tail.index) : f.displayName);
     if (f.packGrams) {
       setAmount(f.packGrams);
       setUnit('g');
@@ -122,6 +124,7 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
           {f.source === 'recipe' && <span className="badge">レシピ</span>}
           {f.source === 'babyfood' && <span className="badge">ベビーフード</span>}
           {f.source === 'custom' && <span className="badge">カスタム</span>}
+          {f.alias && <span className="alias">別名：{f.alias}</span>}
         </span>
         <span className="muted small">{sub ?? ''}</span>
       </button>
@@ -207,7 +210,11 @@ export function FoodEntry({ child, date, mealId, item, foods, onClose }: Props) 
           </label>
         )}
         {cookNote && <div className="notice warn small">成分表に「{cookNote.replace(/（.*/, '')}」のデータがないため、{food.cookState}の値で計算します。調理による変化は未考慮です。</div>}
-        {food.source !== 'preset' && food.code && <p className="muted small" style={{ margin: 0 }}>成分表 {food.code}：{food.name}</p>}
+        {food.code && (
+          <p className="muted small" style={{ margin: 0 }} data-testid="table-source">
+            成分表 {food.code}「{friendlyName(food.tableName ?? food.name)}」{food.alias ? `（別名：${food.alias}）` : ''}の値で計算
+          </p>
+        )}
 
         <div className="row" style={{ alignItems: 'flex-end' }}>
           <label className="field grow"><span>提供量</span><NumberInput value={amount} onChange={setAmount} ariaLabel="提供量" /></label>

@@ -331,3 +331,79 @@ describe('育児用ミルクの公式成分表示', () => {
     expect(p.ranges).toContain('vitC');
   });
 });
+
+describe('よく使う食材の一般化と別名', () => {
+  const load = async () => {
+    const { PRESETS } = await import('../../data/refdata');
+    const { presetToFood, mextToFood, isLiquid } = await import('../../lib/day');
+    const { searchFoods, normalizeKana } = await import('../search');
+    const presets = PRESETS.map((p) => presetToFood(p, food(p.code), normalizeKana));
+    const table = FOODS.map(mextToFood);
+    const labels = (q: string) => searchFoods(presets, q, [], 50).map((f) => f.displayName);
+    const names = (q: string) => searchFoods(table, q, [], 200).map((f) => f.name);
+    return { PRESETS, presets, table, labels, names, isLiquid };
+  };
+
+  it('公開済みのIDを消していない（記録が参照している）', async () => {
+    const { PRESETS } = await load();
+    const ids = new Set(PRESETS.map((p) => p.id));
+    const legacy = 'okayu10 okayu7 okayu5 gohan bread udon somen oatmeal potato sweetpotato pumpkin carrot daikon onion spinach komatsuna broccoli cabbage tomato tofu natto kinako shirasu madai salmon cod karei tuna mackerel sasami chickenmince yolk egg eggwhite yogurt milk cheese formulapowder nori katsuobushi banana apple strawberry mikan'.split(' ');
+    for (const id of legacy) expect(ids, id).toContain(id);
+    expect(ids.size).toBe(PRESETS.length);
+    expect(PRESETS.length).toBeGreaterThanOrEqual(120);
+  });
+
+  it('ふだんの呼び名で見つかる（パプリカ・コーン など）', async () => {
+    const { labels } = await load();
+    expect(labels('ぱぷ')).toEqual(expect.arrayContaining(['赤パプリカ', '黄パプリカ']));
+    expect(labels('コーン')).toEqual(expect.arrayContaining(['とうもろこし（ゆで）', 'コーン缶（ホール）', 'コーン缶（クリーム）']));
+    expect(labels('とうもろこし')).toContain('とうもろこし（ゆで）');
+    expect(labels('きのこ')).toEqual(expect.arrayContaining(['しいたけ（ゆで）', 'しめじ（ゆで）', 'えのき（ゆで）']));
+    expect(labels('白身魚')).toEqual(expect.arrayContaining(['たい（ゆで・水煮）', 'かれい（水煮）', 'たら（焼き）', 'ひらめ']));
+    expect(labels('ひき肉')).toEqual(expect.arrayContaining(['鶏ひき肉（加熱）', '豚ひき肉（加熱）', '牛ひき肉（加熱）']));
+    expect(labels('高野豆腐')).toContain('高野豆腐（水煮）');
+    expect(labels('だし')).toContain('だし（かつお・昆布）');
+  });
+
+  it('成分表の別名（備考）を持ち、検索にも当たる', async () => {
+    const { table, names } = await load();
+    expect(table.find((f) => f.code === '06247')!.alias).toBe('パプリカ');
+    expect(table.find((f) => f.code === '06249')!.alias).toBe('パプリカ、キングベル');
+    expect(names('パプリカ').some((n) => n.includes('赤ピーマン'))).toBe(true);
+    expect(names('高野豆腐').some((n) => n.includes('凍り豆腐'))).toBe(true);
+  });
+
+  it('別名辞書が無関係な食品に当たらない', async () => {
+    const { names } = await load();
+    // コーン：乾燥穀物（玄穀）は出さない
+    expect(names('コーン').some((n) => n.includes('玄穀'))).toBe(false);
+    expect(names('コーン').some((n) => n.includes('スイートコーン'))).toBe(true);
+    // 梨：「皮なし」の食品に当たらない
+    const nashi = names('梨');
+    expect(nashi.length).toBeGreaterThan(0);
+    expect(nashi.every((n) => n.includes('なし類'))).toBe(true);
+    // 桃：肉の「もも」に当たらない
+    const momo = names('桃');
+    expect(momo.length).toBeGreaterThan(0);
+    expect(momo.every((n) => n.includes('もも類'))).toBe(true);
+    // 牛：うしえび に当たらない。鶏：ささみが出る
+    expect(names('牛').some((n) => n.includes('えび'))).toBe(false);
+    expect(names('牛').some((n) => n.includes('うし　［'))).toBe(true);
+    expect(names('鶏').some((n) => n.includes('ささみ'))).toBe(true);
+    // ごはん：炊いた米だけ（穀粒は出さない）。おかゆ：かゆだけ
+    expect(names('ごはん').some((n) => n.includes('水稲めし'))).toBe(true);
+    expect(names('ごはん').some((n) => n.includes('穀粒'))).toBe(false);
+    expect(names('おかゆ').every((n) => n.includes('かゆ'))).toBe(true);
+    // 既存の検索（魚の漢字）
+    expect(names('鯖').some((n) => n.includes('まさば'))).toBe(true);
+    expect(names('鮭').some((n) => n.includes('しろさけ'))).toBe(true);
+    expect(names('鯛').some((n) => n.includes('まだい'))).toBe(true);
+  });
+
+  it('液体のよく使う食材は容量で入力できる（係数1.0）', async () => {
+    const { presets, isLiquid } = await load();
+    const byLabel = (l: string) => presets.find((f) => f.displayName === l)!;
+    for (const l of ['牛乳', '豆乳（無調整）', 'だし（かつお・昆布）', '昆布だし', 'かつおだし', '麦茶']) expect(isLiquid(byLabel(l)), l).toBe(true);
+    for (const l of ['ヨーグルト（無糖）', 'にんじん（ゆで）', '片栗粉']) expect(isLiquid(byLabel(l)), l).toBe(false);
+  });
+});
