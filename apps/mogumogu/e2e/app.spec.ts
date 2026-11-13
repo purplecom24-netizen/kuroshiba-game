@@ -65,6 +65,17 @@ test('記録 → 栄養分析 → 一覧（T-11, T-16）', async ({ page }) => {
   await expect(table.locator('tbody tr')).toHaveCount(32);
   await expect(table).toContainText('目安量');
   await expect(table).toContainText('推奨量');
+  // 脂質はエネルギー比（%）で表示し、「%E」という表記は出さない
+  const fat = page.getByTestId('row-fat');
+  await expect(fat).toContainText('エネルギー比');
+  await expect(fat.locator('.nut-val .v')).toHaveText(/^≥?\d+ \/ 40 %$/);
+  await expect(fat.locator('.nut-ratio .v')).toHaveText(/^\d+%$/);
+  await expect(table).not.toContainText('%E');
+  // 数値の行は折り返さない
+  for (const id of ['energy', 'protein', 'fat']) {
+    const h = (await page.getByTestId(`row-${id}`).locator('.nut-val .v').boundingBox())!.height;
+    expect(h).toBeLessThan(30);
+  }
   await expect(page.getByText('医療的な判断の代わりにはなりません').first()).toBeVisible();
   await page.screenshot({ path: 'e2e-results/analysis.png', fullPage: true });
 });
@@ -87,6 +98,8 @@ test('オフラインで動く（T-14）', async ({ page, context }) => {
   await page.reload();
   await context.setOffline(true);
   await page.reload();
+  // 丸ゴシック体は事前キャッシュから読み込まれる
+  expect(await page.evaluate(async () => { await document.fonts.load('16px "M PLUS Rounded 1c"', 'あ鉄1'); await document.fonts.load('800 16px "M PLUS Rounded 1c"', 'あ鉄1'); return document.fonts.check('16px "M PLUS Rounded 1c"', 'あ鉄1') && document.fonts.check('800 16px "M PLUS Rounded 1c"', 'あ鉄1'); })).toBe(true);
   await page.getByRole('button', { name: '＋ 授乳' }).click();
   await expect(page.locator('.kv')).toContainText('授乳1回');
   await page.getByRole('button', { name: '＋ 食事' }).click();
@@ -235,4 +248,74 @@ test('栄養分析：任意でカレンダーから単日・複数日を選ん�
   await expect(cal.getByRole('button', { name: '次の月' })).toBeDisabled();
   await cal.getByRole('button', { name: '11月12日（記録あり）' }).click();
   await page.screenshot({ path: 'e2e-results/analysis-custom.png', fullPage: true });
+});
+
+test('タブバー：半透明のカプセル、なぞって切替、キーボードでも切替', async ({ page }) => {
+  await setup(page);
+  const bar = page.locator('.tabbar');
+  const glass = await page.locator('.tabbar-glass').evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { blur: (s.backdropFilter || (s as unknown as Record<string, string>).webkitBackdropFilter || '').includes('blur'), radius: parseFloat(s.borderTopLeftRadius), alpha: s.backgroundColor };
+  });
+  expect(glass.blur).toBe(true);
+  expect(glass.radius).toBeGreaterThan(20);
+  expect(glass.alpha).not.toMatch(/^rgb\(/); // 不透明（rgb）ではなく半透明
+  // 画面の左右に余白があり、浮いている
+  const box = (await bar.boundingBox())!;
+  const vp = page.viewportSize()!;
+  expect(box.x).toBeGreaterThanOrEqual(12);
+  expect(vp.width - (box.x + box.width)).toBeGreaterThanOrEqual(12);
+  expect(vp.height - (box.y + box.height)).toBeGreaterThanOrEqual(8);
+
+  // 選択中カプセルは選択タブの位置にある
+  const lensOver = async (name: string) => {
+    const b = (await page.getByRole('button', { name, exact: true }).boundingBox())!;
+    const l = (await page.locator('.tab-lens').boundingBox())!;
+    return Math.abs(l.x + l.width / 2 - (b.x + b.width / 2));
+  };
+  await expect.poll(() => lensOver('記録')).toBeLessThan(3);
+
+  // なぞって切替：記録 → 設定まで動かして離す
+  const items = (await page.locator('.tabbar-items').boundingBox())!;
+  const y = items.y + items.height / 2;
+  await page.mouse.move(items.x + items.width * 0.1, y);
+  await page.mouse.down();
+  await expect(bar).toHaveClass(/dragging/);
+  await page.mouse.move(items.x + items.width * 0.5, y, { steps: 5 });
+  await expect(page.getByRole('button', { name: '栄養分析', exact: true })).toHaveClass(/under-lens/);
+  await page.mouse.move(items.x + items.width * 0.9, y, { steps: 5 });
+  await page.mouse.up();
+  await expect(bar).not.toHaveClass(/dragging/);
+  await expect(page.getByRole('button', { name: '設定', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByText('子どもプロフィール')).toBeVisible();
+  await expect.poll(() => lensOver('設定')).toBeLessThan(3);
+
+  // タップで切替
+  await page.getByRole('button', { name: '成長', exact: true }).click();
+  await expect(page.getByText('体重の発育曲線')).toBeVisible();
+
+  // 指でなぞって切替（タッチ）：成長 → 記録
+  const cdp = await page.context().newCDPSession(page);
+  const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x = 0) =>
+    cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x: Math.round(x), y: Math.round(y) }] });
+  await touch('touchStart', items.x + items.width * 0.7);
+  await expect(bar).toHaveClass(/dragging/);
+  for (const f of [0.6, 0.45, 0.3, 0.12]) await touch('touchMove', items.x + items.width * f);
+  await expect(page.getByRole('button', { name: '記録', exact: true })).toHaveClass(/under-lens/);
+  await touch('touchEnd');
+  await expect(bar).not.toHaveClass(/dragging/);
+  await expect(page.getByRole('button', { name: '記録', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('button', { name: '＋ 食事' })).toBeVisible();
+  // 指でタップ
+  await page.touchscreen.tap(items.x + items.width * 0.5, y);
+  await expect(page.getByRole('button', { name: '栄養分析', exact: true })).toHaveAttribute('aria-current', 'page');
+
+  // キーボードで切替
+  await page.getByRole('button', { name: '食材', exact: true }).focus();
+  await page.keyboard.press('Enter');
+  await expect(page.getByRole('button', { name: '食材', exact: true })).toHaveAttribute('aria-current', 'page');
+  await expect(page.getByRole('button', { name: 'ミルク銘柄' })).toBeVisible();
+
+  // フォント
+  expect(await page.evaluate(async () => { await document.fonts.ready; return getComputedStyle(document.body).fontFamily; })).toContain('M PLUS Rounded 1c');
 });

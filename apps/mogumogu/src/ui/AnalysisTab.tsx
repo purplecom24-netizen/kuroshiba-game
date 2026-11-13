@@ -14,7 +14,7 @@ import type { DayIntake, NutrientIntake } from '../engine/types';
 import { loadDates } from '../lib/day';
 import { db } from '../db';
 import { fmt, jpDate } from '../lib/format';
-import { MEDICAL_NOTE, Seg, StatusBadge } from './common';
+import { Chevron, MEDICAL_NOTE, Seg, StatusBadge } from './common';
 
 type Group = 'focus' | 'macro' | 'mineral' | 'vitamin';
 const GROUP_LABEL: Record<Group, string> = { focus: '重点', macro: '主要栄養素', mineral: 'ミネラル', vitamin: 'ビタミン' };
@@ -129,11 +129,11 @@ function FocusPanel({ rows }: { rows: Row[] }) {
           const pct = r.j.ratio ?? 0;
           return (
             <div className="focus" key={r.id} data-testid={`focus-${r.id}`}>
-              <div className="label">{r.name}</div>
+              <div className="label">{r.name}{isEnergyRatio(r.j) ? '（エネルギー比）' : ''}</div>
               <div className="big">
                 {r.j.lowerBound ? '≥' : ''}
                 {fmt(r.j.intake)}
-                <span className="unit"> {r.j.intakeUnit}</span>
+                <span className="unit"> {unitText(r.j.intakeUnit)}</span>
               </div>
               <div className="gauge" role="img" aria-label={`${r.j.ratioLabel ?? ''} ${fmt(pct, 0)}%`}>
                 <div className={`fill ${r.j.status}`} style={{ width: `${Math.min(pct, 150) / 1.5}%` }} />
@@ -142,7 +142,7 @@ function FocusPanel({ rows }: { rows: Row[] }) {
               <div className="small">
                 {r.j.ratioLabel} {fmt(pct, 0)}%{' '}
                 {r.j.gap && r.j.gap > 0 && !r.j.overUL ? (
-                  <strong>あと{fmt(r.j.gap)}{r.j.intakeUnit}</strong>
+                  <strong>あと{fmt(r.j.gap)}{unitText(r.j.intakeUnit)}</strong>
                 ) : null}
               </div>
               <div style={{ marginTop: 4 }}><StatusBadge status={r.j.status} lowerBound={r.j.lowerBound} /></div>
@@ -228,7 +228,8 @@ function StackedView({ rows }: { rows: Row[] }) {
       gap: Math.max(0, 100 - (breast + formula + food)),
       amt: { breast: r.it.bySource.breast, formula: r.it.bySource.formula, food: r.it.bySource.food, gap: r.j.gap ?? 0 },
       unit: r.unit,
-      intakeUnit: r.j.intakeUnit,
+      gapUnit: isEnergyRatio(r.j) ? '%（エネルギー比）' : unitText(r.j.intakeUnit),
+      gapSuffix: isEnergyRatio(r.j) ? '%' : '',
       lb: r.j.lowerBound,
       ratio,
     };
@@ -240,7 +241,7 @@ function StackedView({ rows }: { rows: Row[] }) {
       const row = d[index];
       if (!row || width < 34) return null;
       const v = row.amt[key];
-      const txt = key === 'gap' ? `あと${fmt(v)}` : fmt(v);
+      const txt = key === 'gap' ? `あと${fmt(v)}${row.gapSuffix}` : fmt(v);
       return (
         <text x={x + width / 2} y={y + height / 2} textAnchor="middle" dominantBaseline="central" fontSize={10} fill={key === 'gap' ? 'var(--text)' : '#fff'} style={{ fontVariantNumeric: 'tabular-nums' }}>
           {txt}
@@ -272,7 +273,7 @@ function StackedView({ rows }: { rows: Row[] }) {
                   <div>{SOURCE_LABEL.breast}：{fmt(x.amt.breast)} {x.unit}</div>
                   <div>{SOURCE_LABEL.formula}：{fmt(x.amt.formula)} {x.unit}</div>
                   <div>{SOURCE_LABEL.food}：{fmt(x.amt.food)} {x.unit}</div>
-                  <div>ギャップ：{fmt(x.amt.gap)} {x.intakeUnit}</div>
+                  <div>ギャップ：{fmt(x.amt.gap)} {x.gapUnit}</div>
                 </div>
               );
             }}
@@ -301,49 +302,66 @@ function NutrientTable({ rows }: { rows: Row[] }) {
       <table className="nut" data-testid="nutrient-table">
         <thead>
           <tr>
-            <th>栄養素</th>
+            <th>栄養素・判定</th>
             <th>摂取量 / 基準値</th>
             <th>充足率</th>
-            <th>判定・欠測</th>
           </tr>
         </thead>
         <tbody>
           {rows.map((r) => {
             const t = r.ref.target;
+            const energyRatio = isEnergyRatio(r.j);
             const missingNote = [
               r.it.missingFoodGrams > 0 ? `欠測 ${fmt(r.it.missingFoodGrams, 0)}g/${fmt(r.it.totalFoodGrams, 0)}g` : '',
               r.it.missingSources.includes('formula') ? 'ミルク表示なし' : '',
               r.it.missingSources.includes('breast') ? '母乳濃度なし' : '',
             ].filter(Boolean);
             return (
-              <tr key={r.id}>
-                <td className="nut-name">{r.name}</td>
-                <td>
-                  {r.j.lowerBound ? '≥' : ''}
-                  {r.j.intakeUnit === '%E' ? `${fmt(r.j.intake, 0)}%E` : fmt(r.it.total)}
-                  {' / '}
-                  {t ? `${fmt(t.value)}${t.unit.startsWith('%E') ? '%E' : ''}` : '—'}
-                  {r.j.intakeUnit !== '%E' && <span className="muted"> {r.unit}</span>}
-                  {r.j.intakeUnit === '%E' && <div className="muted small">脂質 {fmt(r.it.total)} g</div>}
-                  {t && <div className="muted small">{KIND_LABEL[t.kind]}{r.ref.ul ? `・上限${fmt(r.ref.ul.value)}` : ''}</div>}
-                </td>
-                <td>
-                  {r.j.ratio !== null ? `${fmt(r.j.ratio, 0)}%` : '—'}
-                  {r.j.ratioLabel && <div className="muted small">{r.j.ratioLabel}</div>}
-                </td>
-                <td>
+              <tr key={r.id} data-testid={`row-${r.id}`}>
+                <td className="nut-name">
+                  <div className="nm">{r.name}</div>
                   <StatusBadge status={r.j.status} />
                   {missingNote.length > 0 && <div className="muted small">欠測あり（下限値）<br />{missingNote.join('・')}</div>}
                   {r.it.hasEstimate && <div className="muted small">推定値を含む</div>}
+                </td>
+                <td className="nut-val">
+                  <div className="v">
+                    {r.j.lowerBound ? '≥' : ''}
+                    {energyRatio ? fmt(r.j.intake, 0) : fmt(r.it.total)}
+                    {t ? ` / ${fmt(t.value)}` : ''}
+                    <span className="muted"> {unitText(r.j.intakeUnit)}</span>
+                  </div>
+                  {energyRatio && <div className="muted small">エネルギー比</div>}
+                  {energyRatio && <div className="muted small">{KIND_LABEL[t!.kind]}・脂質 {fmt(r.it.total)} g</div>}
+                  {t && !energyRatio && <div className="muted small kind">{kindLabel(t.kind)}{r.ref.ul ? `・上限${fmt(r.ref.ul.value)}` : ''}</div>}
+                </td>
+                <td className="nut-ratio">
+                  <div className="v">{r.j.ratio !== null ? `${fmt(r.j.ratio, 0)}%` : '—'}</div>
+                  {r.j.ratioLabel && <div className="muted small">{r.j.ratioLabel}</div>}
                 </td>
               </tr>
             );
           })}
         </tbody>
       </table>
-      <p className="muted small">「≥」は欠測を含むため下限値であることを示します。ビタミンAは乳児の基準に合わせレチノール（プロビタミンAを含まない）で比較しています。</p>
+      <p className="muted small">
+        「≥」は欠測を含むため下限値であることを示します。脂質は、とったエネルギーのうち脂質が占める割合（エネルギー比）で基準と比べます。ビタミンAは乳児の基準に合わせレチノール（プロビタミンAを含まない）で比較しています。
+      </p>
     </div>
   );
+}
+
+/** 脂質など、基準が「エネルギーに占める割合」の栄養素か */
+function isEnergyRatio(j: Judgement): boolean {
+  return j.intakeUnit === '%E';
+}
+/** 画面に出す単位（エネルギー比は % と書く） */
+function unitText(u: string): string {
+  return u === '%E' ? '%' : u;
+}
+/** 指標名。長い「推定エネルギー必要量」は区切りのよい位置で折り返す */
+function kindLabel(kind: keyof typeof KIND_LABEL) {
+  return kind === 'EER' ? <>推定エネルギー<wbr />必要量</> : KIND_LABEL[kind];
 }
 
 const WD = '日月火水木金土';
@@ -383,9 +401,9 @@ function MultiDateCalendar({ child, selected, onChange }: { child: Child; select
   return (
     <div className="card cal" data-testid="multi-cal">
       <div className="cal-head">
-        <button className="btn small" onClick={() => shift(-1)} aria-label="前の月">◀</button>
+        <button className="btn small" onClick={() => shift(-1)} aria-label="前の月"><Chevron dir="left" /></button>
         <span>{y}年{m}月</span>
-        <button className="btn small" onClick={() => shift(1)} aria-label="次の月" disabled={ym >= today.slice(0, 7)}>▶</button>
+        <button className="btn small" onClick={() => shift(1)} aria-label="次の月" disabled={ym >= today.slice(0, 7)}><Chevron dir="right" /></button>
       </div>
       <div className="cal-grid">
         {[...WD].map((w) => <div key={w} className="cal-wd">{w}</div>)}

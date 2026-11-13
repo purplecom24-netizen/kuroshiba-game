@@ -195,6 +195,10 @@ export function SettingsTab({ child, settings }: { child: Child; settings: Setti
           ))}
         </ul>
         <p className="muted small">食品成分の値は「日本食品標準成分表（八訂）増補2023年」（文部科学省）による。</p>
+        <p className="muted small">
+          フォント：M PLUS Rounded 1c（© The M+ FONTS Project Authors、SIL Open Font License 1.1）。{' '}
+          <a href="./OFL-MPLUSRounded1c.txt" target="_blank" rel="noreferrer">ライセンス全文</a>
+        </p>
       </div>
       <p className="disclaimer">{MEDICAL_NOTE}</p>
     </div>
