@@ -11,6 +11,7 @@
 
 ## コマンド
 - `npm run data` 参照データの再生成
+- `npm run fonts` 同梱フォント（M PLUS Rounded 1c のサブセット）の再生成
 - `npm test` 計算エンジンのテスト（Vitest、T-01〜T-13）
 - `npm run build` → リポジトリ直下の `mogumogu/` に出力（GitHub Pages で配信）
 - `npm run e2e` 主要画面の操作テスト（Playwright、T-11/T-13〜T-16）。ビルド後に実行
@@ -21,3 +22,5 @@
 - `src/engine/` 計算エンジン（token, age, reference, breastmilk, intake, judge, period, units, recipe, growth, search）
 - `src/lib/day.ts` DBの記録 → エンジン入力の組み立て
 - `src/ui/` 画面（記録・食材・栄養分析・成長・設定）
+- `src/ui/TabBar.tsx` 浮いたカプセル型の半透明タブバー（Liquid Glass 風）
+- `src/assets/fonts/` 同梱フォント（生成物。OFL.txt を同梱）

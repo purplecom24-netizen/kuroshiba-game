@@ -5,7 +5,7 @@ import { useFoodMap } from '../hooks';
 import { useUI } from '../store';
 import { addDays } from '../engine/age';
 import { fmt, jpDate, nowTime, todayStr } from '../lib/format';
-import { DateField, Modal, NumberInput, Seg } from './common';
+import { Chevron, DateField, Modal, NumberInput, ReturnIcon, Seg } from './common';
 import { FoodEntry } from './FoodEntry';
 import { drunkMl } from '../engine/units';
 import { FORMULA_PRESETS } from '../data/refdata';
@@ -92,9 +92,9 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
         </div>
       )}
       <div className="date-nav">
-        <button className="btn small" onClick={() => go(-1)} aria-label="前の日">◀</button>
+        <button className="btn small" onClick={() => go(-1)} aria-label="前の日"><Chevron dir="left" /></button>
         <DateField value={date} onChange={setDate} ariaLabel="日付" />
-        <button className="btn small" onClick={() => go(1)} aria-label="次の日">▶</button>
+        <button className="btn small" onClick={() => go(1)} aria-label="次の日"><Chevron dir="right" /></button>
       </div>
       <div key={date} className={slide ? `day-slide ${slide}` : undefined}>
 
@@ -159,7 +159,7 @@ export function RecordTab({ child, settings }: { child: Child; settings: Setting
           onClick={() => { setSlide(date > todayStr() ? 'prev' : 'next'); setDate(todayStr()); }}
           aria-label="今日に戻る"
         >
-          <span aria-hidden="true">↩</span>今日
+          <ReturnIcon />今日
         </button>
       )}
 

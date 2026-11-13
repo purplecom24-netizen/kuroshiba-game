@@ -74,6 +74,24 @@ export function NumberInput({ value, onChange, placeholder, ariaLabel }: { value
   );
 }
 
+/** 線画の矢印アイコン */
+export function Chevron({ dir }: { dir: 'left' | 'right' }) {
+  return (
+    <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d={dir === 'left' ? 'M15 5l-7 7 7 7' : 'M9 5l7 7-7 7'} />
+    </svg>
+  );
+}
+/** 「戻る」矢印（今日に戻るボタン用） */
+export function ReturnIcon() {
+  return (
+    <svg className="icon" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M9 14L4.5 9.5 9 5" />
+      <path d="M4.5 9.5H14a5.5 5.5 0 0 1 0 11h-3" />
+    </svg>
+  );
+}
+
 const WD = '日月火水木金土';
 /**
  * 日付欄。表示は自前のラベルで中央ぞろえにし、透明な input[type=date] を重ねてタップでカレンダーを開く

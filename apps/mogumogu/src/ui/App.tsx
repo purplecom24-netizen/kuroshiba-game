@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useActiveChild, useSettings } from '../hooks';
-import { useUI, type Tab } from '../store';
+import { useUI } from '../store';
+import { TabBar } from './TabBar';
 import { formatAge } from '../engine/age';
 import { jpDate, todayStr } from '../lib/format';
 import { RecordTab } from './RecordTab';
@@ -10,13 +11,6 @@ import { GrowthTab } from './GrowthTab';
 import { SettingsTab, ChildForm } from './SettingsTab';
 import { db, getSettings, saveSettings } from '../db';
 
-const TABS: { id: Tab; label: string; ico: string }[] = [
-  { id: 'record', label: '記録', ico: '✎' },
-  { id: 'foods', label: '食材', ico: '🥕' },
-  { id: 'analysis', label: '栄養分析', ico: '◎' },
-  { id: 'growth', label: '成長', ico: '📈' },
-  { id: 'settings', label: '設定', ico: '⚙' },
-];
 
 export function App() {
   const { tab, setTab, date } = useUI();
@@ -79,14 +73,7 @@ export function App() {
         {tab === 'growth' && <GrowthTab child={child} settings={settings} />}
         {tab === 'settings' && <SettingsTab child={child} settings={settings} />}
       </main>
-      <nav className="tabbar" aria-label="タブ">
-        {TABS.map((t) => (
-          <button key={t.id} aria-current={tab === t.id ? 'page' : undefined} className={t.id === 'analysis' ? 'center' : ''} onClick={() => setTab(t.id)}>
-            <span className="ico" aria-hidden="true">{t.ico}</span>
-            {t.label}
-          </button>
-        ))}
-      </nav>
+      <TabBar tab={tab} onChange={setTab} />
     </div>
   );
 }

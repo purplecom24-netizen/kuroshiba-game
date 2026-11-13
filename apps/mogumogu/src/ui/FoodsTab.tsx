@@ -19,7 +19,7 @@ export function FoodsTab() {
   const [sec, setSec] = useState<Section>('custom');
   return (
     <div>
-      <Seg label="食材の種類" value={sec} onChange={setSec} options={[{ v: 'custom', l: 'カスタム・BF' }, { v: 'formula', l: 'ミルク銘柄' }, { v: 'recipe', l: 'レシピ' }, { v: 'units', l: '単位' }]} />
+      <Seg label="食材の種類" value={sec} onChange={setSec} options={[{ v: 'custom', l: '食材・BF' }, { v: 'formula', l: 'ミルク銘柄' }, { v: 'recipe', l: 'レシピ' }, { v: 'units', l: '単位' }]} />
       <div style={{ marginTop: 12 }}>
         {sec === 'custom' && <CustomFoods />}
         {sec === 'formula' && <Formulas />}
