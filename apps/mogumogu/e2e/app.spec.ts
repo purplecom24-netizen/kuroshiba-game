@@ -369,3 +369,64 @@ test('食材選び：ふだんの呼び名と別名で探せる（パプリカ�
   await expect(dialog).toContainText('提供 30 g');
   await expect(page.getByLabel('大さじ1杯の重さ')).toHaveCount(0);
 });
+
+test('ヘッダー：上部に固定されたガラスのカプセル、内容は下をくぐる', async ({ page }) => {
+  await setup(page);
+  const header = page.locator('.header');
+  // 内容を増やしてスクロールできるようにする
+  await page.getByRole('button', { name: '栄養分析', exact: true }).click();
+  await page.getByRole('button', { name: '＋ ミルク' }).waitFor({ state: 'detached' });
+  await page.getByRole('button', { name: '記録', exact: true }).click();
+  await page.getByRole('button', { name: '＋ ミルク' }).click();
+  await page.getByLabel('銘柄').selectOption({ label: '明治ほほえみ（粉・らくらくキューブ）（明治）' });
+  await page.getByLabel('作った量').pressSequentially('200');
+  await page.getByRole('button', { name: '保存' }).click();
+  await page.getByRole('button', { name: '栄養分析', exact: true }).click();
+  await expect(page.getByTestId('nutrient-table')).toBeVisible();
+
+  // ガラスのカプセル（半透明＋ぼかし、丸い）
+  const pill = await page.locator('.glass-pill').first().evaluate((el) => {
+    const s = getComputedStyle(el);
+    return { blur: (s.backdropFilter || (s as unknown as Record<string, string>).webkitBackdropFilter || '').includes('blur'), radius: parseFloat(s.borderTopLeftRadius), bg: s.backgroundColor };
+  });
+  expect(pill.blur).toBe(true);
+  expect(pill.radius).toBeGreaterThan(18);
+  expect(pill.bg).not.toMatch(/^rgb\(/);
+  await expect(header.locator('.who')).toContainText('はな');
+  await expect(header.locator('.who')).toContainText('7か月10日');
+  await expect(header.locator('.when')).toHaveText('今日');
+
+  // スクロールしても上に固定されたまま。内容はヘッダーの下をくぐる
+  await page.evaluate(() => window.scrollTo(0, 700));
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(600);
+  const box = (await header.boundingBox())!;
+  expect(box.y).toBe(0);
+  expect(await header.evaluate((el) => getComputedStyle(el).position)).toBe('fixed');
+  await expect(header.locator('.who')).toBeVisible();
+  await page.screenshot({ path: 'e2e-results/header-scrolled.png' });
+  // カプセルのないところは、うしろの画面をそのまま操作できる
+  const through = await page.evaluate(() => {
+    const el = document.elementFromPoint(window.innerWidth / 2, 30);
+    return !!el && !el.closest('.header');
+  });
+  expect(through).toBe(true);
+
+  // タブを切り替えると先頭から表示する
+  await page.getByRole('button', { name: '成長', exact: true }).click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  // 先頭では、最初の内容がヘッダーに隠れない
+  const first = (await page.locator('.main .card').first().boundingBox())!;
+  const hb = (await header.boundingBox())!;
+  expect(first.y).toBeGreaterThanOrEqual(hb.y + hb.height);
+
+  // きょうだいを追加すると、名前のカプセルから切り替えられる
+  await page.getByRole('button', { name: '設定', exact: true }).click();
+  await page.getByRole('button', { name: '＋ きょうだいを追加' }).click();
+  const form = page.locator('.card').filter({ hasText: '子どもを追加' }).last();
+  await form.getByLabel('名前（ニックネーム可）').fill('そら');
+  await form.getByLabel('生年月日').fill('2025-01-15');
+  await form.getByRole('button', { name: '登録してはじめる' }).click();
+  await expect(header.locator('.who')).toContainText('そら');
+  await page.getByLabel('子どもを切り替え').selectOption({ label: 'はな' });
+  await expect(header.locator('.who')).toContainText('はな');
+});
