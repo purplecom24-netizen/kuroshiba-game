@@ -393,3 +393,6 @@ table.nut td.nut-name .status { margin-bottom: 2px; }
 /* 線画アイコン（前後の矢印など） */
 .icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; display: block; }
 .fab-today .icon { width: 18px; height: 18px; }
+
+/* 検索結果：成分表の別名（例：赤ピーマン → パプリカ） */
+.result-item .alias { display: block; font-size: 0.78rem; color: var(--text-3); }

@@ -319,3 +319,53 @@ test('タブバー：半透明のカプセル、なぞって切替、キーボ�
   // フォント
   expect(await page.evaluate(async () => { await document.fonts.ready; return getComputedStyle(document.body).fontFamily; })).toContain('M PLUS Rounded 1c');
 });
+
+test('食材選び：ふだんの呼び名と別名で探せる（パプリカ・コーン）', async ({ page }) => {
+  await setup(page);
+  await page.getByRole('button', { name: '＋ 食事' }).click();
+  const dialog = page.getByRole('dialog');
+  // カテゴリ別の一覧
+  for (const c of ['主食', '野菜', 'いも', '果物', '魚', '肉・卵', '豆・大豆製品', '乳製品', 'その他']) await expect(dialog.getByRole('button', { name: c, exact: true })).toBeVisible();
+  await dialog.getByRole('button', { name: '野菜', exact: true }).click();
+  await expect(dialog.getByRole('listitem').filter({ hasText: /^赤パプリカ/ })).toBeVisible();
+  await page.screenshot({ path: 'e2e-results/picker-veg.png' });
+
+  // 「ぱぷ」→ よく使う食材に赤・黄パプリカ、成分表の候補には別名が出る
+  await page.getByLabel('食材を検索').fill('ぱぷ');
+  const items = dialog.getByRole('listitem');
+  await expect(items.nth(0)).toHaveText(/^赤パプリカ/);
+  await expect(items.nth(1)).toHaveText(/^黄パプリカ/);
+  await expect(items.filter({ hasText: /^赤ピーマン　果実　生/ })).toContainText('別名：パプリカ');
+  await expect(items.filter({ hasText: /^黄ピーマン　果実　生/ })).toContainText('別名：パプリカ、キングベル');
+  await page.screenshot({ path: 'e2e-results/picker-paprika.png' });
+
+  // 赤パプリカを選ぶ → 参照している成分表の食品と注記が出る。ゆでのデータはないので「生の値で計算」
+  await items.nth(0).click();
+  await expect(page.getByTestId('table-source')).toHaveText('成分表 06247「赤ピーマン　果実　生」の値で計算');
+  await expect(dialog).toContainText('成分表では「赤ピーマン」');
+  const cook = page.getByLabel('調理のしかた');
+  await expect(cook).toHaveValue('mext:06247');
+  await cook.selectOption({ label: 'ゆで（データなし・生の値で計算）' });
+  await expect(dialog).toContainText('調理による変化は未考慮');
+  await page.getByLabel('提供量').pressSequentially('15');
+  await page.screenshot({ path: 'e2e-results/picker-paprika-amount.png' });
+  await page.getByRole('button', { name: '保存' }).click();
+  const meal = page.locator('.card').filter({ hasText: '1回目' });
+  await expect(meal).toContainText('赤パプリカ');
+  await expect(meal).toContainText('ゆで（調理による変化は未考慮）');
+
+  // 「コーン」→ とうもろこし（ゆで）やコーン缶が先頭。乾燥穀物（玄穀）は出ない
+  await page.getByRole('button', { name: '＋ 食材を追加' }).click();
+  await page.getByLabel('食材を検索').fill('コーン');
+  await expect(items.nth(0)).toHaveText(/^コーンフレーク|^とうもろこし（ゆで）/);
+  await expect(items.filter({ hasText: /^とうもろこし（ゆで）/ })).toBeVisible();
+  await expect(items.filter({ hasText: /^コーン缶（ホール）/ })).toBeVisible();
+  await expect(dialog).not.toContainText('玄穀');
+  // 液体のよく使う食材は容量で入れられる（係数の入力を求めない）
+  await page.getByLabel('食材を検索').fill('牛乳');
+  await items.filter({ hasText: /^牛乳/ }).first().click();
+  await page.getByLabel('提供量').pressSequentially('2');
+  await page.getByLabel('単位').selectOption('tbsp');
+  await expect(dialog).toContainText('提供 30 g');
+  await expect(page.getByLabel('大さじ1杯の重さ')).toHaveCount(0);
+});

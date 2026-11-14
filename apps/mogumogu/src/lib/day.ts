@@ -15,6 +15,8 @@ export interface FoodLike {
   source: 'mext' | 'custom' | 'recipe' | 'babyfood' | 'preset';
   category?: string;
   note?: string;
+  alias?: string; // 成分表の備考にある別名（例：赤ピーマン → パプリカ）
+  tableName?: string; // よく使う食材が参照している成分表の食品名
   per100g: Record<string, NutrientValue>;
   base?: string;
   cookState?: string | null;
@@ -57,12 +59,20 @@ export function presetToFood(p: Preset, m: MextFood, normalize: (s: string) => s
     code: m.code,
     category: p.category,
     note: p.note,
+    tableName: m.name,
     keys: normalize([p.label, ...p.aliases].join(' ')),
   };
 }
 
 export function mextToFood(f: MextFood): FoodLike {
-  return { id: f.id, name: f.name, displayName: f.displayName, source: 'mext', per100g: f.per100g, base: f.base, cookState: f.cookState, code: f.code, keys: f.keys };
+  return { id: f.id, name: f.name, displayName: f.displayName, source: 'mext', per100g: f.per100g, base: f.base, cookState: f.cookState, code: f.code, keys: f.keys, alias: f.alias || undefined };
+}
+
+/** 液体の既定係数 1.0（要件 6.1）を使う食品か。成分表のし好飲料類・液状乳類・人乳・豆乳・だし等 */
+export function isLiquid(f: FoodLike): boolean {
+  if (f.source !== 'mext' && f.source !== 'preset') return false;
+  if (f.code?.startsWith('16')) return true;
+  return /液状乳類|人乳|普通牛乳|豆乳|ジュース|だし|スープ|ストレート|液体ミルク/.test(f.tableName ?? f.name);
 }
 
 /** 銘柄の100mlあたり成分（100gあたりしか表示がなければ標準調乳濃度で換算） */
