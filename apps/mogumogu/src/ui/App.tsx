@@ -25,12 +25,20 @@ export function App() {
     });
   }, []);
 
+  // タブを切り替えたら、その画面の先頭から表示する
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [tab]);
+
   if (!loaded || !ready) return <div className="main muted">読み込み中…</div>;
 
   if (!child) {
     return (
       <div className="app">
-        <div className="header"><span className="name">もぐもぐ栄養ノート</span></div>
+        <header className="header">
+          <div className="header-edge" aria-hidden="true" />
+          <div className="glass-pill"><span className="name">もぐもぐ栄養ノート</span></div>
+        </header>
         <main className="main">
           <div className="card">
             <h2>はじめに</h2>
@@ -49,22 +57,23 @@ export function App() {
   return (
     <div className="app">
       <header className="header">
-        <span className="name">{child.name}</span>
-        <span className="age">{formatAge(child.birthDate, date)}</span>
+        <div className="header-edge" aria-hidden="true" />
+        <div className="glass-pill who">
+          <span className="name">{child.name}</span>
+          <span className="age">{formatAge(child.birthDate, date)}</span>
+          {children && children.length > 1 ? (
+            <>
+              <svg className="icon caret" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+              <select className="pill-select" aria-label="子どもを切り替え" value={child.id} onChange={(e) => saveSettings({ activeChildId: Number(e.target.value) })}>
+                {children.map((c) => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </>
+          ) : null}
+        </div>
         <span className="spacer" />
-        <span className="muted">{date === todayStr() ? '今日' : jpDate(date)}</span>
-        {children && children.length > 1 ? (
-          <select
-            aria-label="子どもを切り替え"
-            value={child.id}
-            style={{ width: 'auto', minHeight: 32, padding: '2px 6px' }}
-            onChange={(e) => saveSettings({ activeChildId: Number(e.target.value) })}
-          >
-            {children.map((c) => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-        ) : null}
+        <div className="glass-pill when">{date === todayStr() ? '今日' : jpDate(date)}</div>
       </header>
       <main className="main">
         {tab === 'record' && <RecordTab child={child} settings={settings} />}

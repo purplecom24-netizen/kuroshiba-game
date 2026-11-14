@@ -43,6 +43,7 @@
   --critical-bg: #fbe4e4;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
   /* タブバー（ガラス） */
+  --header-h: 44px;
   --tabbar-h: 62px;
   --tabbar-bottom: max(12px, calc(env(safe-area-inset-bottom) - 14px));
   --glass-shadow: rgba(0, 0, 0, 0.13);
@@ -139,20 +140,58 @@ body {
 button, input, select, textarea { font: inherit; color: inherit; }
 a { color: var(--accent); overflow-wrap: anywhere; }
 .main { overflow-wrap: anywhere; }
-html, body { overflow-x: hidden; }
+/* 横スクロールを防ぐ。body に hidden を付けると固定・追従する要素が流れてしまうので、body は clip にする */
+html {
+  overflow-x: hidden;
+  /* 固定のヘッダー・タブバーの下に、フォーカスした入力欄などが隠れないようにする */
+  scroll-padding-top: calc(env(safe-area-inset-top) + var(--header-h) + 24px);
+  scroll-padding-bottom: calc(var(--tabbar-bottom) + var(--tabbar-h) + 16px);
+}
+body { overflow-x: clip; }
 
 .app { min-height: 100dvh; display: flex; flex-direction: column; }
+/* ---- ヘッダー：画面上部に固定。帯はなく、ガラスの部品が浮く（iOS 26 の Liquid Glass 風） ---- */
 .header {
-  position: sticky; top: 0; z-index: 10;
-  background: var(--surface);
-  border-bottom: 1px solid var(--border);
+  position: fixed; top: 0; left: 0; right: 0; z-index: 10;
   padding: calc(env(safe-area-inset-top) + 8px) 16px 8px;
-  display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap;
+  display: flex; align-items: center; gap: 8px;
+  pointer-events: none; /* 部品のないところは、うしろの画面をそのまま操作できる */
 }
-.header .name { font-weight: 700; font-size: 1.05rem; }
-.header .age { color: var(--text-2); font-size: 0.9rem; }
+/* 上端のぼかし：下を流れる内容が、上に近づくほどぼけて薄くなる */
+.header-edge {
+  position: absolute; left: 0; right: 0; top: 0; height: calc(100% + 22px); pointer-events: none;
+  background: linear-gradient(to bottom, rgba(246, 245, 241, 0.9), rgba(246, 245, 241, 0.55) 62%, rgba(246, 245, 241, 0));
+  background: linear-gradient(to bottom, color-mix(in srgb, var(--bg) 90%, transparent), color-mix(in srgb, var(--bg) 55%, transparent) 62%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 58%, transparent 100%);
+}
+/* ガラスの部品（カプセル） */
+.glass-pill {
+  position: relative; pointer-events: auto; min-width: 0;
+  display: inline-flex; align-items: center; gap: 8px;
+  height: var(--header-h); padding: 0 16px; border-radius: 999px;
+  background: rgba(252, 252, 251, 0.62);
+  background: color-mix(in srgb, var(--surface) 62%, transparent);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    0 6px 18px var(--glass-shadow), 0 1px 3px var(--glass-shadow),
+    inset 0 0 0 1px var(--glass-rim), inset 0 1.5px 0.5px var(--glass-hi), inset 0 -1px 0.5px var(--glass-lo);
+}
+.header .who { max-width: 70vw; }
+.header .name { font-weight: 700; font-size: 1.05rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.header .age { color: var(--text-2); font-size: 0.88rem; white-space: nowrap; }
+.header .when { color: var(--text-2); font-size: 0.88rem; white-space: nowrap; }
 .header .spacer { flex: 1; }
-.main { flex: 1; padding: 12px 16px calc(var(--tabbar-bottom) + var(--tabbar-h) + 24px); max-width: 720px; width: 100%; margin: 0 auto; }
+.header .caret { width: 16px; height: 16px; color: var(--text-3); }
+/* 子どもの切り替え：カプセル全体をタップすると端末の選択画面が開く */
+.pill-select {
+  position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; border: 0;
+  opacity: 0; cursor: pointer; -webkit-appearance: none; appearance: none;
+}
+.main { flex: 1; padding: calc(env(safe-area-inset-top) + var(--header-h) + 24px) 16px calc(var(--tabbar-bottom) + var(--tabbar-h) + 24px); max-width: 720px; width: 100%; margin: 0 auto; }
 
 /* ---- タブバー：浮いたカプセル型の半透明ガラス（iOS 26 の Liquid Glass 風） ---- */
 .tabbar {
@@ -218,6 +257,8 @@ html, body { overflow-x: hidden; }
 }
 /* 「透明度を下げる」設定のときは、ガラスをやめて不透明にする */
 @media (prefers-reduced-transparency: reduce) {
+  .glass-pill { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
+  .header-edge { background: var(--bg); -webkit-backdrop-filter: none; backdrop-filter: none; -webkit-mask-image: none; mask-image: none; height: 100%; }
   .tabbar-glass { background: var(--surface); -webkit-backdrop-filter: none; backdrop-filter: none; }
   .tabbar.dragging .tab-lens { -webkit-backdrop-filter: none; backdrop-filter: none; }
   .fab-today { background: var(--accent); -webkit-backdrop-filter: none; backdrop-filter: none; }
